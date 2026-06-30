@@ -1,6 +1,11 @@
-ticker,name,buy_zone_low,buy_zone_high,sell_zone,stop_level,notes
-VWRA,Vanguard FTSE All-World UCITS ETF,184,186,,180,Core buy zone
-GEV,GE Vernova,950,1000,1100,900,AI power infrastructure
-PLTR,Palantir Technologies,,,125,100,Do not average down unless trend repairs
-MRVL,Marvell Technology,,,285,250,Watch for repair
-IB1T,Bitcoin ETP,,,,,Need to verify ISIN domicile before buying
+ticker,name,current_price,buy_zone_low,buy_zone_high,trim_zone,stop_level,priority,category,notes
+VWRA.L,Vanguard FTSE All-World UCITS ETF,185,184,186,,180,1,Core ETF,Core buy zone
+GEV,GE Vernova,980,950,1000,1100,900,2,AI Power,AI power infrastructure
+PLTR,Palantir Technologies,118,,,125,100,5,High Beta,Do not average down unless trend repairs
+MRVL,Marvell Technology,270,,,285,250,6,AI Semis,Watch for repair
+IEMA.L,iShares MSCI EM UCITS ETF,63,62,63,,60,4,Core ETF,Emerging markets add zone
+0050.TW,Yuanta Taiwan 50 ETF,102,,100,,95,3,Taiwan,Buy back below 100
+00878.TW,Yuanta Taiwan Dividend Plus ETF,31.5,31,32,,30,3,Taiwan,Dividend ETF buy zone
+2330.TW,Taiwan Semiconductor,2250,,2300,,2100,2,Taiwan,Buy below 2300
+2454.TW,MediaTek,3750,3700,3800,,3600,4,Taiwan,Buy zone with stop
+2327.TW,Yageo,930,900,950,,860,4,Taiwan,Buyback zone

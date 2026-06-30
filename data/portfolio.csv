@@ -1,8 +1,8 @@
-ticker,name,shares,average_cost,currency,asset_type,notes
-VWRA,Vanguard FTSE All-World UCITS ETF,9,186.54,USD,ETF,Core global equity
-CNX1,iShares Nasdaq 100 UCITS ETF,1.0005,1255.25,GBP,ETF,Tech core
-IEMA,iShares MSCI EM UCITS ETF,7,64.67,USD,ETF,Emerging markets
-MRVL,Marvell Technology,5,283.87,USD,Stock,AI networking semiconductor
-PLTR,Palantir Technologies,5,142.75,USD,Stock,High beta AI software
-SGLD,Physical Gold ETC,2,438.13,USD,ETC,Gold hedge
-WHEA,Healthcare ETF,6,66.51,USD,ETF,Healthcare theme
+ticker,name,shares,average_cost,current_price,currency,market_value,unrealized_pnl,unrealized_pnl_pct,asset_type,action_signal,notes
+VWRA.L,Vanguard FTSE All-World UCITS ETF,9,186.54,185,USD,1665,-13.86,-0.83,ETF,Hold,Core global equity
+CNX1.L,iShares Nasdaq 100 UCITS ETF,1.0005,1255.25,1255,GBP,1255.63,-0.25,-0.02,ETF,Hold,Tech core
+IEMA.L,iShares MSCI EM UCITS ETF,7,64.67,63,USD,441,-11.69,-2.58,ETF,Buy Zone,Emerging markets
+MRVL,Marvell Technology,5,283.87,270,USD,1350,-69.35,-4.89,Stock,Watch,AI networking semiconductor
+PLTR,Palantir Technologies,5,142.75,118,USD,590,-123.75,-17.34,Stock,Risk Alert,High beta AI software
+SGLD.L,Physical Gold ETC,2,438.13,438,USD,876,-0.26,-0.03,ETC,Hold,Gold hedge
+WHEA.L,Healthcare ETF,6,66.51,66,USD,396,-3.06,-0.77,ETF,Hold,Healthcare theme

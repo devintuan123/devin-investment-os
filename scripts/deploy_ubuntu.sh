@@ -2,7 +2,7 @@
 set -euo pipefail
 
 sudo apt update
-sudo apt install -y python3 python3-venv python3-pip git curl nano
+sudo apt install -y python3 python3-venv python3-pip git curl nano ufw nginx
 
 python3 -m venv .venv
 source .venv/bin/activate
@@ -15,6 +15,11 @@ if [ ! -f .env ]; then
 else
   echo ".env already exists. Leaving it unchanged."
 fi
+
+sudo ufw allow ssh
+sudo ufw allow 80/tcp
+sudo ufw allow 8501/tcp
+sudo ufw --force enable
 
 echo "Run the app with:"
 echo "streamlit run app.py --server.port 8501 --server.address 0.0.0.0"

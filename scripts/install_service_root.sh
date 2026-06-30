@@ -10,6 +10,7 @@ After=network.target
 
 [Service]
 Type=simple
+User=root
 WorkingDirectory=/root/devin-investment-os
 EnvironmentFile=-/root/devin-investment-os/.env
 ExecStart=/root/devin-investment-os/.venv/bin/streamlit run app.py --server.port 8501 --server.address 0.0.0.0

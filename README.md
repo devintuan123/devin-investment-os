@@ -1,8 +1,20 @@
 # Devin Investment OS
 
-Devin Investment OS is a simple Streamlit investment dashboard with local CSV storage, macro score placeholders, portfolio editing, watchlist signals, Telegram alerts, and Ubuntu deployment scripts.
+Devin Investment OS is a Streamlit dashboard for a personal investment workflow. It tracks market regime, portfolio risk, watchlist buy zones, asset scores, and a daily playbook.
 
-## Local Setup
+This is not financial advice.
+
+## Features
+
+- Home dashboard with Market Score, regime, actions, portfolio preview, and watchlist preview.
+- Macro dashboard covering Liquidity, Sentiment, Breadth, AI / Tech, and Defensive / Hedge.
+- Portfolio editor with price refresh, market value, unrealized P/L, allocation, and high-beta exposure.
+- Watchlist editor with Buy Zone, Watch, Trim, and Risk Alert signals.
+- Asset Scores and Daily Playbook pages.
+- Telegram report and alert scripts that skip gracefully when `.env` is missing.
+- Nginx reverse proxy and systemd server workflow.
+
+## Local Development
 
 ```bash
 python3 -m venv .venv
@@ -11,7 +23,7 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-On Windows PowerShell:
+Windows PowerShell:
 
 ```powershell
 python -m venv .venv
@@ -20,15 +32,45 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-## Environment
-
-Copy the example environment file:
+## Server Deployment
 
 ```bash
-cp .env.example .env
+git clone https://github.com/devintuan123/devin-investment-os.git
+cd devin-investment-os
+bash scripts/deploy_ubuntu.sh
+streamlit run app.py --server.port 8501 --server.address 0.0.0.0
 ```
 
-Then edit `.env`:
+Install root systemd service:
+
+```bash
+bash scripts/install_service_root.sh
+```
+
+## Update Workflow
+
+On the VPS:
+
+```bash
+bash /root/update_devin_investos.sh
+```
+
+Or from this repo:
+
+```bash
+bash scripts/update_server.sh
+```
+
+Health check:
+
+```bash
+bash /root/check_devin_investos.sh
+bash scripts/health_check.sh
+```
+
+## Telegram Setup
+
+Copy `.env.example` to `.env` on the server and fill in:
 
 ```bash
 TELEGRAM_BOT_TOKEN=
@@ -37,35 +79,18 @@ TELEGRAM_CHAT_ID=
 
 Do not commit `.env`.
 
-## Server Setup
+Manual report scripts:
 
 ```bash
-git clone <your-repo-url>
-cd devin-investment-os
-bash scripts/deploy_ubuntu.sh
-streamlit run app.py --server.port 8501 --server.address 0.0.0.0
+python scripts/send_daily_report.py
+python scripts/send_watchlist_alerts.py
 ```
 
-## Systemd Setup
+Optional cron examples:
 
-For a root deployment:
-
-```bash
-bash scripts/install_service_root.sh
-```
-
-For an `ubuntu` user deployment:
-
-```bash
-bash scripts/install_service_ubuntu.sh
-```
-
-Then manage the service:
-
-```bash
-sudo systemctl status devin-investment-os
-sudo systemctl restart devin-investment-os
-sudo journalctl -u devin-investment-os -f
+```cron
+0 8 * * 1-5 cd /root/devin-investment-os && .venv/bin/python scripts/send_daily_report.py
+*/30 * * * 1-5 cd /root/devin-investment-os && .venv/bin/python scripts/send_watchlist_alerts.py
 ```
 
 ## Data Files
@@ -73,4 +98,10 @@ sudo journalctl -u devin-investment-os -f
 - `data/portfolio.csv`
 - `data/watchlist.csv`
 
-The app reads and writes these files locally.
+These files contain holdings and watch zones only. Do not add account numbers or secrets.
+
+## Security Notes
+
+- Do not commit `.env`, passwords, SSH keys, Telegram tokens, or account numbers.
+- Keep SSH port 22 protected and do not expose secrets in logs.
+- Market data uses yfinance with fallback values so the app remains stable during data failures.
