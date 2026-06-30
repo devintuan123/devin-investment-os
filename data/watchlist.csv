@@ -1,0 +1,6 @@
+ticker,name,buy_zone_low,buy_zone_high,sell_zone,stop_level,notes
+VWRA,Vanguard FTSE All-World UCITS ETF,184,186,,180,Core buy zone
+GEV,GE Vernova,950,1000,1100,900,AI power infrastructure
+PLTR,Palantir Technologies,,,125,100,Do not average down unless trend repairs
+MRVL,Marvell Technology,,,285,250,Watch for repair
+IB1T,Bitcoin ETP,,,,,Need to verify ISIN domicile before buying

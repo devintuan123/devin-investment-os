@@ -1,0 +1,8 @@
+ticker,name,shares,average_cost,currency,asset_type,notes
+VWRA,Vanguard FTSE All-World UCITS ETF,9,186.54,USD,ETF,Core global equity
+CNX1,iShares Nasdaq 100 UCITS ETF,1.0005,1255.25,GBP,ETF,Tech core
+IEMA,iShares MSCI EM UCITS ETF,7,64.67,USD,ETF,Emerging markets
+MRVL,Marvell Technology,5,283.87,USD,Stock,AI networking semiconductor
+PLTR,Palantir Technologies,5,142.75,USD,Stock,High beta AI software
+SGLD,Physical Gold ETC,2,438.13,USD,ETC,Gold hedge
+WHEA,Healthcare ETF,6,66.51,USD,ETF,Healthcare theme
