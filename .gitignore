@@ -1,7 +1,12 @@
 .env
+*.env
+secrets/*.env
+secrets/api_keys.local.env
 .venv/
 __pycache__/
 *.pyc
 .DS_Store
+*.key
+*.pem
 .streamlit/secrets.toml
 data/snapshots/*.json

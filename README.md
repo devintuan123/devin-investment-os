@@ -80,6 +80,8 @@ TELEGRAM_CHAT_ID=
 
 Do not commit `.env`.
 
+For the full local Windows secrets workflow, see `docs/API_KEYS_SETUP.md`.
+
 Manual report scripts:
 
 ```bash
