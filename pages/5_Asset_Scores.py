@@ -7,16 +7,18 @@ st.title("Asset Scores")
 st.caption("Asset class scorecard for daily allocation decisions.")
 
 rows = [
-    ("US Market", 62, "Bullish Neutral", "SPY, QQQ, DIA", "Hold"),
-    ("Taiwan Market", 58, "Neutral", "0050.TW, 2330.TW, 2454.TW", "Watch"),
-    ("AI / Semis", 72, "Constructive", "NVDA, TSM, MRVL, GEV", "Buy Zone"),
-    ("Gold", 55, "Neutral", "GC=F, SGLD.L", "Hold"),
-    ("BTC", 48, "Neutral", "BTC-USD", "Watch"),
-    ("Core ETF", 66, "Constructive", "VWRA.L, CNX1.L, IEMA.L", "Buy Zone"),
-    ("High Beta Stocks", 44, "Mixed", "PLTR, MRVL", "Avoid"),
+    ("US Market", 62, "Bullish Neutral", "Uptrend", "Medium", "Hold", "SPY, QQQ, DIA"),
+    ("Taiwan Market", 58, "Neutral", "Repairing", "Medium", "Watch", "0050.TW, 2330.TW, 2454.TW"),
+    ("AI / Semis", 72, "Constructive", "Strong", "High", "Buy Zone", "NVDA, TSM, MRVL"),
+    ("AI Power Infrastructure", 76, "Constructive", "Strong", "High", "Buy pullbacks", "GEV"),
+    ("Gold", 55, "Neutral", "Stable", "Low", "Hold", "GC=F, SGLD.L"),
+    ("BTC", 48, "Neutral", "Volatile", "High", "Watch", "BTC-USD"),
+    ("Core ETFs", 66, "Constructive", "Stable", "Low", "Buy Zone", "VWRA.L, CNX1.L, IEMA.L"),
+    ("High Beta Stocks", 44, "Mixed", "Unstable", "High", "Avoid", "PLTR, MRVL"),
+    ("Healthcare", 52, "Neutral", "Stable", "Low", "Hold", "WHEA.L"),
 ]
 
-df = pd.DataFrame(rows, columns=["Asset", "Score", "Status", "Key Indicators", "Suggested Action"])
+df = pd.DataFrame(rows, columns=["Asset", "Score", "Status", "Trend", "Risk", "Action", "Related Tickers"])
 
 cols = st.columns(4)
 cols[0].metric("Best Score", df.loc[df["Score"].idxmax(), "Asset"])

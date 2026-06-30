@@ -1,0 +1,9 @@
+{
+  "Liquidity": ["DX-Y.NYB", "^VIX"],
+  "Sentiment": ["^VIX", "QQQ", "SPY"],
+  "Breadth": ["SPY", "QQQ", "IWM", "DIA"],
+  "AI / Tech": ["NVDA", "TSM", "GEV", "PLTR", "MRVL"],
+  "Defensive / Hedge": ["GC=F", "BTC-USD", "SGLD.L"],
+  "Taiwan Market": ["0050.TW", "2330.TW", "2454.TW", "2327.TW"],
+  "BTC / Gold": ["BTC-USD", "GC=F", "SGLD.L"]
+}

@@ -1,0 +1,19 @@
+{
+  "core_priority": ["VWRA.L", "0050.TW", "GEV", "IEMA.L", "2330.TW"],
+  "avoid": [
+    "Blind PLTR averaging down",
+    "Blind MRVL averaging down",
+    "Chasing sharp post-news spikes",
+    "Overbuilding US-situs individual stock exposure"
+  ],
+  "pullback_plan": {
+    "5_percent": ["VWRA.L", "0050.TW"],
+    "8_percent": ["GEV", "IEMA.L", "2330.TW"],
+    "12_to_15_percent": ["Stage stronger buying", "Avoid blind PLTR/MRVL averaging"]
+  },
+  "risk_limits": {
+    "high_beta_exposure_pct": 25,
+    "single_name_concentration_pct": 30,
+    "hedge_min_pct": 5
+  }
+}

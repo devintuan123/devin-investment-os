@@ -6,3 +6,9 @@ MRVL,Marvell Technology,5,283.87,270,USD,1350,-69.35,-4.89,Stock,Watch,AI networ
 PLTR,Palantir Technologies,5,142.75,118,USD,590,-123.75,-17.34,Stock,Risk Alert,High beta AI software
 SGLD.L,Physical Gold ETC,2,438.13,438,USD,876,-0.26,-0.03,ETC,Hold,Gold hedge
 WHEA.L,Healthcare ETF,6,66.51,66,USD,396,-3.06,-0.77,ETF,Hold,Healthcare theme
+0050.TW,Yuanta Taiwan 50 ETF,10,102,102,TWD,1020,0,0,ETF,Hold,Taiwan core
+00878.TW,Yuanta Taiwan Dividend Plus ETF,20,31.5,31.5,TWD,630,0,0,ETF,Hold,Taiwan dividend
+2330.TW,Taiwan Semiconductor,1,2250,2250,TWD,2250,0,0,Stock,Hold,Core Taiwan semis
+2454.TW,MediaTek,1,3750,3750,TWD,3750,0,0,Stock,Watch,Taiwan IC design
+2327.TW,Yageo,1,930,930,TWD,930,0,0,Stock,Watch,Taiwan components
+BTC-USD,Bitcoin,0.01,65000,65000,USD,650,0,0,Crypto,Hold,BTC hedge placeholder

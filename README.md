@@ -11,6 +11,7 @@ This is not financial advice.
 - Portfolio editor with price refresh, market value, unrealized P/L, allocation, and high-beta exposure.
 - Watchlist editor with Buy Zone, Watch, Trim, and Risk Alert signals.
 - Asset Scores and Daily Playbook pages.
+- History page for daily snapshots and regime changes.
 - Telegram report and alert scripts that skip gracefully when `.env` is missing.
 - Nginx reverse proxy and systemd server workflow.
 
@@ -84,7 +85,12 @@ Manual report scripts:
 ```bash
 python scripts/send_daily_report.py
 python scripts/send_watchlist_alerts.py
+python scripts/send_risk_alerts.py
+python scripts/create_daily_snapshot.py
+python scripts/generate_weekly_report.py
 ```
+
+More docs live in `docs/`, including architecture, cron setup, security, data sources, TODOs, and the Level 3 roadmap.
 
 Optional cron examples:
 

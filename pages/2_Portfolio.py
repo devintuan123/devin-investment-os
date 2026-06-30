@@ -4,6 +4,7 @@ import streamlit as st
 
 from utils.data import load_portfolio, save_portfolio
 from utils.market_data import get_prices
+from utils.portfolio_risk import holding_action, portfolio_summary
 
 
 st.set_page_config(page_title="Portfolio", page_icon="DI", layout="wide")
@@ -25,7 +26,7 @@ def enrich_portfolio(df: pd.DataFrame, refresh_prices: bool = False) -> pd.DataF
     df["unrealized_pnl"] = (current_price - average_cost) * shares
     cost_basis = shares * average_cost
     df["unrealized_pnl_pct"] = (df["unrealized_pnl"] / cost_basis.replace(0, pd.NA) * 100).fillna(0)
-    df["action_signal"] = df["unrealized_pnl_pct"].apply(lambda value: "Trim" if value > 25 else ("Risk Alert" if value < -15 else "Hold"))
+    df["action_signal"] = df.apply(holding_action, axis=1)
     return df
 
 
@@ -36,8 +37,18 @@ portfolio = enrich_portfolio(portfolio, refresh)
 col1, col2, col3 = st.columns(3)
 col1.metric("Total Market Value", f"{portfolio['market_value'].sum():,.2f}")
 col2.metric("Unrealized P/L", f"{portfolio['unrealized_pnl'].sum():,.2f}")
-high_beta = portfolio[portfolio["asset_type"].astype(str).str.contains("Stock", case=False, na=False)]["market_value"].sum()
-col3.metric("High-Beta Exposure", f"{high_beta:,.2f}")
+risk = portfolio_summary(portfolio)
+col3.metric("Portfolio Risk", f"{risk['risk_score']}/100")
+
+metric_cols = st.columns(4)
+metric_cols[0].metric("High-Beta Exposure", f"{risk['high_beta_exposure']:.1f}%")
+metric_cols[1].metric("Hedge Exposure", f"{risk['hedge_allocation']:.1f}%")
+metric_cols[2].metric("Core Allocation", f"{risk['core_allocation']:.1f}%")
+metric_cols[3].metric("Single Name Max", f"{risk['single_name_concentration']:.1f}%")
+
+st.subheader("Suggested Risk Actions")
+for item in risk["suggestions"]:
+    st.write(f"- {item}")
 
 edited = st.data_editor(portfolio, use_container_width=True, hide_index=True, num_rows="dynamic")
 if st.button("Save Portfolio", use_container_width=True):
