@@ -13,6 +13,7 @@ from utils.i18n import (
     translate_action_label,
     translate_regime,
     translate_risk_label,
+    translate_term,
     translate_warning,
 )
 
@@ -90,7 +91,9 @@ COLUMN_KEYS = {
     "volatility_proxy": "volatility_proxy",
     "configured": "configured",
     "connected": "connected",
+    "Connected": "connected",
     "status": "status",
+    "Status": "status",
     "score": "score",
     "alerts": "latest_alerts",
     "received_at": "latest_successful_fetch",
@@ -98,6 +101,12 @@ COLUMN_KEYS = {
     "return_5d": "return_5d",
     "return_1m": "return_1m",
     "distance_ma_50d": "distance_ma_50d",
+    "No.": "no_column",
+    "No": "no_column",
+    "no": "no_column",
+    "index": "no_column",
+    "Index": "no_column",
+    "#": "no_column",
 }
 
 COLUMN_LABELS = {
@@ -154,6 +163,11 @@ VALUE_KEYS = {
     "Gold": "gold",
     "Cash": "cash",
     "Taiwan": "taiwan",
+    "US Market": "us_market",
+    "US Tech": "us_tech",
+    "Taiwan Market": "taiwan_market",
+    "Macro": "macro",
+    "Volatility": "volatility",
     "US": "us",
     "UCITS": "ucits",
     "On target": "balanced",
@@ -203,6 +217,9 @@ def translate_cell_value(value: Any, lang: str) -> Any:
     if translated != text:
         return translated
     translated = translate_regime(text)
+    if translated != text:
+        return translated
+    translated = translate_term(text)
     if translated != text:
         return translated
     key = VALUE_KEYS.get(text)

@@ -3,6 +3,7 @@ import plotly.express as px
 import streamlit as st
 
 from utils.i18n import t, translate_action_label, translate_warning
+from utils.interactive_table import render_interactive_table
 from utils.portfolio_engine import (
     calculate_cash_needed_for_rebalance,
     calculate_position_values,
@@ -11,7 +12,7 @@ from utils.portfolio_engine import (
     portfolio_health_score,
     save_portfolio,
 )
-from utils.table_i18n import translate_dataframe, translated_column_config
+from utils.table_i18n import translated_column_config
 from utils.ui import get_current_lang, render_refresh_button, render_sidebar_language_switch, render_sidebar_provider_status
 
 
@@ -49,7 +50,7 @@ st.subheader(t("drift"))
 if not positions.empty:
     drift = positions[["symbol", "category", "current_weight", "target_weight", "drift", "drift_label", "action_suggestion"]].copy()
     drift["action_suggestion"] = drift["action_suggestion"].map(translate_action_label)
-    st.dataframe(translate_dataframe(drift, lang), use_container_width=True, hide_index=True)
+    render_interactive_table(drift, table_key="portfolio_drift", lang=lang)
 
 st.subheader(t("positions"))
 if positions.empty:
@@ -58,7 +59,7 @@ else:
     columns = ["symbol", "name", "category", "market", "currency", "quantity", "avg_cost", "latest_price", "market_value", "current_weight", "target_weight", "drift", "unrealized_pl", "action_suggestion", "freshness_status", "warning"]
     view = positions[[column for column in columns if column in positions]].copy()
     view["action_suggestion"] = view["action_suggestion"].map(translate_action_label)
-    st.dataframe(translate_dataframe(view, lang), use_container_width=True, hide_index=True)
+    render_interactive_table(view, table_key="portfolio_positions", lang=lang)
 
 st.subheader(t("suggested_actions"))
 for warning in health["warnings"]:
@@ -67,8 +68,9 @@ for _, row in positions.head(8).iterrows():
     st.write(f"- {row['symbol']}: {translate_action_label(row['action_suggestion'])}")
 
 st.subheader(t("target_allocation"))
-st.dataframe(translate_dataframe(calculate_cash_needed_for_rebalance(portfolio), lang), use_container_width=True, hide_index=True)
+render_interactive_table(calculate_cash_needed_for_rebalance(portfolio), table_key="portfolio_cash_needed", lang=lang)
 
+# Editable CSV editor: intentionally allowlisted by table usability gate.
 edited = st.data_editor(portfolio, use_container_width=True, hide_index=True, num_rows="dynamic", column_config=translated_column_config(portfolio, lang))
 if st.button(t("save_portfolio"), use_container_width=True):
     save_portfolio(edited)

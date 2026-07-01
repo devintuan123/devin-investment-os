@@ -3,9 +3,9 @@ import streamlit as st
 
 from utils.buy_zone_engine import score_buy_zones
 from utils.i18n import t, translate_action_label, translate_regime, translate_warning
+from utils.interactive_table import render_interactive_table
 from utils.market_regime import calculate_market_regime
 from utils.portfolio_engine import calculate_position_values, load_portfolio, portfolio_health_score
-from utils.table_i18n import translate_dataframe
 from utils.ui import get_current_lang, render_refresh_button, render_sidebar_language_switch, render_sidebar_provider_status
 
 
@@ -36,7 +36,7 @@ st.metric(t("portfolio_health"), f"{health['score']}/100")
 if not positions.empty:
     drift_view = positions[["symbol", "current_weight", "target_weight", "drift", "action_suggestion"]].head(8).copy()
     drift_view["action_suggestion"] = drift_view["action_suggestion"].map(translate_action_label)
-    st.dataframe(translate_dataframe(drift_view, lang), use_container_width=True, hide_index=True)
+    render_interactive_table(drift_view, table_key="daily_drift", lang=lang)
 
 st.subheader(t("what_changed_today"))
 for item in regime["what_changed"]:
@@ -52,7 +52,7 @@ if buy_zones.empty:
 else:
     add_candidates = buy_zones[buy_zones["action_label"].isin(["Potential Layer 1", "Potential Layer 2", "Deep Pullback Watch", "Hold"])].head(3).copy()
     add_candidates["action_label"] = add_candidates["action_label"].map(translate_action_label)
-    st.dataframe(translate_dataframe(add_candidates[["ticker", "latest_price", "drawdown_52w_pct", "action_label", "warning"]], lang), use_container_width=True, hide_index=True)
+    render_interactive_table(add_candidates[["ticker", "latest_price", "drawdown_52w_pct", "action_label", "warning"]], table_key="daily_add_candidates", lang=lang)
 
 st.subheader(t("top_avoid_warnings"))
 if not buy_zones.empty:
@@ -61,7 +61,7 @@ if not buy_zones.empty:
         st.info(t("no_data"))
     else:
         avoid["action_label"] = avoid["action_label"].map(translate_action_label)
-        st.dataframe(translate_dataframe(avoid[["ticker", "latest_price", "drawdown_52w_pct", "action_label"]], lang), use_container_width=True, hide_index=True)
+        render_interactive_table(avoid[["ticker", "latest_price", "drawdown_52w_pct", "action_label"]], table_key="daily_avoid", lang=lang)
 
 st.subheader(t("risk_warnings"))
 for warning in regime["risk_warnings"]:

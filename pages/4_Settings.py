@@ -3,8 +3,8 @@ import streamlit as st
 
 from utils.config import safety_status
 from utils.i18n import t
+from utils.interactive_table import render_interactive_table
 from utils.provider_status import active_provider_rows, future_disabled_provider_rows
-from utils.table_i18n import translate_dataframe
 from utils.telegram import send_telegram_message
 from utils.ui import get_current_lang, render_refresh_button, render_sidebar_language_switch, render_sidebar_provider_status
 
@@ -25,9 +25,9 @@ for index, row in enumerate(active_rows):
     metric_cols[index].metric(row["Provider"], row["Status"])
 
 st.write(t("active_providers"))
-st.dataframe(translate_dataframe(pd.DataFrame(active_rows), lang), use_container_width=True, hide_index=True)
+render_interactive_table(pd.DataFrame(active_rows), table_key="settings_active_providers", lang=lang)
 st.write(t("disabled_providers"))
-st.dataframe(translate_dataframe(pd.DataFrame(future_disabled_provider_rows()), lang), use_container_width=True, hide_index=True)
+render_interactive_table(pd.DataFrame(future_disabled_provider_rows()), table_key="settings_disabled_providers", lang=lang)
 
 st.subheader(t("safety_status"))
 safety = safety_status()

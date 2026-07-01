@@ -11,6 +11,14 @@ def get_current_lang() -> str:
 
 
 def render_sidebar_language_switch() -> None:
+    st.sidebar.markdown(
+        """
+        <style>
+            [data-testid="stSidebarNav"] {display: none;}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
     labels = {LANG_ZH: t("traditional_chinese"), LANG_EN: t("english")}
     current = get_lang()
     selected = st.sidebar.radio(
@@ -20,6 +28,25 @@ def render_sidebar_language_switch() -> None:
         index=[LANG_ZH, LANG_EN].index(current),
     )
     set_lang(selected)
+    render_sidebar_navigation()
+
+
+def render_sidebar_navigation() -> None:
+    st.sidebar.subheader(t("navigation"))
+    links = [
+        ("app.py", "home"),
+        ("pages/1_Macro_Dashboard.py", "macro_dashboard"),
+        ("pages/2_Portfolio.py", "portfolio"),
+        ("pages/3_Watchlist.py", "watchlist"),
+        ("pages/5_Asset_Scores.py", "asset_scores"),
+        ("pages/6_Daily_Playbook.py", "daily_playbook"),
+        ("pages/10_Buy_Zones.py", "buy_zones"),
+        ("pages/7_History.py", "history"),
+        ("pages/9_Data_Quality.py", "data_quality"),
+        ("pages/4_Settings.py", "settings"),
+    ]
+    for target, label_key in links:
+        st.sidebar.page_link(target, label=t(label_key))
 
 
 def render_sidebar_provider_status() -> None:

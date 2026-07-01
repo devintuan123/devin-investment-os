@@ -3,9 +3,10 @@ import streamlit as st
 
 from utils.data import load_watchlist, save_watchlist
 from utils.i18n import t, translate_action_label, translate_risk_label
+from utils.interactive_table import render_interactive_table
 from utils.market_data import get_prices
 from utils.signals import distance_to_buy_zone, distance_to_trim_zone, watchlist_signal
-from utils.table_i18n import translate_dataframe, translated_column_config
+from utils.table_i18n import translated_column_config
 from utils.ui import get_current_lang, render_refresh_button, render_sidebar_language_switch, render_sidebar_provider_status
 from utils.watchlist_scoring import score_watchlist
 
@@ -42,6 +43,7 @@ if signal_filter != t("all"):
 if "priority" in view:
     view = view.sort_values("priority", na_position="last")
 
+# Editable CSV editor: intentionally allowlisted by table usability gate.
 edited = st.data_editor(view, use_container_width=True, hide_index=True, num_rows="dynamic", column_config=translated_column_config(view, lang))
 if st.button(t("save_watchlist"), use_container_width=True):
     if "signal" in edited:
@@ -60,4 +62,4 @@ else:
     display_scores = scores[score_columns].copy()
     display_scores["action_label"] = display_scores["action_label"].map(translate_action_label)
     display_scores["risk_label"] = display_scores["risk_label"].map(translate_risk_label)
-    st.dataframe(translate_dataframe(display_scores, lang), use_container_width=True, hide_index=True)
+    render_interactive_table(display_scores, table_key="watchlist_scores", lang=lang)

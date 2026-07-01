@@ -20,7 +20,7 @@ def main() -> int:
                 continue
             call_name = node.func.attr
             segment = ast.get_source_segment(source, node) or ""
-            if call_name in TABLE_CALLS and "translate_dataframe(" not in segment:
+            if call_name in TABLE_CALLS:
                 findings.append((path.relative_to(ROOT_DIR), node.lineno, call_name, segment.strip()))
             if call_name == "write" and _looks_like_dataframe_write(node):
                 findings.append((path.relative_to(ROOT_DIR), node.lineno, call_name, segment.strip()))
@@ -28,7 +28,7 @@ def main() -> int:
     if findings:
         print("Table i18n audit failed:")
         for path, line, call_name, segment in findings:
-            print(f"- {path}:{line}: st.{call_name} should use translate_dataframe: {segment}")
+            print(f"- {path}:{line}: st.{call_name} should use render_interactive_table: {segment}")
         return 1
 
     print("table i18n audit passed.")

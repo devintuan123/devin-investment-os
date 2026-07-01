@@ -2,11 +2,11 @@ import pandas as pd
 import streamlit as st
 
 from utils.buy_zone_engine import score_buy_zones
-from utils.i18n import t, translate_action_label, translate_regime, translate_risk_label, translate_warning
+from utils.i18n import t, translate_action_label, translate_regime, translate_risk_label, translate_term, translate_warning
+from utils.interactive_table import render_interactive_table
 from utils.market_regime import calculate_market_regime
 from utils.portfolio_engine import calculate_position_values, load_portfolio, portfolio_health_score
 from utils.provider_status import active_provider_rows
-from utils.table_i18n import translate_dataframe
 from utils.ui import get_current_lang, render_refresh_button, render_sidebar_language_switch, render_sidebar_provider_status
 
 
@@ -51,7 +51,7 @@ for index, row in enumerate(active_provider_rows()):
 st.subheader(t("market_components"))
 component_cols = st.columns(4)
 for index, (name, score) in enumerate(regime["components"].items()):
-    component_cols[index % 4].metric(name, f"{score}/100")
+    component_cols[index % 4].metric(translate_term(name), f"{score}/100")
 
 st.subheader(t("recommended_action"))
 st.markdown(f"<div class='action-box'>{regime['recommended_action'] if lang == 'en' else t('read_only_notice')}</div>", unsafe_allow_html=True)
@@ -76,7 +76,7 @@ else:
         st.info(t("no_data"))
     else:
         candidates["action_label"] = candidates["action_label"].map(translate_action_label)
-        st.dataframe(translate_dataframe(candidates[["ticker", "latest_price", "drawdown_52w_pct", "action_label", "warning"]], lang), use_container_width=True, hide_index=True)
+        render_interactive_table(candidates[["ticker", "latest_price", "drawdown_52w_pct", "action_label", "warning"]], table_key="home_candidates", lang=lang)
 
 st.subheader(t("quick_portfolio"))
 if positions.empty:
@@ -84,7 +84,7 @@ if positions.empty:
 else:
     view = positions[["symbol", "category", "market_value", "current_weight", "target_weight", "drift", "action_suggestion"]].copy()
     view["action_suggestion"] = view["action_suggestion"].map(translate_action_label)
-    st.dataframe(translate_dataframe(view, lang), use_container_width=True, hide_index=True)
+    render_interactive_table(view, table_key="home_portfolio", lang=lang)
 
 st.subheader(t("navigation"))
 links = st.columns(10)

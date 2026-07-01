@@ -3,10 +3,10 @@ import streamlit as st
 
 from utils.config import is_configured
 from utils.i18n import t, translate_regime, translate_warning
+from utils.interactive_table import render_interactive_table
 from utils.market_data import safe_fetch_with_fallback
 from utils.market_regime import calculate_market_regime
 from utils.provider_status import future_disabled_provider_rows
-from utils.table_i18n import translate_dataframe
 from utils.tw_market_time import get_tw_market_session_label, get_tw_next_session_hint, is_tw_market_open
 from utils.ui import get_current_lang, render_refresh_button, render_sidebar_language_switch, render_sidebar_provider_status
 from utils.watchlist_scoring import DEFAULT_WATCHLIST
@@ -50,14 +50,14 @@ quality_rows = []
 for row in regime["provider_quality"]:
     provider = row["Provider"]
     quality_rows.append({t("provider"): provider, t("configured"): t("yes") if _provider_configured(provider) else t("no"), t("connected"): t("yes") if _provider_connected(row) else t("no"), t("latest_successful_fetch"): row.get("Latest successful fetch"), t("freshness"): row.get("Freshness"), t("confidence"): row.get("Confidence"), t("warning"): translate_warning(row.get("Warning", ""))})
-st.dataframe(translate_dataframe(pd.DataFrame(quality_rows), lang), use_container_width=True, hide_index=True)
+render_interactive_table(pd.DataFrame(quality_rows), table_key="data_quality_providers", lang=lang)
 
 st.subheader(t("freshness"))
 ticker_rows = []
 for ticker in DEFAULT_WATCHLIST:
     quote = safe_fetch_with_fallback(ticker)
     ticker_rows.append({t("ticker"): ticker, t("provider"): quote.get("provider_label") or quote.get("source"), t("latest_price_label"): quote.get("price"), t("fetch_time"): quote.get("fetch_timestamp"), t("quote_time"): quote.get("quote_timestamp"), t("market_session_status"): get_tw_market_session_label() if ticker.endswith(".TW") else "n/a", t("freshness_status"): quote.get("freshness_status"), t("confidence"): quote.get("confidence"), t("warning"): translate_warning(quote.get("provider_warning", ""))})
-st.dataframe(translate_dataframe(pd.DataFrame(ticker_rows), lang), use_container_width=True, hide_index=True)
+render_interactive_table(pd.DataFrame(ticker_rows), table_key="data_quality_tickers", lang=lang)
 
 st.subheader(t("overall_confidence"))
 cols = st.columns(4)
@@ -71,5 +71,5 @@ for warning in regime["warnings"]:
     st.warning(translate_warning(warning))
 
 with st.expander(t("future_disabled_providers"), expanded=False):
-    st.dataframe(translate_dataframe(pd.DataFrame(future_disabled_provider_rows()), lang), use_container_width=True, hide_index=True)
+    render_interactive_table(pd.DataFrame(future_disabled_provider_rows()), table_key="data_quality_disabled", lang=lang)
     st.write(t("read_only_notice"))

@@ -219,6 +219,22 @@ TRANSLATIONS = {
         "read_only_notice": "Read-only decision support. No trading or execution.",
         "yes": "Yes",
         "no": "No",
+        "us_market": "US Market",
+        "us_tech": "US Tech",
+        "taiwan_market": "Taiwan Market",
+        "volatility": "Volatility",
+        "search": "Search",
+        "filter": "Filter",
+        "sort": "Sort",
+        "sort_column": "Sort Column",
+        "ascending": "Ascending",
+        "descending": "Descending",
+        "reset_filters": "Reset Filters",
+        "rows": "Rows",
+        "show_all": "Show All",
+        "table_options": "Table Options",
+        "showing_rows": "Showing {shown} / {total} rows",
+        "no_column": "No.",
     },
     LANG_ZH: {
         "language": "\u8a9e\u8a00",
@@ -429,6 +445,22 @@ TRANSLATIONS = {
         "read_only_notice": "\u552f\u8b80\u6c7a\u7b56\u8f14\u52a9\uff0c\u4e0d\u57f7\u884c\u4ea4\u6613\u3002",
         "yes": "\u662f",
         "no": "\u5426",
+        "us_market": "\u7f8e\u570b\u5e02\u5834",
+        "us_tech": "\u7f8e\u570b\u79d1\u6280",
+        "taiwan_market": "\u53f0\u7063\u5e02\u5834",
+        "volatility": "\u6ce2\u52d5\u5ea6",
+        "search": "\u641c\u5c0b",
+        "filter": "\u7be9\u9078",
+        "sort": "\u6392\u5e8f",
+        "sort_column": "\u6392\u5e8f\u6b04\u4f4d",
+        "ascending": "\u5347\u5e8f",
+        "descending": "\u964d\u5e8f",
+        "reset_filters": "\u91cd\u8a2d\u7be9\u9078",
+        "rows": "\u5217\u6578",
+        "show_all": "\u986f\u793a\u5168\u90e8",
+        "table_options": "\u8868\u683c\u9078\u9805",
+        "showing_rows": "\u986f\u793a {shown} / {total} \u5217",
+        "no_column": "\u7de8\u865f",
     },
 }
 
@@ -458,6 +490,33 @@ ACTION_LABEL_KEYS = {
 
 RISK_LABEL_KEYS = {"High": "high", "Elevated": "elevated", "Moderate": "moderate", "Balanced": "balanced"}
 REGIME_KEYS = {"Risk-On": "risk_on", "Neutral": "neutral", "Risk-Off": "risk_off"}
+TERM_KEYS = {
+    "US Market": "us_market",
+    "US Tech": "us_tech",
+    "Taiwan": "taiwan",
+    "Taiwan Market": "taiwan_market",
+    "Crypto": "crypto",
+    "Gold": "gold",
+    "Macro": "macro",
+    "Volatility": "volatility",
+    "Home": "home",
+    "Macro Dashboard": "macro_dashboard",
+    "Portfolio": "portfolio",
+    "Watchlist": "watchlist",
+    "Asset Scores": "asset_scores",
+    "Daily Playbook": "daily_playbook",
+    "Data Quality": "data_quality",
+    "Settings": "settings",
+    "History": "history",
+    "Buy Zones": "buy_zones",
+    "Search": "search",
+    "Filter": "filter",
+    "Sort": "sort",
+    "Reset Filters": "reset_filters",
+    "Rows": "rows",
+    "Show All": "show_all",
+    "Table Options": "table_options",
+}
 
 
 def get_lang() -> str:
@@ -501,6 +560,10 @@ def translate_risk_label(label: str) -> str:
 
 def translate_regime(label: str) -> str:
     return t(REGIME_KEYS.get(label, label))
+
+
+def translate_term(label: str) -> str:
+    return t(TERM_KEYS.get(str(label), str(label)))
 
 
 def translate_status(label: str) -> str:

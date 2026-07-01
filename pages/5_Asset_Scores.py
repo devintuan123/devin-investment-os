@@ -1,9 +1,9 @@
 import pandas as pd
 import streamlit as st
 
-from utils.i18n import t, translate_action_label
+from utils.i18n import t, translate_action_label, translate_term
+from utils.interactive_table import render_interactive_table
 from utils.market_regime import calculate_market_regime
-from utils.table_i18n import translate_dataframe
 from utils.ui import get_current_lang, render_refresh_button, render_sidebar_language_switch, render_sidebar_provider_status
 
 
@@ -23,10 +23,10 @@ for name, score in regime["components"].items():
 df = pd.DataFrame(rows)
 
 cols = st.columns(4)
-cols[0].metric(t("best_score"), max(regime["components"], key=regime["components"].get))
+cols[0].metric(t("best_score"), translate_term(max(regime["components"], key=regime["components"].get)))
 cols[1].metric(t("risk_watch"), t("risk_warnings"))
 cols[2].metric(t("core_bias"), translate_action_label("Hold"))
 cols[3].metric(t("action"), translate_action_label(regime["today_action"]))
 
-st.dataframe(translate_dataframe(df, lang), use_container_width=True, hide_index=True)
+render_interactive_table(df, table_key="asset_scores", lang=lang)
 st.warning(t("broker_warning"))

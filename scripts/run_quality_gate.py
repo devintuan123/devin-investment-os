@@ -9,11 +9,16 @@ ROOT_DIR = Path(__file__).resolve().parents[1]
 
 CHECKS = [
     ("compileall", [sys.executable, "-m", "compileall", "-q", "."]),
+    ("enforce_i18n_hard_gate", [sys.executable, "scripts/enforce_i18n_hard_gate.py"]),
+    ("enforce_table_usability_gate", [sys.executable, "scripts/enforce_table_usability_gate.py"]),
     ("audit_i18n", [sys.executable, "scripts/audit_i18n.py"]),
     ("audit_table_i18n", [sys.executable, "scripts/audit_table_i18n.py"]),
+    ("audit_navigation_i18n", [sys.executable, "scripts/audit_navigation_i18n.py"]),
     ("ui_text_snapshot", [sys.executable, "scripts/ui_text_snapshot.py"]),
-    ("telegram_dry_run", [sys.executable, "scripts/send_daily_report.py", "--dry-run"]),
+    ("telegram_dry_run_zh", [sys.executable, "scripts/send_daily_report.py", "--dry-run", "--lang", "zh"]),
+    ("telegram_dry_run_en", [sys.executable, "scripts/send_daily_report.py", "--dry-run", "--lang", "en"]),
 ]
+MANDATORY = {"compileall", "enforce_i18n_hard_gate", "enforce_table_usability_gate"}
 
 
 def main() -> int:
@@ -23,7 +28,11 @@ def main() -> int:
     for name, command in CHECKS:
         script_path = _script_path(command)
         if script_path and not script_path.exists():
-            print(f"[WARN] {name}: optional script missing ({script_path.relative_to(ROOT_DIR)})")
+            if name in MANDATORY:
+                print(f"[FAIL] {name}: mandatory script missing ({script_path.relative_to(ROOT_DIR)})")
+                failures.append(name)
+            else:
+                print(f"[WARN] {name}: optional script missing ({script_path.relative_to(ROOT_DIR)})")
             continue
 
         print(f"[RUN] {name}")
