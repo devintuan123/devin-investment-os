@@ -12,6 +12,7 @@ REPORT_DIR.mkdir(exist_ok=True)
 import pandas as pd
 
 from utils.i18n import LANG_EN, LANG_ZH, set_lang, t, translate_action_label, translate_regime, translate_warning
+from utils.sector_heat_engine import calculate_theme_heat_score
 from utils.table_i18n import translate_dataframe
 
 
@@ -75,7 +76,10 @@ def main() -> int:
         lines.extend([f"- {key}: {t(key)}" for key in LABELS])
         lines.append("")
         lines.append("Action labels:")
-        lines.extend([f"- {label}: {translate_action_label(label)}" for label in ACTIONS])
+        if lang == LANG_ZH:
+            lines.extend([f"- {translate_action_label(label)}" for label in ACTIONS])
+        else:
+            lines.extend([f"- {label}: {translate_action_label(label)}" for label in ACTIONS])
         lines.append("")
         lines.append("Regimes:")
         lines.extend([f"- {label}: {translate_regime(label)}" for label in ["Risk-On", "Neutral", "Risk-Off"]])
@@ -92,6 +96,38 @@ def main() -> int:
             table_lines.append("")
         table_path.write_text("\n".join(table_lines).rstrip() + "\n", encoding="utf-8")
         print(table_path)
+        navigation_path = REPORT_DIR / f"navigation_snapshot_{lang}.txt"
+        navigation_path.write_text("\n".join([t(key) for key in [*PAGES, "sector_heat_page"]]) + "\n", encoding="utf-8")
+        print(navigation_path)
+        portfolio_path = REPORT_DIR / f"portfolio_management_snapshot_{lang}.txt"
+        portfolio_path.write_text(
+            "\n".join(
+                [
+                    t("overview"),
+                    t("add_holding"),
+                    t("reduce_position"),
+                    t("close_position"),
+                    t("clear_holdings"),
+                    t("transaction_ledger"),
+                    t("realized_pl"),
+                    t("manual_portfolio_warning"),
+                ]
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        print(portfolio_path)
+        sector_path = REPORT_DIR / f"sector_heat_snapshot_{lang}.txt"
+        heat = calculate_theme_heat_score()
+        sector_lines = [t("sector_heat_page"), t("capital_rotation"), t("proxy_heat_warning")]
+        if not heat.empty:
+            sector_lines.append(translate_dataframe(heat.head(5), lang).to_string(index=False))
+        sector_path.write_text("\n".join(sector_lines) + "\n", encoding="utf-8")
+        print(sector_path)
+    module_path = REPORT_DIR / "module_structure_report.txt"
+    modules = sorted((ROOT_DIR / "modules").glob("**/*.py"))
+    module_path.write_text("\n".join(str(path.relative_to(ROOT_DIR)) for path in modules) + "\n", encoding="utf-8")
+    print(module_path)
     return 0
 
 

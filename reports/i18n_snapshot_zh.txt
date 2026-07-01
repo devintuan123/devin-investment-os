@@ -29,17 +29,17 @@ Key labels:
 - warning: 警示
 
 Action labels:
-- Potential buy zone - verify quote: 潛在買進區，請確認報價
-- Extended / Do not chase: 漲幅延伸，勿追高
-- Healthy trend / Hold: 趨勢健康，持有
-- Pullback watch: 回檔觀察
-- Broken trend / Avoid: 趨勢轉弱，避免
-- Potential Layer 1: 潛在第一層加碼
-- Potential Layer 2: 潛在第二層加碼
-- Deep Pullback Watch: 深度回檔觀察
-- Broken trend, avoid: 趨勢轉弱，避免
-- Extended, do not chase: 漲幅延伸，勿追高
-- Hold: 持有
+- 潛在買進區，請確認報價
+- 漲幅延伸，勿追高
+- 趨勢健康，持有
+- 回檔觀察
+- 趨勢轉弱，避免
+- 潛在第一層加碼
+- 潛在第二層加碼
+- 深度回檔觀察
+- 趨勢轉弱，避免
+- 漲幅延伸，勿追高
+- 持有
 
 Regimes:
 - Risk-On: 風險偏好

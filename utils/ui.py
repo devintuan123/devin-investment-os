@@ -41,6 +41,7 @@ def render_sidebar_navigation() -> None:
         ("pages/5_Asset_Scores.py", "asset_scores"),
         ("pages/6_Daily_Playbook.py", "daily_playbook"),
         ("pages/10_Buy_Zones.py", "buy_zones"),
+        ("pages/11_Sector_Heat.py", "sector_heat_page"),
         ("pages/7_History.py", "history"),
         ("pages/9_Data_Quality.py", "data_quality"),
         ("pages/4_Settings.py", "settings"),

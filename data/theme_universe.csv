@@ -1,0 +1,71 @@
+theme,theme_zh,market,symbol,name,category,proxy_type,note
+AI / Semiconductors,AI／半導體,US,NVDA,NVIDIA,Stock,stock,Proxy-based heat
+AI / Semiconductors,AI／半導體,US,AMD,AMD,Stock,stock,Proxy-based heat
+AI / Semiconductors,AI／半導體,US,AVGO,Broadcom,Stock,stock,Proxy-based heat
+AI / Semiconductors,AI／半導體,US,TSM,TSMC ADR,Stock,stock,Proxy-based heat
+AI / Semiconductors,AI／半導體,US,SMH,VanEck Semiconductor ETF,ETF,etf,Proxy-based heat
+AI / Semiconductors,AI／半導體,US,SOXX,iShares Semiconductor ETF,ETF,etf,Proxy-based heat
+Mega-cap Tech,大型科技股,US,AAPL,Apple,Stock,stock,Proxy-based heat
+Mega-cap Tech,大型科技股,US,MSFT,Microsoft,Stock,stock,Proxy-based heat
+Mega-cap Tech,大型科技股,US,AMZN,Amazon,Stock,stock,Proxy-based heat
+Mega-cap Tech,大型科技股,US,META,Meta,Stock,stock,Proxy-based heat
+Mega-cap Tech,大型科技股,US,GOOGL,Alphabet,Stock,stock,Proxy-based heat
+Mega-cap Tech,大型科技股,US,QQQ,Nasdaq 100 ETF,ETF,etf,Proxy-based heat
+Robotics / Automation,機器人／自動化,US,BOTZ,Global X Robotics ETF,ETF,etf,Proxy-based heat
+Robotics / Automation,機器人／自動化,US,ROBO,ROBO Global Robotics ETF,ETF,etf,Proxy-based heat
+Robotics / Automation,機器人／自動化,US,IRBO,iShares Robotics ETF,ETF,etf,Proxy-based heat
+Nuclear / Uranium / Power,核能／鈾礦／電力,US,URA,Global X Uranium ETF,ETF,etf,Proxy-based heat
+Nuclear / Uranium / Power,核能／鈾礦／電力,US,CCJ,Cameco,Stock,stock,Proxy-based heat
+Nuclear / Uranium / Power,核能／鈾礦／電力,US,CEG,Constellation Energy,Stock,stock,Proxy-based heat
+Nuclear / Uranium / Power,核能／鈾礦／電力,US,GEV,GE Vernova,Stock,stock,Proxy-based heat
+Defense,防禦軍工,US,LMT,Lockheed Martin,Stock,stock,Proxy-based heat
+Defense,防禦軍工,US,RTX,RTX,Stock,stock,Proxy-based heat
+Defense,防禦軍工,US,NOC,Northrop Grumman,Stock,stock,Proxy-based heat
+Defense,防禦軍工,US,ITA,iShares Aerospace Defense ETF,ETF,etf,Proxy-based heat
+Cybersecurity,資安,US,CRWD,CrowdStrike,Stock,stock,Proxy-based heat
+Cybersecurity,資安,US,PANW,Palo Alto Networks,Stock,stock,Proxy-based heat
+Cybersecurity,資安,US,NET,Cloudflare,Stock,stock,Proxy-based heat
+Cybersecurity,資安,US,CIBR,First Trust Cybersecurity ETF,ETF,etf,Proxy-based heat
+Healthcare / GLP-1,醫療／GLP-1,US,LLY,Eli Lilly,Stock,stock,Proxy-based heat
+Healthcare / GLP-1,醫療／GLP-1,US,NVO,Novo Nordisk,Stock,stock,Proxy-based heat
+Healthcare / GLP-1,醫療／GLP-1,US,XLV,Health Care Select Sector SPDR,ETF,etf,Proxy-based heat
+Financials,金融,US,XLF,Financial Select Sector SPDR,ETF,etf,Proxy-based heat
+Financials,金融,US,JPM,JPMorgan Chase,Stock,stock,Proxy-based heat
+Financials,金融,US,BAC,Bank of America,Stock,stock,Proxy-based heat
+Energy,能源,US,XLE,Energy Select Sector SPDR,ETF,etf,Proxy-based heat
+Energy,能源,US,XOM,Exxon Mobil,Stock,stock,Proxy-based heat
+Energy,能源,US,CVX,Chevron,Stock,stock,Proxy-based heat
+Gold miners,金礦股,US,GDX,VanEck Gold Miners ETF,ETF,etf,Proxy-based heat
+Gold miners,金礦股,US,NEM,Newmont,Stock,stock,Proxy-based heat
+Gold miners,金礦股,US,GOLD,Barrick Gold,Stock,stock,Proxy-based heat
+Semiconductors,半導體,Taiwan,2330.TW,台積電,Stock,stock,Reference-only yfinance data
+Semiconductors,半導體,Taiwan,2454.TW,聯發科,Stock,stock,Reference-only yfinance data
+Semiconductors,半導體,Taiwan,2303.TW,聯電,Stock,stock,Reference-only yfinance data
+Semiconductors,半導體,Taiwan,3711.TW,日月光投控,Stock,stock,Reference-only yfinance data
+AI Servers / Power,AI 伺服器／電源,Taiwan,2382.TW,廣達,Stock,stock,Reference-only yfinance data
+AI Servers / Power,AI 伺服器／電源,Taiwan,3231.TW,緯創,Stock,stock,Reference-only yfinance data
+AI Servers / Power,AI 伺服器／電源,Taiwan,6669.TW,緯穎,Stock,stock,Reference-only yfinance data
+AI Servers / Power,AI 伺服器／電源,Taiwan,3017.TW,奇鋐,Stock,stock,Reference-only yfinance data
+AI Servers / Power,AI 伺服器／電源,Taiwan,2308.TW,台達電,Stock,stock,Reference-only yfinance data
+Passive Components,被動元件,Taiwan,2327.TW,國巨,Stock,stock,Reference-only yfinance data
+Passive Components,被動元件,Taiwan,2492.TW,華新科,Stock,stock,Reference-only yfinance data
+PCB / CCL,PCB／CCL,Taiwan,3037.TW,欣興,Stock,stock,Reference-only yfinance data
+PCB / CCL,PCB／CCL,Taiwan,2368.TW,金像電,Stock,stock,Reference-only yfinance data
+PCB / CCL,PCB／CCL,Taiwan,2313.TW,華通,Stock,stock,Reference-only yfinance data
+Financials,金融,Taiwan,2881.TW,富邦金,Stock,stock,Reference-only yfinance data
+Financials,金融,Taiwan,2882.TW,國泰金,Stock,stock,Reference-only yfinance data
+Financials,金融,Taiwan,2891.TW,中信金,Stock,stock,Reference-only yfinance data
+High Dividend,高股息,Taiwan,00878.TW,國泰永續高股息,ETF,etf,Reference-only yfinance data
+High Dividend,高股息,Taiwan,0056.TW,元大高股息,ETF,etf,Reference-only yfinance data
+High Dividend,高股息,Taiwan,00919.TW,群益台灣精選高息,ETF,etf,Reference-only yfinance data
+Taiwan Broad Market,台股大盤,Taiwan,0050.TW,元大台灣50,ETF,etf,Reference-only yfinance data
+Taiwan Broad Market,台股大盤,Taiwan,006208.TW,富邦台50,ETF,etf,Reference-only yfinance data
+Global equities,全球股票,LSE,VWRA.L,Vanguard FTSE All-World UCITS,ETF,etf,Proxy-based heat
+Global equities,全球股票,LSE,IWDA.L,iShares Core MSCI World UCITS,ETF,etf,Proxy-based heat
+Nasdaq / US tech,那斯達克／美國科技,LSE,CNX1.L,iShares Nasdaq 100 UCITS,ETF,etf,Proxy-based heat
+Nasdaq / US tech,那斯達克／美國科技,LSE,EQQQ.L,Invesco EQQQ Nasdaq 100 UCITS,ETF,etf,Proxy-based heat
+Emerging markets,新興市場,LSE,IEMA.L,iShares MSCI EM UCITS,ETF,etf,Proxy-based heat
+Emerging markets,新興市場,LSE,EIMI.L,iShares Core MSCI EM IMI UCITS,ETF,etf,Proxy-based heat
+Gold,黃金,LSE,SGLD.L,Invesco Physical Gold ETC,ETC,etc,Proxy-based heat
+Gold,黃金,LSE,IGLN.L,iShares Physical Gold ETC,ETC,etc,Proxy-based heat
+Healthcare / World health,全球醫療,LSE,WHEA.L,iShares MSCI World Health Care Sector UCITS,ETF,etf,Proxy-based heat

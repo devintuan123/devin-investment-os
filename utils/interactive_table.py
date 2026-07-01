@@ -5,11 +5,11 @@ from typing import Optional
 import pandas as pd
 import streamlit as st
 
-from utils.i18n import LANG_ZH, t
+from utils.i18n import t
 from utils.table_i18n import translate_dataframe
 
 
-NO_COLUMNS = {"No.", "No", "no", "index", "Index", "#", t("no_column")}
+NO_COLUMNS = {"No.", "No", "no", "index", "Index", "#"}
 FILTER_HINTS = (
     "category",
     "market",
@@ -18,6 +18,8 @@ FILTER_HINTS = (
     "provider",
     "freshness",
     "status",
+    "theme",
+    "sector",
     "分類",
     "市場",
     "行動",
@@ -25,6 +27,8 @@ FILTER_HINTS = (
     "資料來源",
     "新鮮度",
     "狀態",
+    "主題",
+    "板塊",
 )
 
 
@@ -38,7 +42,7 @@ def render_interactive_table(
     hide_index: bool = True,
     remove_no_column: bool = True,
     default_sort: Optional[str] = None,
-    height: Optional[int] = None,
+    height: Optional[int | str] = None,
 ):
     source = _as_dataframe(df)
     if remove_no_column:
@@ -52,41 +56,54 @@ def render_interactive_table(
     view = translated.copy()
     original_count = len(view)
 
-    with st.container():
-        if searchable:
-            query = st.text_input(t("search"), key=f"{table_key}_search", placeholder=t("search"))
-            if query:
-                string_columns = view.select_dtypes(include=["object", "string"]).columns
-                if len(string_columns) > 0:
-                    mask = view[string_columns].astype(str).apply(lambda column: column.str.contains(query, case=False, na=False))
-                    view = view[mask.any(axis=1)]
+    if searchable:
+        query = st.text_input(t("search"), key=f"{table_key}_search", placeholder=t("search"))
+        if query:
+            string_columns = view.select_dtypes(include=["object", "string"]).columns
+            if len(string_columns) > 0:
+                mask = view[string_columns].astype(str).apply(lambda column: column.str.contains(query, case=False, na=False))
+                view = view[mask.any(axis=1)]
 
-        if filterable:
-            filter_columns = _filter_columns(view)
-            if filter_columns:
-                with st.expander(t("filter"), expanded=False):
-                    for column in filter_columns:
-                        values = sorted([str(value) for value in view[column].dropna().unique() if str(value)])
-                        if not values or len(values) > 25:
-                            continue
-                        selected = st.multiselect(str(column), values, key=f"{table_key}_filter_{column}")
-                        if selected:
-                            view = view[view[column].astype(str).isin(selected)]
-                    if st.button(t("reset_filters"), key=f"{table_key}_reset", use_container_width=True):
-                        _clear_table_state(table_key)
-                        st.rerun()
+    if filterable:
+        filter_columns = _filter_columns(view)
+        if filter_columns:
+            with st.expander(t("filter"), expanded=False):
+                for column in filter_columns:
+                    values = sorted([str(value) for value in view[column].dropna().unique() if str(value)])
+                    if not values or len(values) > 25:
+                        continue
+                    selected = st.multiselect(str(column), values, key=f"{table_key}_filter_{column}")
+                    if selected:
+                        view = view[view[column].astype(str).isin(selected)]
+                if st.button(t("reset_filters"), key=f"{table_key}_reset", use_container_width=True):
+                    _clear_table_state(table_key)
+                    st.rerun()
 
-        if sortable and not view.empty:
-            sort_columns = list(view.columns)
-            sort_index = _default_sort_index(sort_columns, default_sort)
-            sort_cols = st.columns([2, 1])
-            sort_column = sort_cols[0].selectbox(t("sort_column"), sort_columns, index=sort_index, key=f"{table_key}_sort_column")
-            direction = sort_cols[1].selectbox(t("sort"), [t("ascending"), t("descending")], key=f"{table_key}_sort_direction")
-            view = view.sort_values(sort_column, ascending=direction == t("ascending"), na_position="last")
+    if sortable and not view.empty:
+        sort_columns = list(view.columns)
+        sort_index = _default_sort_index(sort_columns, default_sort)
+        sort_cols = st.columns([2, 1])
+        sort_column = sort_cols[0].selectbox(t("sort_by"), sort_columns, index=sort_index, key=f"{table_key}_sort_column")
+        direction = sort_cols[1].selectbox(t("sort"), [t("ascending"), t("descending")], key=f"{table_key}_sort_direction")
+        view = view.sort_values(sort_column, ascending=direction == t("ascending"), na_position="last")
 
-        st.caption(_row_count_label(lang, len(view), original_count))
-        st.dataframe(view, use_container_width=True, hide_index=hide_index, height=height)
-        return view
+    st.caption(t("showing_rows").format(shown=len(view), total=original_count))
+    kwargs = {"use_container_width": True, "hide_index": hide_index}
+    valid_height = _valid_dataframe_height(height)
+    if valid_height is not None:
+        kwargs["height"] = valid_height
+    st.dataframe(view, **kwargs)
+    return view
+
+
+def _valid_dataframe_height(height):
+    if height is None:
+        return None
+    if isinstance(height, int) and height > 0:
+        return height
+    if height in ("stretch", "content"):
+        return height
+    return None
 
 
 def _as_dataframe(df) -> pd.DataFrame:
@@ -121,9 +138,3 @@ def _clear_table_state(table_key: str) -> None:
     for key in list(st.session_state.keys()):
         if str(key).startswith(f"{table_key}_filter_") or str(key) in {f"{table_key}_search", f"{table_key}_sort_column", f"{table_key}_sort_direction"}:
             del st.session_state[key]
-
-
-def _row_count_label(lang: str, shown: int, total: int) -> str:
-    if lang == LANG_ZH:
-        return t("showing_rows").format(shown=shown, total=total)
-    return t("showing_rows").format(shown=shown, total=total)

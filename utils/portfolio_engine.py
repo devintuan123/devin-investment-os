@@ -20,6 +20,7 @@ PORTFOLIO_COLUMNS = [
     "target_weight",
     "account",
     "note",
+    "updated_at",
 ]
 
 
@@ -118,11 +119,56 @@ def calculate_target_drift(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def classify_drift(value: float) -> str:
+    if pd.isna(value):
+        return "No target"
     if value <= -2:
         return "Underweight"
     if value >= 2:
         return "Overweight"
-    return "On target"
+    return "On Target"
+
+
+def allocation_by_category(df: pd.DataFrame) -> pd.DataFrame:
+    positions = calculate_position_values(df)
+    return _allocation_by(positions, "category")
+
+
+def allocation_by_market(df: pd.DataFrame) -> pd.DataFrame:
+    positions = calculate_position_values(df)
+    return _allocation_by(positions, "market")
+
+
+def allocation_by_currency(df: pd.DataFrame) -> pd.DataFrame:
+    positions = calculate_position_values(df)
+    return _allocation_by(positions, "currency")
+
+
+def target_allocation_comparison(df: pd.DataFrame) -> pd.DataFrame:
+    positions = calculate_position_values(df)
+    return positions[["symbol", "category", "market_value", "current_weight", "target_weight", "drift", "drift_label", "action_suggestion"]]
+
+
+def cash_deployment_suggestion(df: pd.DataFrame) -> str:
+    positions = calculate_position_values(df)
+    if positions.empty:
+        return "Watch only"
+    if float(positions["drift"].min()) <= -5:
+        return "Add gradually"
+    return "Hold"
+
+
+def exposure_warnings(df: pd.DataFrame) -> list[str]:
+    positions = calculate_position_values(df)
+    warnings = ["Manual portfolio records may differ from broker records."]
+    if positions.empty:
+        return warnings
+    single_stock = positions[(positions["category"].astype(str).str.lower() == "stock") & (positions["current_weight"] > 15)]
+    for _, row in single_stock.iterrows():
+        warnings.append(f"{row['symbol']} single-stock exposure is elevated.")
+    satellite = positions[(positions["category"].astype(str).str.contains("Crypto|Stock", case=False, na=False)) & (positions["current_weight"] > 20)]
+    for _, row in satellite.iterrows():
+        warnings.append(f"{row['symbol']} high-volatility satellite exposure should be monitored.")
+    return warnings
 
 
 def calculate_cash_needed_for_rebalance(df: pd.DataFrame) -> pd.DataFrame:
@@ -154,10 +200,21 @@ def _action_suggestion(row: pd.Series) -> str:
     if float(row.get("latest_price", 0) or 0) <= 0:
         return "Missing data"
     if float(row.get("quantity", 0) or 0) == 0:
-        return "Watch"
+        return "Watch only"
+    if float(row.get("target_weight", 0) or 0) == 0:
+        return "Need target weight"
     drift = float(row.get("drift", 0) or 0)
     if drift <= -2:
-        return "Add"
+        return "Add gradually"
     if drift >= 3:
         return "Trim later"
     return "Hold"
+
+
+def _allocation_by(positions: pd.DataFrame, column: str) -> pd.DataFrame:
+    if positions.empty or column not in positions:
+        return pd.DataFrame(columns=[column, "market_value", "current_weight"])
+    total = calculate_total_value(positions)
+    result = positions.groupby(column, dropna=False)["market_value"].sum().reset_index()
+    result["current_weight"] = result["market_value"] / total * 100 if total else 0.0
+    return result

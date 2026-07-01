@@ -1,0 +1,9 @@
+Sector Heat / Capital Rotation
+Capital Rotation
+Proxy-based heat only, not exact fund flows or trading advice.
+Market                     Theme    Theme  Heat Score  Rotation Score     Theme Heat Rotation Signal  return_5d  20D Return  Breadth  Symbol Count                                                        Warning
+    US             Cybersecurity       資安         100             100 Hot / Extended     Rotation In  15.280163    3.757058    100.0             4 Proxy-based heat only, not exact fund flows or trading advice.
+    US        Healthcare / GLP-1 醫療／GLP-1         100              75 Hot / Extended     Rotation In   4.923822   12.131677    100.0             3 Proxy-based heat only, not exact fund flows or trading advice.
+Taiwan        Passive Components     被動元件         100              54 Hot / Extended         Neutral   4.842492   40.578259     50.0             2 Proxy-based heat only, not exact fund flows or trading advice.
+    US                   Defense     防禦軍工          91              82 Hot / Extended     Rotation In   4.497669    4.256133    100.0             4 Proxy-based heat only, not exact fund flows or trading advice.
+   LSE Healthcare / World health     全球醫療          91              65 Hot / Extended     Rotation In   3.042564    7.505863    100.0             1 Proxy-based heat only, not exact fund flows or trading advice.

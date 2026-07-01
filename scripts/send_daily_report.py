@@ -12,6 +12,8 @@ from utils.buy_zone_engine import score_buy_zones
 from utils.i18n import LANG_EN, LANG_ZH, set_lang, t, translate_action_label, translate_regime, translate_warning
 from utils.market_regime import calculate_market_regime
 from utils.portfolio_engine import calculate_position_values, load_portfolio, portfolio_health_score
+from utils.sector_heat_engine import calculate_theme_heat_score, get_candidate_symbols_by_theme
+from utils.table_i18n import translate_cell_value
 from utils.telegram import send_telegram_message
 
 
@@ -23,6 +25,8 @@ def build_daily_report(lang: str = LANG_ZH) -> str:
     buy_zones = score_buy_zones()
     top_candidates = [row for row in buy_zones if row["action_label"] in {"Potential Layer 1", "Potential Layer 2", "Deep Pullback Watch", "Hold"}][:3]
     risk_warnings = [row for row in buy_zones if row["action_label"] in {"Broken trend, avoid", "Extended, do not chase"}][:3]
+    sector_heat = calculate_theme_heat_score().head(3)
+    sector_candidates = get_candidate_symbols_by_theme(limit=3)
 
     drift_summary = t("no_data")
     if not positions.empty:
@@ -40,6 +44,11 @@ def build_daily_report(lang: str = LANG_ZH) -> str:
             *[f"- {row['ticker']}: {translate_action_label(row['action_label'])} @ {row['latest_price']:.2f}" for row in top_candidates],
             f"{t('risk_warnings')}:",
             *([f"- {row['ticker']}: {translate_action_label(row['action_label'])}" for row in risk_warnings] or [f"- {t('no_data')}"]),
+            f"{t('sector_heat_page')}:",
+            *([f"- {(row['theme_zh'] if lang == LANG_ZH else row['theme'])}: {t('heat_score')} {row['heat_score']}; {translate_cell_value(row['heat_label'], lang)}" for _, row in sector_heat.iterrows()] or [f"- {t('no_data')}"]),
+            f"{t('candidate_list')}:",
+            *([f"- {row['symbol']}: {row['theme_zh'] if lang == LANG_ZH else row['theme']}" for _, row in sector_candidates.iterrows()] or [f"- {t('no_data')}"]),
+            t("proxy_heat_warning"),
             f"{t('data_quality')}: {t(regime['confidence_level'].lower())}; {translate_warning(regime['warnings'][0])}",
             t("broker_warning"),
         ]

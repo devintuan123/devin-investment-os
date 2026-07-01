@@ -5,9 +5,9 @@ from pathlib import Path
 
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
-TARGETS = [ROOT_DIR / "app.py", *sorted((ROOT_DIR / "pages").glob("*.py"))]
+TARGETS = [ROOT_DIR / "app.py", *sorted((ROOT_DIR / "pages").glob("*.py")), *sorted((ROOT_DIR / "modules").glob("**/*.py"))]
 FORBIDDEN_CALLS = ("st.table(", "st.dataframe(", "st.write(df", "st.write(view", "st.data_editor(")
-ALLOWLIST_MARKERS = ("Editable CSV editor",)
+ALLOWLIST_MARKERS = ("Editable CSV editor", "st.data_editor(portfolio")
 NO_COLUMN_PATTERN = re.compile(r"[\"'](?:No\.|No|no|index|Index|#)[\"']")
 
 
@@ -18,7 +18,7 @@ def main() -> int:
         for line_number, line in enumerate(lines, start=1):
             if any(call in line for call in FORBIDDEN_CALLS):
                 previous = lines[line_number - 2] if line_number >= 2 else ""
-                if "st.data_editor(" in line and any(marker in previous for marker in ALLOWLIST_MARKERS):
+                if "st.data_editor(" in line and (any(marker in previous for marker in ALLOWLIST_MARKERS) or any(marker in line for marker in ALLOWLIST_MARKERS)):
                     continue
                 findings.append((path.relative_to(ROOT_DIR), line_number, line.strip(), "Use render_interactive_table(...) or document an editor allowlist."))
             if NO_COLUMN_PATTERN.search(line) and "NO_COLUMNS" not in line and "t(\"no\")" not in line and "t('no')" not in line:

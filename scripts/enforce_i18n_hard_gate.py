@@ -15,10 +15,11 @@ from utils.table_i18n import translate_dataframe
 
 
 REQUIRED_TERMS_PATH = ROOT_DIR / "data" / "i18n_required_terms.yaml"
-NAV_FORBIDDEN = ["Home", "Macro Dashboard", "Portfolio", "Watchlist", "Asset Scores", "Daily Playbook", "Data Quality", "Settings", "History", "Buy Zones"]
-COMPONENT_FORBIDDEN = ["US Market", "US Tech", "Taiwan", "Crypto", "Gold", "Macro", "Volatility"]
-HEADER_FORBIDDEN = ["symbol", "ticker", "latest_price", "action_label", "risk_label", "freshness_status", "provider", "confidence", "target_weight", "current_weight", "drift", "buy_zone_1", "buy_zone_2", "buy_zone_3", "No."]
+NAV_FORBIDDEN = ["Home", "Macro Dashboard", "Portfolio", "Watchlist", "Asset Scores", "Daily Playbook", "Data Quality", "Settings", "History", "Buy Zones", "Sector Heat / Capital Rotation"]
+COMPONENT_FORBIDDEN = ["US Market", "US Tech", "Taiwan", "Crypto", "Gold", "Macro", "Volatility", "Liquidity", "Defensive"]
+HEADER_FORBIDDEN = ["symbol", "ticker", "latest_price", "current_price", "action_label", "risk_label", "freshness_status", "provider", "confidence", "target_weight", "current_weight", "drift", "buy_zone_1", "buy_zone_2", "buy_zone_3", "buy_zone_low", "buy_zone_high", "trim_zone", "stop_level", "priority", "No."]
 CELL_FORBIDDEN = COMPONENT_FORBIDDEN + [
+    "Risk controls should take priority.",
     "Potential Buy Zone - verify quote",
     "Extended / Do not chase",
     "Healthy trend / Hold",
@@ -40,12 +41,12 @@ def main() -> int:
     for english, chinese in required_terms.items():
         if not chinese:
             findings.append(("required_terms", english, "Missing required Traditional Chinese translation."))
-        if english in {"US Market", "US Tech", "Taiwan", "Taiwan Market", "Crypto", "Gold", "Macro", "Volatility"} and translate_term(english) == english:
+        if english in {"US Market", "US Tech", "Taiwan", "Taiwan Market", "Crypto", "Gold", "Macro", "Volatility", "Liquidity", "Defensive", "Sector Heat", "Capital Rotation"} and translate_term(english) == english:
             findings.append(("required_terms", english, "Missing term mapping in translate_term()."))
         if english in NAV_FORBIDDEN and chinese not in zh_values:
             findings.append(("navigation_terms", english, "Navigation translation not present in zh mapping."))
 
-    nav_output = "\n".join(t(key) for key in ["home", "macro_dashboard", "portfolio", "watchlist", "asset_scores", "daily_playbook", "data_quality", "settings", "history", "buy_zones"])
+    nav_output = "\n".join(t(key) for key in ["home", "macro_dashboard", "portfolio", "watchlist", "asset_scores", "daily_playbook", "data_quality", "settings", "history", "buy_zones", "sector_heat_page"])
     _check_forbidden(findings, "navigation_output", nav_output, NAV_FORBIDDEN)
 
     component_output = "\n".join(translate_term(term) for term in COMPONENT_FORBIDDEN)
@@ -68,6 +69,12 @@ def main() -> int:
                 "buy_zone_1": 95,
                 "buy_zone_2": 90,
                 "buy_zone_3": 85,
+                "current_price": 100,
+                "buy_zone_low": 90,
+                "buy_zone_high": 95,
+                "trim_zone": 120,
+                "stop_level": 80,
+                "priority": "High",
                 "category": "US Market",
                 "status": "Connected",
                 "warning": "Verify broker quote before actual trading.",

@@ -1,4 +1,4 @@
-US Market: 美國市場
+﻿US Market: 美國市場
 US Tech: 美國科技
 Taiwan: 台灣
 Taiwan Market: 台灣市場
@@ -6,6 +6,8 @@ Crypto: 加密貨幣
 Gold: 黃金
 Macro: 總經
 Volatility: 波動度
+Liquidity: 流動性
+Defensive: 防禦型
 Home: 首頁
 Macro Dashboard: 總經儀表板
 Portfolio: 投資組合
@@ -16,13 +18,24 @@ Data Quality: 資料品質
 Settings: 設定
 History: 歷史
 Buy Zones: 買進區
+Sector Heat: 板塊熱度
+Capital Rotation: 資金輪動
 No.: 編號
 Number: 編號
 Index: 索引
 Symbol: 代號
 Ticker: 代號
+Name: 名稱
+Category: 分類
+Market: 市場
 Latest Price: 最新價格
-Price: 價格
+Current Price: 目前價格
+current_price: 目前價格
+buy_zone_low: 買進區下緣
+buy_zone_high: 買進區上緣
+trim_zone: 減碼區
+stop_level: 停損／風險控制位
+priority: 優先順序
 Action: 行動
 Risk Label: 風險標籤
 Freshness Status: 新鮮度狀態
@@ -38,6 +51,7 @@ Buy Zone 3: 買進區 3
 Drawdown from High: 距高點跌幅
 Trend Score: 趨勢分數
 Pullback Score: 回檔分數
+Risk controls should take priority.: 風險控制應優先。
 Potential Buy Zone - verify quote: 潛在買進區，請確認報價
 Extended / Do not chase: 漲幅延伸，勿追高
 Healthy trend / Hold: 趨勢健康，持有
@@ -57,7 +71,21 @@ Delayed / verify broker quote: 延遲／請向券商確認報價
 Search: 搜尋
 Filter: 篩選
 Sort: 排序
+Sort by: 排序欄位
+Ascending: 升序
+Descending: 降序
 Reset Filters: 重設篩選
 Rows: 列數
 Show All: 顯示全部
 Table Options: 表格選項
+Add Holding: 新增持倉
+Clear Holdings: 清空持倉
+Reduce Position: 減少部位
+Close Position: 關閉部位
+Realized P/L: 已實現損益
+Transaction Ledger: 交易紀錄
+Capital Flow: 資金流向
+Theme Heat: 主題熱度
+Hot Themes: 熱門主題
+Rotation Signal: 輪動訊號
+Candidate List: 候選清單

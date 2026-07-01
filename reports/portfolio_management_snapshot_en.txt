@@ -1,0 +1,8 @@
+Overview
+Add Holding
+Reduce Position
+Close Position
+Clear Holdings
+Transaction Ledger
+Realized P/L
+Manual portfolio records may differ from broker records.
