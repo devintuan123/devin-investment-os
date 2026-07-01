@@ -1,5 +1,6 @@
 .env
 *.env
+secrets/
 secrets/*.env
 secrets/api_keys.local.env
 .venv/
@@ -8,6 +9,15 @@ __pycache__/
 .DS_Store
 *.key
 *.pem
+*.pfx
+*.p12
+*.dll
 .streamlit/secrets.toml
 data/snapshots/*.json
 data/tradingview_alerts.jsonl
+data/yuanta_quotes.json
+data/yuanta_positions.json
+local_bridges/yuanta_bridge/config.json
+local_bridges/yuanta_bridge/*.dll
+local_bridges/yuanta_bridge/*.pfx
+local_bridges/yuanta_bridge/*.p12

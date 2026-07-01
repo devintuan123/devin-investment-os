@@ -25,4 +25,10 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
+ssh $Vps "/root/check_devin_investos.sh"
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "Remote health check failed."
+    exit 1
+}
+
 Write-Host "Secrets uploaded and service restarted."

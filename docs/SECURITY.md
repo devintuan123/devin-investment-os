@@ -9,3 +9,4 @@
 - Do not add account numbers to CSV data files.
 - Use `secrets/api_keys.local.env` only as a local plaintext staging file and upload it with `scripts/upload_secrets_to_vps.ps1`.
 - Binance integration is read-only by design; trading, withdrawals, futures, and order endpoints are not implemented.
+- API onboarding is read-only. Order placement, order modification, order cancellation, margin, futures, withdrawals, and automated orders are forbidden.

@@ -18,6 +18,8 @@ notepad secrets/api_keys.local.env
 
 3. Fill in API keys locally.
 
+See `docs/API_PROVIDER_MATRIX.md` for the provider-by-provider field list.
+
 4. Upload to the VPS:
 
 ```powershell

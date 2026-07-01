@@ -101,6 +101,8 @@ Provider docs:
 - `docs/IBKR_READ_ONLY_PLAN.md`
 - `docs/YUANTA_INTEGRATION_PLAN.md`
 - `docs/TOKENIZED_EQUITY_PROVIDER.md`
+- `docs/API_PROVIDER_MATRIX.md`
+- `docs/YUANTA_SPARKAPI_ARCHITECTURE.md`
 
 Optional cron examples:
 
