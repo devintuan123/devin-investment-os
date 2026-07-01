@@ -12,6 +12,7 @@ This is not financial advice.
 - Watchlist editor with Buy Zone, Watch, Trim, and Risk Alert signals.
 - Asset Scores and Daily Playbook pages.
 - History page for daily snapshots and regime changes.
+- TradingView alert page with secure webhook logging.
 - Telegram report and alert scripts that skip gracefully when `.env` is missing.
 - Nginx reverse proxy and systemd server workflow.
 
@@ -93,6 +94,12 @@ python scripts/generate_weekly_report.py
 ```
 
 More docs live in `docs/`, including architecture, cron setup, security, data sources, TODOs, and the Level 3 roadmap.
+
+Provider docs:
+
+- `docs/TRADINGVIEW_WEBHOOK.md`
+- `docs/IBKR_READ_ONLY_PLAN.md`
+- `docs/YUANTA_INTEGRATION_PLAN.md`
 
 Optional cron examples:
 

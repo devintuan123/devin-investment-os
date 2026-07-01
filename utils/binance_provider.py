@@ -16,6 +16,20 @@ def get_public_price(symbol: str) -> dict:
     return response.json()
 
 
+def get_btcusdt_price() -> dict:
+    payload = get_public_price("BTCUSDT")
+    return {
+        "ticker": "BTC-USD",
+        "source": "binance",
+        "price": float(payload["price"]),
+        "warning": "",
+    }
+
+
+def binance_configured() -> bool:
+    return bool(os.getenv("BINANCE_API_KEY") and os.getenv("BINANCE_API_SECRET"))
+
+
 def account_snapshot_placeholder() -> dict:
     return {
         "enabled": bool(os.getenv("BINANCE_API_KEY") and os.getenv("BINANCE_API_SECRET")),

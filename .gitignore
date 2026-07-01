@@ -10,3 +10,4 @@ __pycache__/
 *.pem
 .streamlit/secrets.toml
 data/snapshots/*.json
+data/tradingview_alerts.jsonl

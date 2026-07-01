@@ -5,6 +5,8 @@ from typing import Iterable
 import pandas as pd
 import yfinance as yf
 
+from utils.binance_provider import get_btcusdt_price
+
 
 FALLBACK_PRICES = {
     "SPY": 550.0,
@@ -40,6 +42,29 @@ def normalize_ticker(ticker: object) -> str:
 def safe_fetch_with_fallback(ticker: str, fallback: float | None = None) -> dict:
     ticker = normalize_ticker(ticker)
     fallback_price = fallback if fallback is not None else FALLBACK_PRICES.get(ticker, 0.0)
+    if ticker in {"BTC-USD", "BTCUSDT"}:
+        try:
+            btc = get_btcusdt_price()
+            return {
+                "ticker": "BTC-USD",
+                "price": btc["price"],
+                "change_pct": 0.0,
+                "return_1d": 0.0,
+                "return_5d": 0.0,
+                "return_1m": 0.0,
+                "return_3m": 0.0,
+                "ma_20d": btc["price"],
+                "ma_50d": btc["price"],
+                "ma_200d": btc["price"],
+                "drawdown_52w": 0.0,
+                "distance_ma_20d": 0.0,
+                "distance_ma_50d": 0.0,
+                "distance_ma_200d": 0.0,
+                "source": "binance",
+                "warning": "",
+            }
+        except Exception:
+            pass
     try:
         history = yf.Ticker(ticker).history(period="1y")
         close = history["Close"].dropna()
@@ -64,6 +89,7 @@ def safe_fetch_with_fallback(ticker: str, fallback: float | None = None) -> dict
             "distance_ma_50d": _distance_from_ma(latest, close, 50),
             "distance_ma_200d": _distance_from_ma(latest, close, 200),
             "warning": "",
+            "source": "yfinance",
         }
     except Exception as exc:
         return {
@@ -82,6 +108,7 @@ def safe_fetch_with_fallback(ticker: str, fallback: float | None = None) -> dict
             "distance_ma_50d": 0.0,
             "distance_ma_200d": 0.0,
             "warning": f"Using fallback for {ticker}: {exc}",
+            "source": "fallback",
         }
 
 
