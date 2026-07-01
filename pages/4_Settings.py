@@ -1,5 +1,6 @@
 import os
 
+import pandas as pd
 import streamlit as st
 from dotenv import load_dotenv
 
@@ -10,6 +11,7 @@ from utils.ibkr_provider import (
     flex_web_service_placeholder,
     market_data_snapshot_placeholder,
 )
+from utils.provider_status import active_provider_rows, future_disabled_provider_rows
 from utils.telegram import send_telegram_message
 
 
@@ -20,20 +22,16 @@ st.title("Settings")
 st.caption("Environment-backed settings. Secret values are never displayed.")
 
 st.subheader("API Configuration")
-providers = {
-    "IBKR": os.getenv("IBKR_ENABLED", "false").lower() == "true",
-    "Yuanta": os.getenv("YUANTA_ENABLED", "false").lower() == "true",
-    "Binance": is_configured("BINANCE_API_KEY", "BINANCE_API_SECRET"),
-    "OKX": is_configured("OKX_API_KEY", "OKX_API_SECRET", "OKX_API_PASSPHRASE"),
-    "Bitget": is_configured("BITGET_API_KEY", "BITGET_API_SECRET", "BITGET_API_PASSPHRASE"),
-    "TradingView": is_configured("TRADINGVIEW_WEBHOOK_SECRET"),
-    "Telegram": is_configured("TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID"),
-    "FRED": is_configured("FRED_API_KEY"),
-    "yfinance fallback": True,
-}
-provider_rows = [st.columns(3), st.columns(3), st.columns(3)]
-for index, (provider, configured) in enumerate(providers.items()):
-    provider_rows[index // 3][index % 3].metric(provider, "Configured" if configured else "Not configured")
+active_rows = active_provider_rows()
+metric_cols = st.columns(4)
+for index, row in enumerate(active_rows):
+    metric_cols[index].metric(row["Provider"], row["Status"].title())
+
+st.write("Active providers")
+st.dataframe(pd.DataFrame(active_rows), use_container_width=True, hide_index=True)
+
+st.write("Future disabled providers")
+st.dataframe(pd.DataFrame(future_disabled_provider_rows()), use_container_width=True, hide_index=True)
 
 st.subheader("Safety Status")
 safety = safety_status()

@@ -1,9 +1,18 @@
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 
 
-load_dotenv()
+ROOT_DIR = Path(__file__).resolve().parents[1]
+
+
+def load_app_env() -> None:
+    load_dotenv(ROOT_DIR / ".env", override=False)
+    load_dotenv(ROOT_DIR / "secrets" / "api_keys.local.env", override=False)
+
+
+load_app_env()
 
 ENABLE_TRADING = False
 ENABLE_WITHDRAWALS = False

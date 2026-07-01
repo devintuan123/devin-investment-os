@@ -2,6 +2,7 @@ import pandas as pd
 import streamlit as st
 
 from utils.market_data import safe_fetch_with_fallback
+from utils.provider_status import active_provider_rows, future_disabled_provider_rows
 from utils.providers.tokenized_equity_provider import (
     REFERENCE_WARNING,
     discover_supported_tokenized_equities,
@@ -19,6 +20,12 @@ st.write("- Crypto: Binance > yfinance > fallback")
 st.write("- US/ETF: IBKR future > yfinance > fallback")
 st.write("- Taiwan: Yuanta future/CSV > yfinance > fallback")
 st.write("- Signals: TradingView webhook > internal rules")
+
+st.subheader("Provider Status")
+st.write("Active providers")
+st.dataframe(pd.DataFrame(active_provider_rows()), use_container_width=True, hide_index=True)
+st.write("Future disabled")
+st.dataframe(pd.DataFrame(future_disabled_provider_rows()), use_container_width=True, hide_index=True)
 
 st.subheader("Tokenized Equity")
 health = tokenized_equity_health_check()
