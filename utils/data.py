@@ -37,7 +37,18 @@ WATCHLIST_COLUMNS = [
 
 
 def load_portfolio() -> pd.DataFrame:
-    return _load_csv(PORTFOLIO_PATH, PORTFOLIO_COLUMNS)
+    df = _load_csv(PORTFOLIO_PATH, PORTFOLIO_COLUMNS)
+    aliases = {
+        "symbol": "ticker",
+        "quantity": "shares",
+        "avg_cost": "average_cost",
+        "category": "asset_type",
+        "note": "notes",
+    }
+    for source, target in aliases.items():
+        if source in df.columns and (target not in df.columns or df[target].astype(str).eq("").all()):
+            df[target] = df[source]
+    return df
 
 
 def load_watchlist() -> pd.DataFrame:

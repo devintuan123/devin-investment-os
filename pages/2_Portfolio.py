@@ -2,63 +2,76 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-from utils.data import load_portfolio, save_portfolio
-from utils.market_data import get_prices
-from utils.portfolio_risk import holding_action, portfolio_summary
+from utils.i18n import t, translate_action_label, translate_warning
+from utils.portfolio_engine import (
+    calculate_cash_needed_for_rebalance,
+    calculate_position_values,
+    calculate_total_value,
+    load_portfolio,
+    portfolio_health_score,
+    save_portfolio,
+)
+from utils.ui import render_refresh_button, render_sidebar_language_switch, render_sidebar_provider_status
 
 
 st.set_page_config(page_title="Portfolio", page_icon="DI", layout="wide")
-st.title("Portfolio")
-st.caption("Editable holdings, valuation, allocation, and high-beta exposure.")
+render_sidebar_language_switch()
+render_refresh_button()
+render_sidebar_provider_status()
 
-
-def enrich_portfolio(df: pd.DataFrame, refresh_prices: bool = False) -> pd.DataFrame:
-    df = df.copy()
-    if refresh_prices:
-        prices = get_prices(df["ticker"].dropna().tolist()).set_index("ticker")
-        for ticker in prices.index:
-            df.loc[df["ticker"] == ticker, "current_price"] = prices.loc[ticker, "price"]
-
-    shares = pd.to_numeric(df.get("shares"), errors="coerce").fillna(0)
-    average_cost = pd.to_numeric(df.get("average_cost"), errors="coerce").fillna(0)
-    current_price = pd.to_numeric(df.get("current_price"), errors="coerce").fillna(0)
-    df["market_value"] = shares * current_price
-    df["unrealized_pnl"] = (current_price - average_cost) * shares
-    cost_basis = shares * average_cost
-    df["unrealized_pnl_pct"] = (df["unrealized_pnl"] / cost_basis.replace(0, pd.NA) * 100).fillna(0)
-    df["action_signal"] = df.apply(holding_action, axis=1)
-    return df
-
+st.title(t("portfolio"))
+st.caption(t("portfolio_page_caption"))
 
 portfolio = load_portfolio()
-refresh = st.button("Refresh Prices", use_container_width=True)
-portfolio = enrich_portfolio(portfolio, refresh)
+positions = calculate_position_values(portfolio)
+health = portfolio_health_score(portfolio)
+cash = st.number_input(t("cash"), min_value=0.0, value=0.0, step=100.0)
+total_value = calculate_total_value(positions) + cash
 
-col1, col2, col3 = st.columns(3)
-col1.metric("Total Market Value", f"{portfolio['market_value'].sum():,.2f}")
-col2.metric("Unrealized P/L", f"{portfolio['unrealized_pnl'].sum():,.2f}")
-risk = portfolio_summary(portfolio)
-col3.metric("Portfolio Risk", f"{risk['risk_score']}/100")
+cols = st.columns(3)
+cols[0].metric(t("total_portfolio_value"), f"{total_value:,.2f}")
+cols[1].metric(t("cash"), f"{cash:,.2f}")
+cols[2].metric(t("portfolio_health"), f"{health['score']}/100")
 
-metric_cols = st.columns(4)
-metric_cols[0].metric("High-Beta Exposure", f"{risk['high_beta_exposure']:.1f}%")
-metric_cols[1].metric("Hedge Exposure", f"{risk['hedge_allocation']:.1f}%")
-metric_cols[2].metric("Core Allocation", f"{risk['core_allocation']:.1f}%")
-metric_cols[3].metric("Single Name Max", f"{risk['single_name_concentration']:.1f}%")
+st.subheader(t("current_allocation"))
+if positions.empty:
+    st.info(t("no_data"))
+else:
+    allocation = positions.groupby("category", dropna=False)["market_value"].sum().reset_index()
+    target = positions.groupby("category", dropna=False)["target_weight"].sum().reset_index()
+    chart_cols = st.columns(2)
+    chart_cols[0].plotly_chart(px.pie(allocation, names="category", values="market_value", title=t("current_allocation")), use_container_width=True)
+    chart_cols[1].plotly_chart(px.bar(target, x="category", y="target_weight", title=t("target_allocation")), use_container_width=True)
 
-st.subheader("Suggested Risk Actions")
-for item in risk["suggestions"]:
-    st.write(f"- {item}")
+st.subheader(t("drift"))
+if not positions.empty:
+    drift = positions[["symbol", "category", "current_weight", "target_weight", "drift", "drift_label", "action_suggestion"]].copy()
+    drift["action_suggestion"] = drift["action_suggestion"].map(translate_action_label)
+    st.dataframe(drift, use_container_width=True, hide_index=True)
+
+st.subheader(t("positions"))
+if positions.empty:
+    st.info(t("no_holdings"))
+else:
+    columns = ["symbol", "name", "category", "market", "currency", "quantity", "avg_cost", "latest_price", "market_value", "current_weight", "target_weight", "drift", "unrealized_pl", "action_suggestion", "freshness_status", "warning"]
+    view = positions[[column for column in columns if column in positions]].copy()
+    view["action_suggestion"] = view["action_suggestion"].map(translate_action_label)
+    st.dataframe(view, use_container_width=True, hide_index=True)
+
+st.subheader(t("suggested_actions"))
+for warning in health["warnings"]:
+    st.write(f"- {warning}")
+for _, row in positions.head(8).iterrows():
+    st.write(f"- {row['symbol']}: {translate_action_label(row['action_suggestion'])}")
+
+st.subheader(t("target_allocation"))
+st.dataframe(calculate_cash_needed_for_rebalance(portfolio), use_container_width=True, hide_index=True)
 
 edited = st.data_editor(portfolio, use_container_width=True, hide_index=True, num_rows="dynamic")
-if st.button("Save Portfolio", use_container_width=True):
+if st.button(t("save_portfolio"), use_container_width=True):
     save_portfolio(edited)
-    st.success("Portfolio saved.")
+    st.success(t("portfolio_saved"))
 
-chart_col1, chart_col2 = st.columns(2)
-with chart_col1:
-    allocation = portfolio.groupby("asset_type", dropna=False)["market_value"].sum().reset_index()
-    st.plotly_chart(px.pie(allocation, names="asset_type", values="market_value", title="Allocation by Asset Type"), use_container_width=True)
-with chart_col2:
-    currency = portfolio.groupby("currency", dropna=False)["market_value"].sum().reset_index()
-    st.plotly_chart(px.pie(currency, names="currency", values="market_value", title="Allocation by Currency"), use_container_width=True)
+for warning in positions.get("warning", pd.Series(dtype=str)).dropna().astype(str).unique()[:5]:
+    if warning:
+        st.warning(translate_warning(warning))

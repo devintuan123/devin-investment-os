@@ -1,14 +1,14 @@
-ticker,name,shares,average_cost,current_price,currency,market_value,unrealized_pnl,unrealized_pnl_pct,asset_type,action_signal,notes
-VWRA.L,Vanguard FTSE All-World UCITS ETF,9,186.54,185,USD,1665,-13.86,-0.83,ETF,Hold,Core global equity
-CNX1.L,iShares Nasdaq 100 UCITS ETF,1.0005,1255.25,1255,GBP,1255.63,-0.25,-0.02,ETF,Hold,Tech core
-IEMA.L,iShares MSCI EM UCITS ETF,7,64.67,63,USD,441,-11.69,-2.58,ETF,Buy Zone,Emerging markets
-MRVL,Marvell Technology,5,283.87,270,USD,1350,-69.35,-4.89,Stock,Watch,AI networking semiconductor
-PLTR,Palantir Technologies,5,142.75,118,USD,590,-123.75,-17.34,Stock,Risk Alert,High beta AI software
-SGLD.L,Physical Gold ETC,2,438.13,438,USD,876,-0.26,-0.03,ETC,Hold,Gold hedge
-WHEA.L,Healthcare ETF,6,66.51,66,USD,396,-3.06,-0.77,ETF,Hold,Healthcare theme
-0050.TW,Yuanta Taiwan 50 ETF,10,102,102,TWD,1020,0,0,ETF,Hold,Taiwan core
-00878.TW,Yuanta Taiwan Dividend Plus ETF,20,31.5,31.5,TWD,630,0,0,ETF,Hold,Taiwan dividend
-2330.TW,Taiwan Semiconductor,1,2250,2250,TWD,2250,0,0,Stock,Hold,Core Taiwan semis
-2454.TW,MediaTek,1,3750,3750,TWD,3750,0,0,Stock,Watch,Taiwan IC design
-2327.TW,Yageo,1,930,930,TWD,930,0,0,Stock,Watch,Taiwan components
-BTC-USD,Bitcoin,0.01,65000,65000,USD,650,0,0,Crypto,Hold,BTC hedge placeholder
+symbol,name,category,market,currency,quantity,avg_cost,target_weight,account,note
+VWRA.L,Vanguard FTSE All-World UCITS ETF,ETF,UCITS,USD,9.0,186.54,20,manual,Core global equity
+0050.TW,Yuanta Taiwan 50 ETF,ETF,Taiwan,TWD,10.0,102.0,15,manual,Taiwan core
+CNX1.L,iShares Nasdaq 100 UCITS ETF,ETF,UCITS,GBP,1.0005,1255.25,10,manual,Tech core
+PLTR,Palantir Technologies,Stock,US,USD,5.0,142.75,3,manual,High beta AI software
+SGLD.L,Physical Gold ETC,ETC,UCITS,USD,2.0,438.13,5,manual,Gold hedge
+BTC-USD,Bitcoin,Crypto,Crypto,USD,0.01,65000.0,5,manual,BTC hedge placeholder
+IEMA.L,iShares MSCI EM UCITS ETF,ETF,UCITS,USD,7.0,64.67,8,manual,Emerging markets
+WHEA.L,Healthcare ETF,ETF,UCITS,USD,6.0,66.51,5,manual,Healthcare theme
+GEV,GE Vernova,Stock,US,USD,0.0,0.0,5,watch/planned,watch/planned
+MRVL,Marvell Technology,Stock,US,USD,5.0,283.87,4,manual,AI networking semiconductor
+2330.TW,Taiwan Semiconductor,Stock,Taiwan,TWD,1.0,2250.0,10,manual,Core Taiwan semis
+2454.TW,MediaTek,Stock,Taiwan,TWD,1.0,3750.0,5,manual,Taiwan IC design
+2327.TW,Yageo,Stock,Taiwan,TWD,1.0,930.0,5,manual,Taiwan components

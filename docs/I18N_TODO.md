@@ -1,19 +1,19 @@
 # I18N TODO
 
-The following pages are not fully translated yet:
+All currently visible Streamlit pages use the shared language switch from `utils/ui.py`.
 
-- `pages/1_Macro_Dashboard.py`
-- `pages/2_Portfolio.py`
-- `pages/4_Settings.py`
-- `pages/5_Asset_Scores.py`
-- `pages/7_History.py`
-- `pages/8_TradingView_Alerts.py`
+Future work:
 
-The v0.3 language switch is implemented for:
+- Any new page must call `render_sidebar_language_switch()`.
+- Any new visible label must use `t("key")`.
+- Any new action label must be mapped in `ACTION_LABEL_KEYS`.
+- Any new risk label must be mapped in `RISK_LABEL_KEYS`.
 
-- `app.py`
-- `pages/3_Watchlist.py`
-- `pages/6_Daily_Playbook.py`
-- `pages/9_Data_Quality.py`
+Allowed untranslated items:
 
-Keep provider names, tickers, and API names unchanged across languages.
+- ticker symbols
+- provider names
+- API names
+- URLs
+- file paths
+- technical dataframe column keys when they are not visible labels

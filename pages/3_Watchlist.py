@@ -2,29 +2,20 @@ import pandas as pd
 import streamlit as st
 
 from utils.data import load_watchlist, save_watchlist
-from utils.i18n import (
-    get_lang,
-    render_language_sidebar,
-    render_refresh_button,
-    t,
-    translate_action_label,
-    translate_risk_label,
-)
+from utils.i18n import t, translate_action_label, translate_risk_label
 from utils.market_data import get_prices
 from utils.signals import distance_to_buy_zone, distance_to_trim_zone, watchlist_signal
+from utils.ui import render_refresh_button, render_sidebar_language_switch, render_sidebar_provider_status
 from utils.watchlist_scoring import score_watchlist
 
 
 st.set_page_config(page_title="Watchlist", page_icon="DI", layout="wide")
-render_language_sidebar()
+render_sidebar_language_switch()
 render_refresh_button()
-st.title(t("watchlist"))
-st.caption(
-    "Buy zones, trim zones, stop levels, priorities, and simple action signals."
-    if get_lang() == "en"
-    else "買進區、減碼區、停損位、優先順序與簡易行動訊號。"
-)
+render_sidebar_provider_status()
 
+st.title(t("watchlist"))
+st.caption(t("read_only_notice"))
 
 watchlist = load_watchlist()
 if st.button(t("refresh_data"), use_container_width=True):
@@ -36,15 +27,6 @@ if st.button(t("refresh_data"), use_container_width=True):
 watchlist["signal"] = watchlist.apply(watchlist_signal, axis=1)
 watchlist["distance_to_buy_zone_pct"] = watchlist.apply(distance_to_buy_zone, axis=1)
 watchlist["distance_to_trim_zone_pct"] = watchlist.apply(distance_to_trim_zone, axis=1)
-watchlist["suggested_action"] = watchlist["signal"].map(
-    {
-        "Buy Zone": "Consider staged buy",
-        "Trim": "Trim or stop chasing",
-        "Risk Alert": "Review stop/risk control",
-        "Watch": "Wait for planned zone",
-        "No price": "Refresh price",
-    }
-).fillna("Watch")
 
 filters = st.columns(2)
 category = filters[0].selectbox(t("category"), [t("all")] + sorted([str(x) for x in watchlist["category"].dropna().unique() if str(x)]))
@@ -70,43 +52,10 @@ scores = pd.DataFrame(score_watchlist(watchlist["ticker"].dropna().astype(str).t
 if scores.empty:
     st.info(t("no_watchlist"))
 else:
-    tw_scores = scores[scores["ticker"].astype(str).str.endswith(".TW")]
-    if not tw_scores.empty:
+    if not scores[scores["ticker"].astype(str).str.endswith(".TW")].empty:
         st.warning(t("delayed_verify_broker_quote"))
-    score_columns = [
-        "ticker",
-        "latest_price",
-        "ma20",
-        "ma60",
-        "ma120",
-        "distance_ma20_pct",
-        "distance_ma60_pct",
-        "drawdown_52w_pct",
-        "trend_score",
-        "pullback_score",
-        "risk_label",
-        "action_label",
-        "freshness_status",
-        "confidence",
-    ]
+    score_columns = ["ticker", "latest_price", "ma20", "ma60", "ma120", "drawdown_52w_pct", "trend_score", "pullback_score", "risk_label", "action_label", "freshness_status", "confidence"]
     display_scores = scores[score_columns].copy()
     display_scores["action_label"] = display_scores["action_label"].map(translate_action_label)
     display_scores["risk_label"] = display_scores["risk_label"].map(translate_risk_label)
-    if get_lang() == "zh":
-        display_scores = display_scores.rename(
-            columns={
-                "ticker": t("ticker"),
-                "latest_price": t("latest_price"),
-                "ma20": t("ma20"),
-                "ma60": t("ma60"),
-                "ma120": t("ma120"),
-                "drawdown_52w_pct": t("drawdown_52w_pct"),
-                "trend_score": t("trend_score"),
-                "pullback_score": t("pullback_score"),
-                "risk_label": t("risk_label"),
-                "action_label": t("action_label"),
-                "freshness_status": t("freshness_status"),
-                "confidence": t("confidence"),
-            }
-        )
     st.dataframe(display_scores, use_container_width=True, hide_index=True)

@@ -1,0 +1,53 @@
+Language snapshot: en
+
+Pages:
+- Home
+- Macro Dashboard
+- Portfolio
+- Watchlist
+- Asset Scores
+- Daily Playbook
+- Buy Zones
+- History
+- TradingView Alerts
+- Data Quality
+- Settings
+
+Key labels:
+- market_score: Market Score
+- market_regime: Market Regime
+- today_action: Today Action
+- data_confidence: Data Confidence
+- provider_status: Provider Status
+- refresh_data: Refresh Data
+- portfolio_value: Portfolio Value
+- target_allocation: Target Allocation
+- current_allocation: Current Allocation
+- drift: Drift
+- freshness: Freshness
+- confidence: Confidence
+- warning: Warning
+
+Action labels:
+- Potential buy zone - verify quote: Potential buy zone - verify quote
+- Extended / Do not chase: Extended / Do not chase
+- Healthy trend / Hold: Healthy trend / Hold
+- Pullback watch: Pullback watch
+- Broken trend / Avoid: Broken trend / Avoid
+- Potential Layer 1: Potential Layer 1
+- Potential Layer 2: Potential Layer 2
+- Deep Pullback Watch: Deep Pullback Watch
+- Broken trend, avoid: Broken trend, avoid
+- Extended, do not chase: Extended, do not chase
+- Hold: Hold
+
+Regimes:
+- Risk-On: Risk-On
+- Neutral: Neutral
+- Risk-Off: Risk-Off
+
+Warnings:
+- Taiwan stock data is reference-only. Do not use for execution.
+- yfinance data may be delayed or best-effort.
+- FRED macro data may be daily or lagged.
+- Verify broker quote before actual trading.

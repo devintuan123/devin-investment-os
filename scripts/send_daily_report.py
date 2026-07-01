@@ -8,34 +8,38 @@ import sys
 ROOT_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT_DIR))
 
+from utils.buy_zone_engine import score_buy_zones
 from utils.market_regime import calculate_market_regime
+from utils.portfolio_engine import calculate_position_values, load_portfolio, portfolio_health_score
 from utils.telegram import send_telegram_message
-from utils.watchlist_scoring import score_watchlist
 
 
 def build_daily_report() -> str:
     regime = calculate_market_regime()
-    watch_scores = score_watchlist()
-    top_signals = watch_scores[:3]
-    metrics = regime["key_metrics"]
-    ten_year = metrics.get("10Y Yield")
-    btc = metrics.get("BTC")
-    gold = metrics.get("Gold")
+    health = portfolio_health_score(load_portfolio())
+    positions = calculate_position_values(load_portfolio())
+    buy_zones = score_buy_zones()
+    top_candidates = [row for row in buy_zones if row["action_label"] in {"Potential Layer 1", "Potential Layer 2", "Deep Pullback Watch", "Hold"}][:3]
+    risk_warnings = [row for row in buy_zones if row["action_label"] in {"Broken trend, avoid", "Extended, do not chase"}][:3]
+
+    drift_summary = "No portfolio data"
+    if not positions.empty:
+        average_drift = float(positions["drift"].abs().mean())
+        drift_summary = f"Portfolio health {health['score']}/100; average drift {average_drift:.1f}%"
 
     return "\n".join(
         [
             "Devin Investment OS Daily Report",
             f"Market Score: {regime['market_score']}/100",
-            f"Market Regime: {regime['market_regime']}",
+            f"Regime: {regime['market_regime']}",
             f"Today Action: {regime['today_action']}",
-            f"VIX: {_fmt(metrics.get('VIX'))}",
-            f"10Y Yield: {_fmt(ten_year, suffix='%')}",
-            f"BTC Price: {_fmt(btc, prefix='$')}",
-            f"Gold Status: {_gold_status(regime, gold)}",
-            "Top 3 Watchlist Signals:",
-            *[f"- {row['ticker']}: {row['action_label']}" for row in top_signals],
-            f"Risk Warning: {regime['risk_warnings'][0]}",
-            "Decision-support only. Verify broker quote before trading.",
+            drift_summary,
+            "Top Buy-Zone Candidates:",
+            *[f"- {row['ticker']}: {row['action_label']} @ {row['latest_price']:.2f}" for row in top_candidates],
+            "Top Risk Warnings:",
+            *([f"- {row['ticker']}: {row['action_label']}" for row in risk_warnings] or ["- None"]),
+            f"Data Quality: {regime['confidence_level']} confidence; {regime['warnings'][0]}",
+            "Read-only decision support. Verify broker quote before trading.",
         ]
     )
 
@@ -55,21 +59,6 @@ def main() -> int:
 
     print(report)
     return 0
-
-
-def _fmt(value: object, prefix: str = "", suffix: str = "") -> str:
-    if value is None:
-        return "n/a"
-    try:
-        return f"{prefix}{float(value):,.2f}{suffix}"
-    except (TypeError, ValueError):
-        return str(value)
-
-
-def _gold_status(regime: dict, gold: object) -> str:
-    score = regime["components"].get("Gold", 50)
-    label = "defensive bid" if score >= 58 else "neutral"
-    return f"{label} ({_fmt(gold, prefix='$')})"
 
 
 if __name__ == "__main__":

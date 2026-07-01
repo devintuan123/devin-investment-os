@@ -2,18 +2,12 @@ import pandas as pd
 import streamlit as st
 
 from utils.config import is_configured
-from utils.i18n import (
-    get_lang,
-    render_language_sidebar,
-    render_refresh_button,
-    t,
-    translate_regime,
-    translate_warning,
-)
+from utils.i18n import t, translate_regime, translate_warning
 from utils.market_data import safe_fetch_with_fallback
 from utils.market_regime import calculate_market_regime
 from utils.provider_status import future_disabled_provider_rows
 from utils.tw_market_time import get_tw_market_session_label, get_tw_next_session_hint, is_tw_market_open
+from utils.ui import render_refresh_button, render_sidebar_language_switch, render_sidebar_provider_status
 from utils.watchlist_scoring import DEFAULT_WATCHLIST
 
 
@@ -35,70 +29,33 @@ def _provider_connected(row: dict) -> bool:
 
 
 st.set_page_config(page_title="Data Quality", page_icon="DI", layout="wide")
-render_language_sidebar()
+render_sidebar_language_switch()
 render_refresh_button()
-st.title(t("data_quality"))
-st.caption(
-    "Read-only provider freshness, confidence, and warnings."
-    if get_lang() == "en"
-    else "唯讀資料來源新鮮度、信心與警示。"
-)
+render_sidebar_provider_status()
 
 regime = calculate_market_regime()
+st.title(t("data_quality"))
+st.caption(t("read_only_notice"))
 
 st.subheader(t("market_session_status"))
 session_cols = st.columns(3)
 session_cols[0].metric("TWSE", get_tw_market_session_label())
-session_cols[1].metric("Open", "Yes" if is_tw_market_open() else "No")
+session_cols[1].metric(t("active"), t("yes") if is_tw_market_open() else t("no"))
 session_cols[2].write(get_tw_next_session_hint())
 
-st.subheader(t("data_quality"))
+st.subheader(t("provider_status"))
 quality_rows = []
 for row in regime["provider_quality"]:
     provider = row["Provider"]
-    quality_rows.append(
-        {
-            t("provider"): provider,
-            t("configured"): "Yes" if _provider_configured(provider) else "No",
-            t("connected"): "Yes" if _provider_connected(row) else "No",
-            t("latest_successful_fetch"): row.get("Latest successful fetch"),
-            t("freshness"): row.get("Freshness"),
-            t("confidence"): row.get("Confidence"),
-            t("warning"): translate_warning(row.get("Warning", "")),
-        }
-    )
+    quality_rows.append({t("provider"): provider, t("configured"): t("yes") if _provider_configured(provider) else t("no"), t("connected"): t("yes") if _provider_connected(row) else t("no"), t("latest_successful_fetch"): row.get("Latest successful fetch"), t("freshness"): row.get("Freshness"), t("confidence"): row.get("Confidence"), t("warning"): translate_warning(row.get("Warning", ""))})
 st.dataframe(pd.DataFrame(quality_rows), use_container_width=True, hide_index=True)
 
-st.subheader("Ticker / Provider Freshness" if get_lang() == "en" else "個股／資料來源新鮮度")
+st.subheader(t("freshness"))
 ticker_rows = []
 for ticker in DEFAULT_WATCHLIST:
     quote = safe_fetch_with_fallback(ticker)
-    ticker_rows.append(
-        {
-            t("ticker"): ticker,
-            t("provider"): quote.get("provider_label") or quote.get("source"),
-            t("latest_price_label"): quote.get("price"),
-            t("fetch_time"): quote.get("fetch_timestamp"),
-            t("quote_time"): quote.get("quote_timestamp"),
-            t("market_session_status"): get_tw_market_session_label() if ticker.endswith(".TW") else "n/a",
-            t("freshness_status"): quote.get("freshness_status"),
-            t("confidence"): quote.get("confidence"),
-            t("warning"): translate_warning(quote.get("provider_warning", "")),
-        }
-    )
+    ticker_rows.append({t("ticker"): ticker, t("provider"): quote.get("provider_label") or quote.get("source"), t("latest_price_label"): quote.get("price"), t("fetch_time"): quote.get("fetch_timestamp"), t("quote_time"): quote.get("quote_timestamp"), t("market_session_status"): get_tw_market_session_label() if ticker.endswith(".TW") else "n/a", t("freshness_status"): quote.get("freshness_status"), t("confidence"): quote.get("confidence"), t("warning"): translate_warning(quote.get("provider_warning", ""))})
 st.dataframe(pd.DataFrame(ticker_rows), use_container_width=True, hide_index=True)
-
-st.subheader(t("source_hierarchy"))
-if get_lang() == "en":
-    st.write("- Crypto: Binance read-only > yfinance > fallback")
-    st.write("- Stocks / ETFs / Taiwan / gold: yfinance delayed / best-effort > fallback")
-    st.write("- Macro: FRED daily / lagged")
-    st.write("- Notifications: Telegram outbound only")
-else:
-    st.write("- 加密貨幣：Binance 唯讀 > yfinance > 備援")
-    st.write("- 股票／ETF／台股／黃金：yfinance 延遲或盡力資料 > 備援")
-    st.write("- 總經：FRED 每日或落後資料")
-    st.write("- 通知：Telegram 僅外送通知")
 
 st.subheader(t("overall_confidence"))
 cols = st.columns(4)
@@ -112,10 +69,5 @@ for warning in regime["warnings"]:
     st.warning(translate_warning(warning))
 
 with st.expander(t("future_disabled_providers"), expanded=False):
-    future_df = pd.DataFrame(future_disabled_provider_rows())
-    st.dataframe(future_df, use_container_width=True, hide_index=True)
-    st.write(
-        "These providers remain disabled unless explicitly requested."
-        if get_lang() == "en"
-        else "這些資料來源維持停用，除非使用者明確要求啟用。"
-    )
+    st.dataframe(pd.DataFrame(future_disabled_provider_rows()), use_container_width=True, hide_index=True)
+    st.write(t("read_only_notice"))

@@ -1,28 +1,32 @@
 import pandas as pd
 import streamlit as st
 
+from utils.i18n import t, translate_regime
 from utils.indicators import market_indicators
-from utils.scoring import calculate_market_score
+from utils.market_regime import calculate_market_regime
+from utils.ui import render_refresh_button, render_sidebar_language_switch, render_sidebar_provider_status
 
 
 st.set_page_config(page_title="Macro Dashboard", page_icon="DI", layout="wide")
-st.title("Macro Dashboard")
-st.caption("Macro regime framework with live/fallback market inputs.")
+render_sidebar_language_switch()
+render_refresh_button()
+render_sidebar_provider_status()
 
-inputs = {"liquidity": 68, "sentiment": 62, "breadth": 58, "ai_tech": 74, "defensive": 52}
-score = calculate_market_score(inputs)
+regime = calculate_market_regime()
+st.title(t("macro_dashboard"))
+st.caption(t("macro_caption"))
 
-col1, col2 = st.columns(2)
-col1.metric("Market Score", f"{score['score']}/100")
-col2.metric("Regime", score["regime"])
+cols = st.columns(2)
+cols[0].metric(t("market_score"), f"{regime['market_score']}/100")
+cols[1].metric(t("market_regime"), translate_regime(regime["market_regime"]))
 
-indicators = market_indicators()
-for section, payload in indicators.items():
+for section, payload in market_indicators().items():
     st.subheader(section)
     c1, c2 = st.columns(2)
-    c1.metric("Score", f"{payload['score']}/100")
-    c2.metric("Status", payload["status"])
-    st.write(payload["explanation"])
-    st.write(f"What changed: {payload['what_changed']}")
+    c1.metric(t("score"), f"{payload['score']}/100")
+    c2.metric(t("status"), payload["status"])
+    st.write(f"{t('explanation')}: {payload['explanation']}")
+    st.write(f"{t('what_changed')}: {payload['what_changed']}")
     rows = pd.DataFrame(payload["data"])
-    st.dataframe(rows[["ticker", "price", "return_5d", "return_1m", "distance_ma_50d", "drawdown_52w"]], use_container_width=True, hide_index=True)
+    columns = ["ticker", "price", "return_5d", "return_1m", "distance_ma_50d", "drawdown_52w", "freshness_status", "confidence"]
+    st.dataframe(rows[[column for column in columns if column in rows]], use_container_width=True, hide_index=True)

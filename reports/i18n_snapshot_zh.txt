@@ -1,0 +1,53 @@
+Language snapshot: zh
+
+Pages:
+- 首頁
+- 總經儀表板
+- 投資組合
+- 觀察清單
+- 資產分數
+- 每日作戰計畫
+- 買進區
+- 歷史
+- TradingView 警示
+- 資料品質
+- 設定
+
+Key labels:
+- market_score: 市場分數
+- market_regime: 市場狀態
+- today_action: 今日建議行動
+- data_confidence: 資料信心
+- provider_status: 資料來源狀態
+- refresh_data: 重新整理資料
+- portfolio_value: 投資組合價值
+- target_allocation: 目標配置
+- current_allocation: 目前配置
+- drift: 偏離
+- freshness: 新鮮度
+- confidence: 信心
+- warning: 警示
+
+Action labels:
+- Potential buy zone - verify quote: 潛在買進區，請確認報價
+- Extended / Do not chase: 漲幅延伸，勿追高
+- Healthy trend / Hold: 趨勢健康，持有
+- Pullback watch: 回檔觀察
+- Broken trend / Avoid: 趨勢轉弱，避免
+- Potential Layer 1: 潛在第一層加碼
+- Potential Layer 2: 潛在第二層加碼
+- Deep Pullback Watch: 深度回檔觀察
+- Broken trend, avoid: 趨勢轉弱，避免
+- Extended, do not chase: 漲幅延伸，勿追高
+- Hold: 持有
+
+Regimes:
+- Risk-On: 風險偏好
+- Neutral: 中性
+- Risk-Off: 風險趨避
+
+Warnings:
+- 台股資料僅供參考，不可用於下單執行。
+- yfinance 資料可能延遲，僅供參考。
+- FRED 總經資料可能為每日更新或落後資料。
+- 實際交易前請確認券商報價。
