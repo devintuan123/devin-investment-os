@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from typing import Iterable
 
 import pandas as pd
 import yfinance as yf
 
 from utils.binance_provider import get_btcusdt_price
+from utils.data_freshness import classify_quote_freshness, format_freshness_warning
+from utils.tw_market_time import is_tw_market_open
 
 
 FALLBACK_PRICES = {
@@ -41,13 +44,16 @@ def normalize_ticker(ticker: object) -> str:
 
 def safe_fetch_with_fallback(ticker: str, fallback: float | None = None) -> dict:
     ticker = normalize_ticker(ticker)
+    fetch_timestamp = datetime.now(timezone.utc).isoformat()
     fallback_price = fallback if fallback is not None else FALLBACK_PRICES.get(ticker, 0.0)
     if ticker in {"BTC-USD", "BTCUSDT"}:
         try:
             btc = get_btcusdt_price()
+            freshness = classify_quote_freshness("BTC-USD", "binance", fetch_timestamp, fetch_timestamp, False)
             return {
                 "ticker": "BTC-USD",
                 "price": btc["price"],
+                "previous_close": btc["price"],
                 "change_pct": 0.0,
                 "return_1d": 0.0,
                 "return_5d": 0.0,
@@ -61,6 +67,13 @@ def safe_fetch_with_fallback(ticker: str, fallback: float | None = None) -> dict
                 "distance_ma_50d": 0.0,
                 "distance_ma_200d": 0.0,
                 "source": "binance",
+                "fetch_timestamp": fetch_timestamp,
+                "quote_timestamp": fetch_timestamp,
+                "provider_label": freshness["provider_label"],
+                "real_time": freshness["real_time"],
+                "freshness_status": freshness["freshness_status"],
+                "confidence": freshness["confidence"],
+                "provider_warning": freshness["warning"],
                 "warning": "",
             }
         except Exception:
@@ -72,10 +85,15 @@ def safe_fetch_with_fallback(ticker: str, fallback: float | None = None) -> dict
             raise ValueError("No close prices returned")
         latest = float(close.iloc[-1])
         previous = float(close.iloc[-2]) if len(close) > 1 else latest
+        quote_timestamp = _timestamp_to_iso(close.index[-1])
+        provider = "Yahoo Finance / yfinance" if ticker.endswith(".TW") else "yfinance"
+        freshness = classify_quote_freshness(ticker, "yfinance", quote_timestamp, fetch_timestamp, is_tw_market_open())
+        provider_warning = freshness["warning"] if ticker.endswith(".TW") else "yfinance data may be delayed or best-effort."
         change_pct = ((latest - previous) / previous * 100) if previous else 0.0
         return {
             "ticker": ticker,
             "price": latest,
+            "previous_close": previous,
             "change_pct": change_pct,
             "return_1d": _return(close, 1),
             "return_5d": _return(close, 5),
@@ -88,13 +106,23 @@ def safe_fetch_with_fallback(ticker: str, fallback: float | None = None) -> dict
             "distance_ma_20d": _distance_from_ma(latest, close, 20),
             "distance_ma_50d": _distance_from_ma(latest, close, 50),
             "distance_ma_200d": _distance_from_ma(latest, close, 200),
+            "fetch_timestamp": fetch_timestamp,
+            "quote_timestamp": quote_timestamp,
+            "provider_label": freshness["provider_label"] if ticker.endswith(".TW") else "yfinance",
+            "real_time": freshness["real_time"] if ticker.endswith(".TW") else False,
+            "freshness_status": freshness["freshness_status"] if ticker.endswith(".TW") else "Delayed / best-effort",
+            "confidence": freshness["confidence"] if ticker.endswith(".TW") else 75,
+            "provider_warning": provider_warning,
             "warning": "",
             "source": "yfinance",
         }
     except Exception as exc:
+        freshness = classify_quote_freshness(ticker, "yfinance", None, fetch_timestamp, is_tw_market_open())
+        warning = f"Using fallback for {ticker}: {exc}"
         return {
             "ticker": ticker,
             "price": float(fallback_price),
+            "previous_close": float(fallback_price),
             "change_pct": 0.0,
             "return_1d": 0.0,
             "return_5d": 0.0,
@@ -107,7 +135,14 @@ def safe_fetch_with_fallback(ticker: str, fallback: float | None = None) -> dict
             "distance_ma_20d": 0.0,
             "distance_ma_50d": 0.0,
             "distance_ma_200d": 0.0,
-            "warning": f"Using fallback for {ticker}: {exc}",
+            "fetch_timestamp": fetch_timestamp,
+            "quote_timestamp": None,
+            "provider_label": freshness["provider_label"],
+            "real_time": False,
+            "freshness_status": "Fallback",
+            "confidence": min(40, freshness["confidence"]),
+            "provider_warning": format_freshness_warning(freshness),
+            "warning": warning,
             "source": "fallback",
         }
 
@@ -164,3 +199,13 @@ def _drawdown(close: pd.Series) -> float:
 def _distance_from_ma(latest: float, close: pd.Series, window: int) -> float:
     ma = _moving_average(close, window)
     return ((latest - ma) / ma * 100) if ma else 0.0
+
+
+def _timestamp_to_iso(value: object) -> str | None:
+    try:
+        timestamp = pd.Timestamp(value)
+        if timestamp.tzinfo is None:
+            timestamp = timestamp.tz_localize(timezone.utc)
+        return timestamp.isoformat()
+    except Exception:
+        return None

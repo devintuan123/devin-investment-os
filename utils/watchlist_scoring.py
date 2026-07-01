@@ -61,6 +61,12 @@ def score_ticker(ticker: str) -> dict:
         "risk_label": risk_label,
         "action_label": action_label,
         "source": price_row.get("source", "unknown"),
+        "provider_label": price_row.get("provider_label"),
+        "fetch_timestamp": price_row.get("fetch_timestamp"),
+        "quote_timestamp": price_row.get("quote_timestamp"),
+        "freshness_status": price_row.get("freshness_status"),
+        "confidence": price_row.get("confidence"),
+        "provider_warning": price_row.get("provider_warning"),
         "warning": price_row.get("warning") or warning,
     }
 

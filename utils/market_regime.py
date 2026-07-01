@@ -6,6 +6,7 @@ from statistics import mean
 import pandas as pd
 
 from utils.binance_provider import get_public_price
+from utils.data_freshness import TW_REFERENCE_WARNING
 from utils.fred_provider import get_latest_observation, get_recent_observations
 from utils.market_data import FALLBACK_PRICES, get_history, safe_fetch_with_fallback
 
@@ -106,6 +107,12 @@ def _asset_snapshot(ticker: str) -> dict:
         "return_60d": _return(close, 60),
         "drawdown_52w": _drawdown(close),
         "source": price_row.get("source", "unknown"),
+        "fetch_timestamp": price_row.get("fetch_timestamp"),
+        "quote_timestamp": price_row.get("quote_timestamp"),
+        "provider_label": price_row.get("provider_label"),
+        "freshness_status": price_row.get("freshness_status"),
+        "confidence": price_row.get("confidence"),
+        "provider_warning": price_row.get("provider_warning"),
         "warning": price_row.get("warning") or warning,
     }
 
@@ -309,8 +316,15 @@ def _provider_quality(assets: dict, fred: dict, binance: dict, confidence: int) 
 def _data_warnings(assets: dict, fred: dict, binance: dict) -> list[str]:
     warnings = []
     fallback_assets = [ticker for ticker, asset in assets.items() if asset.get("source") == "fallback" or asset.get("warning")]
+    tw_uncertain = [
+        ticker
+        for ticker, asset in assets.items()
+        if ticker.endswith(".TW") and asset.get("freshness_status") in {"Delayed / uncertain", "Reference / delayed", "Fallback"}
+    ]
     if fallback_assets:
         warnings.append(f"Fallback or partial yfinance data used for: {', '.join(fallback_assets[:6])}.")
+    if tw_uncertain:
+        warnings.append(TW_REFERENCE_WARNING)
     if not fred.get("DGS10", {}).get("connected"):
         warnings.append("FRED 10Y yield is missing.")
     if not binance.get("BTCUSDT", {}).get("connected"):
