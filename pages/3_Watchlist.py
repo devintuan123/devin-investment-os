@@ -4,6 +4,7 @@ import streamlit as st
 from utils.data import load_watchlist, save_watchlist
 from utils.market_data import get_prices
 from utils.signals import distance_to_buy_zone, distance_to_trim_zone, watchlist_signal
+from utils.watchlist_scoring import score_watchlist
 
 
 st.set_page_config(page_title="Watchlist", page_icon="DI", layout="wide")
@@ -48,3 +49,24 @@ if st.button("Save Watchlist", use_container_width=True):
         edited = edited.drop(columns=["signal"])
     save_watchlist(edited)
     st.success("Watchlist saved.")
+
+st.subheader("Decision Scoring")
+scores = pd.DataFrame(score_watchlist(watchlist["ticker"].dropna().astype(str).tolist()))
+if scores.empty:
+    st.info("No scoring data available.")
+else:
+    score_columns = [
+        "ticker",
+        "latest_price",
+        "ma20",
+        "ma60",
+        "ma120",
+        "distance_ma20_pct",
+        "distance_ma60_pct",
+        "drawdown_52w_pct",
+        "trend_score",
+        "pullback_score",
+        "risk_label",
+        "action_label",
+    ]
+    st.dataframe(scores[score_columns], use_container_width=True, hide_index=True)

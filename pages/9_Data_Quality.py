@@ -1,80 +1,37 @@
 import pandas as pd
 import streamlit as st
 
-from utils.market_data import safe_fetch_with_fallback
-from utils.provider_status import active_provider_rows, future_disabled_provider_rows
-from utils.providers.tokenized_equity_provider import (
-    REFERENCE_WARNING,
-    discover_supported_tokenized_equities,
-    get_tokenized_equity_basis,
-    tokenized_equity_health_check,
-)
+from utils.market_regime import calculate_market_regime
+from utils.provider_status import future_disabled_provider_rows
 
 
 st.set_page_config(page_title="Data Quality", page_icon="DI", layout="wide")
 st.title("Data Quality")
-st.caption("Provider hierarchy, freshness, reliability caps, and reference-data warnings.")
+st.caption("Read-only provider freshness, confidence, and warnings.")
+
+regime = calculate_market_regime()
+
+st.subheader("Active Provider Quality")
+quality_df = pd.DataFrame(regime["provider_quality"])
+st.dataframe(quality_df, use_container_width=True, hide_index=True)
 
 st.subheader("Source Hierarchy")
-st.write("- Crypto: Binance > yfinance > fallback")
-st.write("- US/ETF: IBKR future > yfinance > fallback")
-st.write("- Taiwan: Yuanta future/CSV > yfinance > fallback")
-st.write("- Signals: TradingView webhook > internal rules")
+st.write("- Crypto: Binance read-only > yfinance > fallback")
+st.write("- Stocks / ETFs / Taiwan / gold: yfinance delayed / best-effort > fallback")
+st.write("- Macro: FRED daily / lagged")
+st.write("- Notifications: Telegram outbound only")
 
-st.subheader("Provider Status")
-st.write("Active providers")
-st.dataframe(pd.DataFrame(active_provider_rows()), use_container_width=True, hide_index=True)
-st.write("Future disabled")
-st.dataframe(pd.DataFrame(future_disabled_provider_rows()), use_container_width=True, hide_index=True)
+st.subheader("Market Data Confidence")
+cols = st.columns(4)
+cols[0].metric("Overall Confidence", regime["confidence_level"])
+cols[1].metric("Confidence Score", f"{regime['confidence_score']}/100")
+cols[2].metric("Market Score", f"{regime['market_score']}/100")
+cols[3].metric("Regime", regime["market_regime"])
 
-st.subheader("Tokenized Equity")
-health = tokenized_equity_health_check()
-col1, col2, col3 = st.columns(3)
-col1.metric("Provider", health["provider"])
-col2.metric("Available Symbols", health["available_count"])
-col3.metric("Reliability Cap", f"{health['reliability_cap']}/100")
-st.warning(REFERENCE_WARNING)
+st.subheader("Warnings")
+for warning in regime["warnings"]:
+    st.warning(warning)
 
-rows = []
-for item in discover_supported_tokenized_equities():
-    if item["available"]:
-        basis = get_tokenized_equity_basis(item["symbol"])
-        rows.append(
-            {
-                "Provider": "Tokenized Equity",
-                "Underlying": item["underlying"],
-                "Supported Symbol": item["symbol"],
-                "Available": True,
-                "Price": basis.get("price"),
-                "Official Price": basis.get("official_price"),
-                "Basis %": basis.get("basis_pct"),
-                "Freshness": basis.get("freshness"),
-                "Reliability Cap": basis.get("reliability_cap"),
-                "Confidence": basis.get("confidence"),
-                "Warning": basis.get("warning"),
-            }
-        )
-    else:
-        rows.append(
-            {
-                "Provider": "Tokenized Equity",
-                "Underlying": item["underlying"],
-                "Supported Symbol": item["symbol"],
-                "Available": False,
-                "Price": None,
-                "Official Price": None,
-                "Basis %": None,
-                "Freshness": "unavailable",
-                "Reliability Cap": 0,
-                "Confidence": 0,
-                "Warning": item["warning"],
-            }
-        )
-
-st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
-
-st.subheader("Sample Official Sources")
-official_rows = [safe_fetch_with_fallback(ticker) for ticker in ["SPY", "QQQ", "NVDA", "TSLA", "BTC-USD"]]
-official_df = pd.DataFrame(official_rows)
-columns = [column for column in ["ticker", "price", "source", "warning"] if column in official_df]
-st.dataframe(official_df[columns], use_container_width=True, hide_index=True)
+with st.expander("Future / disabled providers", expanded=False):
+    st.dataframe(pd.DataFrame(future_disabled_provider_rows()), use_container_width=True, hide_index=True)
+    st.write("These providers remain disabled unless explicitly requested.")
