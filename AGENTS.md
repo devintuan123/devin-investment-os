@@ -81,14 +81,40 @@ Before changing:
 - confirm working path
 
 After changing:
+- read `docs/REVIEW_CHECKLIST.md`
+- apply relevant `docs/ROLES/*.md`
+- check `docs/DEFINITION_OF_DONE.md`
 - `python -m compileall -q .`
 - run relevant tests
+- run `python scripts/run_quality_gate.py` for non-trivial changes when available
 - validate secrets only if needed without printing values
 - ensure git does not include secrets
 - commit safe code/docs changes only
 - push to GitHub
 - deploy if app/server behavior changed
 - health check public URL
+
+## Role-based review process
+
+Before the final response for every non-trivial task, Codex must:
+- read `docs/REVIEW_CHECKLIST.md`
+- apply the relevant role documents in `docs/ROLES/`
+- check `docs/DEFINITION_OF_DONE.md`
+- run the correct audits/tests for the changed scope
+- provide a role-based final report unless the user requests a stricter final format
+
+Required review order:
+1. Project Manager
+2. Developer
+3. Localization Specialist
+4. UI/UX Designer
+5. Investment Analyst
+6. QA Tester
+7. Security Officer
+
+Codex must not report a task as completed unless every required role passes or a blocker is clearly reported.
+
+If the user says "do not let Codex idle" or asks for continuous build, Codex should continue to the next planned phase only within the approved roadmap and safety boundaries.
 
 ## VPS
 
