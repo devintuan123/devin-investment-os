@@ -4,6 +4,14 @@ Devin Investment OS is a Streamlit dashboard for a personal investment workflow.
 
 This is not financial advice.
 
+## Current Active Provider Stack
+
+- yfinance / Yahoo Finance provides stocks, ETFs, Taiwan tickers, gold, and fallback market data.
+- Binance provides read-only crypto data.
+- FRED provides read-only macro data.
+- Telegram provides outbound notifications.
+- IBKR and Yuanta are deferred future integrations.
+
 ## Features
 
 - Home dashboard with Market Score, regime, actions, portfolio preview, and watchlist preview.
