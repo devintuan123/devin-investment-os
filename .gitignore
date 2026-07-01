@@ -21,3 +21,7 @@ local_bridges/yuanta_bridge/config.json
 local_bridges/yuanta_bridge/*.dll
 local_bridges/yuanta_bridge/*.pfx
 local_bridges/yuanta_bridge/*.p12
+secrets/ssh/
+secrets/ssh/*
+id_rsa
+id_ed25519
