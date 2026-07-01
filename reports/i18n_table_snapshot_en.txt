@@ -1,0 +1,14 @@
+Table language snapshot: en
+
+Watchlist
+ Symbol  Latest Price                      Action Label Risk Label    Freshness Status Category
+2330.TW          1000 Potential Buy Zone - verify quote     Medium Delayed / uncertain    Stock
+
+Provider status
+Provider Configured Connected      Freshness  Confidence                                    Warning
+ Binance        Yes Connected Near real-time          90 Verify broker quote before actual trading.
+    FRED        Yes Connected Daily / lagged          85    FRED macro data may be daily or lagged.
+
+Portfolio
+Symbol Category  Market Value  Current Weight  Target Weight  Drift Suggested Action
+   SPY      ETF         10000              40             45     -5              Add

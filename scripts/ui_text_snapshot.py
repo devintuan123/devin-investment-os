@@ -9,7 +9,10 @@ sys.path.insert(0, str(ROOT_DIR))
 REPORT_DIR = ROOT_DIR / "reports"
 REPORT_DIR.mkdir(exist_ok=True)
 
+import pandas as pd
+
 from utils.i18n import LANG_EN, LANG_ZH, set_lang, t, translate_action_label, translate_regime, translate_warning
+from utils.table_i18n import translate_dataframe
 
 
 PAGES = [
@@ -81,7 +84,64 @@ def main() -> int:
         lines.extend([f"- {translate_warning(warning)}" for warning in WARNINGS])
         path.write_text("\n".join(lines) + "\n", encoding="utf-8")
         print(path)
+        table_path = REPORT_DIR / f"i18n_table_snapshot_{lang}.txt"
+        table_lines = [f"Table language snapshot: {lang}", ""]
+        for title, frame in _sample_tables():
+            table_lines.append(title)
+            table_lines.append(translate_dataframe(frame, lang).to_string(index=False))
+            table_lines.append("")
+        table_path.write_text("\n".join(table_lines).rstrip() + "\n", encoding="utf-8")
+        print(table_path)
     return 0
+
+
+def _sample_tables() -> list[tuple[str, pd.DataFrame]]:
+    watchlist = pd.DataFrame(
+        [
+            {
+                "symbol": "2330.TW",
+                "latest_price": 1000,
+                "action_label": "Potential Buy Zone - verify quote",
+                "risk_label": "Medium",
+                "freshness_status": "Delayed / uncertain",
+                "category": "Stock",
+            }
+        ]
+    )
+    providers = pd.DataFrame(
+        [
+            {
+                "provider": "Binance",
+                "configured": "Yes",
+                "connected": "Connected",
+                "freshness": "Near real-time",
+                "confidence": 90,
+                "warning": "Verify broker quote before actual trading.",
+            },
+            {
+                "provider": "FRED",
+                "configured": "Yes",
+                "connected": "Connected",
+                "freshness": "Daily / lagged",
+                "confidence": 85,
+                "warning": "FRED macro data may be daily or lagged.",
+            },
+        ]
+    )
+    portfolio = pd.DataFrame(
+        [
+            {
+                "symbol": "SPY",
+                "category": "ETF",
+                "market_value": 10000,
+                "current_weight": 40,
+                "target_weight": 45,
+                "drift": -5,
+                "action_suggestion": "Add",
+            }
+        ]
+    )
+    return [("Watchlist", watchlist), ("Provider status", providers), ("Portfolio", portfolio)]
 
 
 if __name__ == "__main__":

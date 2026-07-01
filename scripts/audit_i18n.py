@@ -28,6 +28,9 @@ STREAMLIT_NAMES = {
     "text_area",
     "number_input",
     "page_link",
+    "dataframe",
+    "table",
+    "data_editor",
 }
 IGNORED_PATTERNS = [
     re.compile(r"^[A-Z0-9.^=/ _:%-]+$"),
@@ -45,6 +48,19 @@ IGNORED_VALUES = {
     "wide",
     "text",
     "streamlit",
+}
+COMMON_TABLE_LABELS = {
+    "ticker",
+    "symbol",
+    "latest_price",
+    "action_label",
+    "risk_label",
+    "freshness_status",
+    "category",
+    "provider",
+    "connected",
+    "configured",
+    "warning",
 }
 
 
@@ -110,6 +126,8 @@ def _is_ignored(value: str) -> bool:
     if "{" in value and "}" in value:
         return True
     if value.startswith("<") or value.startswith(".") or value.startswith("["):
+        return True
+    if value in COMMON_TABLE_LABELS:
         return True
     return any(pattern.match(value) for pattern in IGNORED_PATTERNS)
 

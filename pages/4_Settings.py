@@ -4,8 +4,9 @@ import streamlit as st
 from utils.config import safety_status
 from utils.i18n import t
 from utils.provider_status import active_provider_rows, future_disabled_provider_rows
+from utils.table_i18n import translate_dataframe
 from utils.telegram import send_telegram_message
-from utils.ui import render_refresh_button, render_sidebar_language_switch, render_sidebar_provider_status
+from utils.ui import get_current_lang, render_refresh_button, render_sidebar_language_switch, render_sidebar_provider_status
 
 
 st.set_page_config(page_title="Settings", page_icon="DI", layout="wide")
@@ -15,6 +16,7 @@ render_sidebar_provider_status()
 
 st.title(t("settings"))
 st.caption(t("settings_caption"))
+lang = get_current_lang()
 
 st.subheader(t("api_configuration"))
 active_rows = active_provider_rows()
@@ -23,9 +25,9 @@ for index, row in enumerate(active_rows):
     metric_cols[index].metric(row["Provider"], row["Status"])
 
 st.write(t("active_providers"))
-st.dataframe(pd.DataFrame(active_rows), use_container_width=True, hide_index=True)
+st.dataframe(translate_dataframe(pd.DataFrame(active_rows), lang), use_container_width=True, hide_index=True)
 st.write(t("disabled_providers"))
-st.dataframe(pd.DataFrame(future_disabled_provider_rows()), use_container_width=True, hide_index=True)
+st.dataframe(translate_dataframe(pd.DataFrame(future_disabled_provider_rows()), lang), use_container_width=True, hide_index=True)
 
 st.subheader(t("safety_status"))
 safety = safety_status()

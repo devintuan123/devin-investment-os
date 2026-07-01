@@ -6,6 +6,7 @@ from utils.i18n import t, translate_action_label, translate_regime, translate_ri
 from utils.market_regime import calculate_market_regime
 from utils.portfolio_engine import calculate_position_values, load_portfolio, portfolio_health_score
 from utils.provider_status import active_provider_rows
+from utils.table_i18n import translate_dataframe
 from utils.ui import get_current_lang, render_refresh_button, render_sidebar_language_switch, render_sidebar_provider_status
 
 
@@ -75,7 +76,7 @@ else:
         st.info(t("no_data"))
     else:
         candidates["action_label"] = candidates["action_label"].map(translate_action_label)
-        st.dataframe(candidates[["ticker", "latest_price", "drawdown_52w_pct", "action_label", "warning"]], use_container_width=True, hide_index=True)
+        st.dataframe(translate_dataframe(candidates[["ticker", "latest_price", "drawdown_52w_pct", "action_label", "warning"]], lang), use_container_width=True, hide_index=True)
 
 st.subheader(t("quick_portfolio"))
 if positions.empty:
@@ -83,7 +84,7 @@ if positions.empty:
 else:
     view = positions[["symbol", "category", "market_value", "current_weight", "target_weight", "drift", "action_suggestion"]].copy()
     view["action_suggestion"] = view["action_suggestion"].map(translate_action_label)
-    st.dataframe(view, use_container_width=True, hide_index=True)
+    st.dataframe(translate_dataframe(view, lang), use_container_width=True, hide_index=True)
 
 st.subheader(t("navigation"))
 links = st.columns(10)

@@ -434,6 +434,7 @@ TRANSLATIONS = {
 
 ACTION_LABEL_KEYS = {
     "Potential buy zone - verify quote": "potential_buy_zone",
+    "Potential Buy Zone - verify quote": "potential_buy_zone",
     "Extended / Do not chase": "extended_do_not_chase",
     "Healthy trend / Hold": "healthy_trend_hold",
     "Pullback watch": "pullback_watch",

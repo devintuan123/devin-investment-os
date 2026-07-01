@@ -4,7 +4,8 @@ import streamlit as st
 from utils.i18n import t, translate_regime
 from utils.indicators import market_indicators
 from utils.market_regime import calculate_market_regime
-from utils.ui import render_refresh_button, render_sidebar_language_switch, render_sidebar_provider_status
+from utils.table_i18n import translate_dataframe
+from utils.ui import get_current_lang, render_refresh_button, render_sidebar_language_switch, render_sidebar_provider_status
 
 
 st.set_page_config(page_title="Macro Dashboard", page_icon="DI", layout="wide")
@@ -13,6 +14,7 @@ render_refresh_button()
 render_sidebar_provider_status()
 
 regime = calculate_market_regime()
+lang = get_current_lang()
 st.title(t("macro_dashboard"))
 st.caption(t("macro_caption"))
 
@@ -29,4 +31,4 @@ for section, payload in market_indicators().items():
     st.write(f"{t('what_changed')}: {payload['what_changed']}")
     rows = pd.DataFrame(payload["data"])
     columns = ["ticker", "price", "return_5d", "return_1m", "distance_ma_50d", "drawdown_52w", "freshness_status", "confidence"]
-    st.dataframe(rows[[column for column in columns if column in rows]], use_container_width=True, hide_index=True)
+    st.dataframe(translate_dataframe(rows[[column for column in columns if column in rows]], lang), use_container_width=True, hide_index=True)
