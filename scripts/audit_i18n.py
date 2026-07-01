@@ -45,7 +45,6 @@ IGNORED_VALUES = {
     "wide",
     "text",
     "streamlit",
-    "Devin Investment OS test message.",
 }
 
 

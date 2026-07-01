@@ -43,7 +43,7 @@ st.write(t("read_only_notice"))
 st.write(" / ".join(["yfinance", "Binance", "FRED", "Telegram"]))
 
 st.subheader(t("telegram_test"))
-message = st.text_area(t("telegram_ready_summary"), value="Devin Investment OS test message.")
+message = st.text_area(t("telegram_ready_summary"), value=t("telegram_test_default"))
 if st.button(t("send_test_message"), use_container_width=True):
     st.success(t("sent")) if send_telegram_message(message) else st.warning(t("skipped_check_config"))
 
