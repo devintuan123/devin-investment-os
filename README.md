@@ -100,6 +100,7 @@ Provider docs:
 - `docs/TRADINGVIEW_WEBHOOK.md`
 - `docs/IBKR_READ_ONLY_PLAN.md`
 - `docs/YUANTA_INTEGRATION_PLAN.md`
+- `docs/TOKENIZED_EQUITY_PROVIDER.md`
 
 Optional cron examples:
 
