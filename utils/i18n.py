@@ -807,6 +807,14 @@ TRANSLATIONS[LANG_ZH].update({
     "macro_missing_data_warning": "????????????????????????????????",
 })
 
+
+TRANSLATIONS[LANG_ZH].update({
+    'macro_data_status': '總經資料狀態',
+    'fred_raw_data': 'FRED 原始資料',
+    'market_proxy_data': '市場代理資料',
+    'macro_missing_data_warning': '偵測到缺漏或備援的總經輸入。分數信心已降低；請先檢查原始資料表。',
+})
+
 def get_lang() -> str:
     if "streamlit" not in sys.modules:
         return _fallback_lang
