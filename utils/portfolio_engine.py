@@ -5,6 +5,7 @@ from pathlib import Path
 import pandas as pd
 
 from utils.market_data import safe_fetch_with_fallback
+from utils.strategy_rules import get_asset_category, get_asset_risk_policy, get_target_weight
 
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
@@ -97,6 +98,10 @@ def calculate_position_values(df: pd.DataFrame) -> pd.DataFrame:
         portfolio["market_value"] / total_value * 100 if total_value else 0.0
     )
     portfolio["drift"] = portfolio["current_weight"] - portfolio["target_weight"]
+    portfolio["strategy_target_weight"] = portfolio["symbol"].map(lambda symbol: get_target_weight(symbol) or 0.0)
+    portfolio["strategy_drift"] = portfolio["current_weight"] - portfolio["strategy_target_weight"]
+    portfolio["strategy_category"] = portfolio["symbol"].map(get_asset_category)
+    portfolio["strategy_max_weight"] = portfolio["symbol"].map(lambda symbol: get_asset_risk_policy(symbol).get("max_weight", 0))
     portfolio["drift_label"] = portfolio["drift"].apply(classify_drift)
     portfolio["action_suggestion"] = portfolio.apply(_action_suggestion, axis=1)
     return portfolio
@@ -145,7 +150,7 @@ def allocation_by_currency(df: pd.DataFrame) -> pd.DataFrame:
 
 def target_allocation_comparison(df: pd.DataFrame) -> pd.DataFrame:
     positions = calculate_position_values(df)
-    return positions[["symbol", "category", "market_value", "current_weight", "target_weight", "drift", "drift_label", "action_suggestion"]]
+    return positions[["symbol", "category", "strategy_category", "market_value", "current_weight", "target_weight", "strategy_target_weight", "drift", "strategy_drift", "drift_label", "strategy_max_weight", "action_suggestion"]]
 
 
 def cash_deployment_suggestion(df: pd.DataFrame) -> str:
@@ -168,6 +173,10 @@ def exposure_warnings(df: pd.DataFrame) -> list[str]:
     satellite = positions[(positions["category"].astype(str).str.contains("Crypto|Stock", case=False, na=False)) & (positions["current_weight"] > 20)]
     for _, row in satellite.iterrows():
         warnings.append(f"{row['symbol']} high-volatility satellite exposure should be monitored.")
+    strategy_limit = positions[pd.to_numeric(positions["current_weight"], errors="coerce") > pd.to_numeric(positions["strategy_max_weight"], errors="coerce")]
+    for _, row in strategy_limit.iterrows():
+        if float(row.get("strategy_max_weight", 0) or 0) > 0:
+            warnings.append(f"{row['symbol']} exceeds strategy max weight reference.")
     return warnings
 
 

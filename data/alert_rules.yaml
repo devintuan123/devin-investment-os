@@ -1,0 +1,29 @@
+alerts:
+  market_score_below:
+    enabled: true
+    threshold: 40
+  market_score_above:
+    enabled: true
+    threshold: 75
+  regime_changed:
+    enabled: true
+  vix_above:
+    enabled: true
+    threshold: 25
+  btc_breakout_or_breakdown:
+    enabled: true
+  buy_zone_entered:
+    enabled: true
+  portfolio_drift_exceeded:
+    enabled: true
+    threshold: 8
+  sector_heat_spike:
+    enabled: true
+    threshold: 85
+  taiwan_quote_stale_warning:
+    enabled: true
+
+delivery:
+  telegram_enabled: true
+  suppress_duplicate_hours: 12
+  decision_support_only: true

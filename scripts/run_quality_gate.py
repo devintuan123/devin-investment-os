@@ -15,6 +15,9 @@ CHECKS = [
     ("enforce_modular_pages_gate", [sys.executable, "scripts/enforce_modular_pages_gate.py"]),
     ("enforce_portfolio_management_gate", [sys.executable, "scripts/enforce_portfolio_management_gate.py"]),
     ("enforce_sector_heat_gate", [sys.executable, "scripts/enforce_sector_heat_gate.py"]),
+    ("enforce_strategy_rules_gate", [sys.executable, "scripts/enforce_strategy_rules_gate.py"]),
+    ("enforce_snapshot_gate", [sys.executable, "scripts/enforce_snapshot_gate.py"]),
+    ("enforce_alert_gate", [sys.executable, "scripts/enforce_alert_gate.py"]),
     ("audit_i18n", [sys.executable, "scripts/audit_i18n.py"]),
     ("audit_table_i18n", [sys.executable, "scripts/audit_table_i18n.py"]),
     ("audit_navigation_i18n", [sys.executable, "scripts/audit_navigation_i18n.py"]),
@@ -22,7 +25,20 @@ CHECKS = [
     ("telegram_dry_run_zh", [sys.executable, "scripts/send_daily_report.py", "--dry-run", "--lang", "zh"]),
     ("telegram_dry_run_en", [sys.executable, "scripts/send_daily_report.py", "--dry-run", "--lang", "en"]),
 ]
-MANDATORY = {"compileall", "full_runtime_audit", "enforce_i18n_hard_gate", "enforce_table_usability_gate", "enforce_modular_pages_gate", "enforce_portfolio_management_gate", "enforce_sector_heat_gate"}
+MANDATORY = {
+    "compileall",
+    "full_runtime_audit",
+    "enforce_i18n_hard_gate",
+    "enforce_table_usability_gate",
+    "enforce_modular_pages_gate",
+    "enforce_portfolio_management_gate",
+    "enforce_sector_heat_gate",
+    "enforce_strategy_rules_gate",
+    "enforce_snapshot_gate",
+    "enforce_alert_gate",
+    "telegram_dry_run_zh",
+    "telegram_dry_run_en",
+}
 
 
 def main() -> int:

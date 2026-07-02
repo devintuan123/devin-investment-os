@@ -2,8 +2,8 @@ Sector Heat / Capital Rotation
 Capital Rotation
 Proxy-based heat only, not exact fund flows or trading advice.
 Market                     Theme  Theme_2  Heat Score  Rotation Score     Theme Heat Rotation Signal  return_5d  20D Return  Breadth  Symbol Count                                                        Warning
-    US             Cybersecurity       資安         100             100 Hot / Extended     Rotation In  14.211991    2.796473    100.0             4 Proxy-based heat only, not exact fund flows or trading advice.
-Taiwan        Passive Components     被動元件         100              77 Hot / Extended     Rotation In   5.387409   33.977748    100.0             2 Proxy-based heat only, not exact fund flows or trading advice.
+    US             Cybersecurity       資安         100             100 Hot / Extended     Rotation In  14.314833    1.492196    100.0             4 Proxy-based heat only, not exact fund flows or trading advice.
     US        Healthcare / GLP-1 醫療／GLP-1         100              73 Hot / Extended     Rotation In   4.523804   11.691960    100.0             3 Proxy-based heat only, not exact fund flows or trading advice.
-   LSE Healthcare / World health     全球醫療          92              66 Hot / Extended     Rotation In   3.127080    7.594039    100.0             1 Proxy-based heat only, not exact fund flows or trading advice.
-Taiwan            Semiconductors      半導體          90              61 Hot / Extended     Rotation In   2.144841    9.980293     75.0             4 Proxy-based heat only, not exact fund flows or trading advice.
+Taiwan            Semiconductors      半導體          92              63 Hot / Extended     Rotation In   2.520941   10.494424     75.0             4 Proxy-based heat only, not exact fund flows or trading advice.
+   LSE Healthcare / World health     全球醫療          91              65 Hot / Extended     Rotation In   3.042564    7.505863    100.0             1 Proxy-based heat only, not exact fund flows or trading advice.
+    US                   Defense     防禦軍工          89              80 Hot / Extended     Rotation In   4.096251    3.865880    100.0             4 Proxy-based heat only, not exact fund flows or trading advice.

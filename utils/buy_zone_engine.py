@@ -4,6 +4,7 @@ import pandas as pd
 
 from utils.market_data import FALLBACK_PRICES, get_history, normalize_ticker, safe_fetch_with_fallback
 from utils.market_regime import calculate_market_regime
+from utils.strategy_rules import classify_action_by_strategy, get_asset_category, get_asset_risk_policy, strategy_warning_for_symbol
 
 
 DEFAULT_BUY_ZONE_TICKERS = [
@@ -45,8 +46,12 @@ def score_buy_zone(ticker: str, market_regime: str = "Neutral") -> dict:
     zone2 = min(ma60, high_52w * 0.90) if ma60 else latest * 0.90
     zone3 = min(ma120, high_52w * 0.82) if ma120 else latest * 0.82
     zone_status, action_label = _zone_action(ticker, latest, ma20, ma60, ma120, drawdown, trend_status, market_regime)
+    strategy_action = classify_action_by_strategy(ticker, action_label, market_regime, quote.get("confidence", 60))
+    risk_policy = get_asset_risk_policy(ticker)
+    warning_text = quote.get("provider_warning") or quote.get("warning") or warning or strategy_warning_for_symbol(ticker)
     return {
         "ticker": ticker,
+        "asset_category": get_asset_category(ticker),
         "latest_price": latest,
         "ma20": ma20,
         "ma60": ma60,
@@ -60,10 +65,13 @@ def score_buy_zone(ticker: str, market_regime: str = "Neutral") -> dict:
         "buy_zone_3": zone3,
         "current_zone_status": zone_status,
         "action_label": action_label,
+        "strategy_action": strategy_action,
+        "strategy_max_weight": risk_policy.get("max_weight"),
         "provider": quote.get("provider_label") or quote.get("source"),
         "freshness_status": quote.get("freshness_status"),
         "confidence": quote.get("confidence"),
-        "warning": quote.get("provider_warning") or quote.get("warning") or warning,
+        "warning": warning_text,
+        "strategy_warning": strategy_warning_for_symbol(ticker),
     }
 
 

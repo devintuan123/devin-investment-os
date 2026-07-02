@@ -1,14 +1,35 @@
-# Cron Setup
+# Devin Investment OS Cron Setup
 
-Do not add cron until `.env` is configured on the VPS.
+Cron is optional and should be installed manually only after confirming the VPS timezone, Telegram configuration, and read-only safety flags.
 
-Suggested entries:
+Recommended jobs:
 
 ```cron
-0 8 * * 1-5 cd /root/devin-investment-os && .venv/bin/python scripts/send_daily_report.py
-30 8,15 * * 1-5 cd /root/devin-investment-os && .venv/bin/python scripts/send_watchlist_alerts.py
-0 21 * * 1-5 cd /root/devin-investment-os && .venv/bin/python scripts/create_daily_snapshot.py
-0 9 * * 1 cd /root/devin-investment-os && .venv/bin/python scripts/generate_weekly_report.py
+# Daily snapshot
+15 7 * * * cd /root/devin-investment-os && . .venv/bin/activate && python scripts/create_daily_snapshot.py
+
+# Morning report
+30 7 * * 1-5 cd /root/devin-investment-os && . .venv/bin/activate && python scripts/send_daily_report.py --send --lang zh
+
+# Market close report
+15 22 * * 1-5 cd /root/devin-investment-os && . .venv/bin/activate && python scripts/send_daily_report.py --send --lang zh
+
+# Alert check
+*/30 * * * * cd /root/devin-investment-os && . .venv/bin/activate && python scripts/send_alerts.py --send --lang zh
 ```
 
-Logs can be redirected to `/var/log/devin-investment-os-cron.log`.
+Dry-run first:
+
+```bash
+cd /root/devin-investment-os
+. .venv/bin/activate
+python scripts/run_daily_workflow.py --dry-run
+python scripts/send_alerts.py --dry-run --lang zh
+```
+
+Safety notes:
+
+- Jobs are decision-support only.
+- No order placement, withdrawals, futures, margin, or auto-trading are enabled.
+- Snapshot JSON files must not contain secrets.
+- Broker quote verification remains required before real trading decisions.

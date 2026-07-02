@@ -5,4 +5,4 @@ Close Position
 Clear Holdings
 Transaction Ledger
 Realized P/L
-Manual portfolio records may differ from broker records.
+Manual portfolio records may differ from broker records. Verify broker quote before trading.

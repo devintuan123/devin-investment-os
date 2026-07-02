@@ -7,6 +7,8 @@ from utils.interactive_table import render_interactive_table
 from utils.market_regime import calculate_market_regime
 from utils.portfolio_engine import calculate_position_values, load_portfolio, portfolio_health_score
 from utils.sector_heat_engine import calculate_theme_heat_score, get_candidate_symbols_by_theme
+from utils.alert_engine import evaluate_alerts, format_alerts
+from utils.strategy_rules import get_cash_deployment_mode
 from utils.ui import get_current_lang, render_refresh_button, render_sidebar_language_switch, render_sidebar_provider_status
 
 
@@ -17,6 +19,9 @@ def render(lang: str) -> None:
     buy_zones = pd.DataFrame(score_buy_zones())
     sector_heat = calculate_theme_heat_score().head(6)
     sector_candidates = get_candidate_symbols_by_theme(limit=8)
+    average_drift = float(positions["drift"].abs().mean()) if not positions.empty else 0.0
+    cash_mode = get_cash_deployment_mode(regime["market_score"], regime["market_regime"], average_drift)
+    alerts = evaluate_alerts()
 
     st.title(t("daily_playbook"))
     st.caption(t("daily_caption"))
@@ -32,7 +37,7 @@ def render(lang: str) -> None:
     st.subheader(t("portfolio_drift_summary"))
     st.metric(t("portfolio_health"), f"{health['score']}/100")
     if not positions.empty:
-        drift_view = positions[["symbol", "current_weight", "target_weight", "drift", "action_suggestion"]].head(8).copy()
+        drift_view = positions[["symbol", "current_weight", "target_weight", "strategy_target_weight", "drift", "strategy_drift", "action_suggestion"]].head(8).copy()
         drift_view["action_suggestion"] = drift_view["action_suggestion"].map(translate_action_label)
         render_interactive_table(drift_view, table_key="daily_drift", lang=lang)
 
@@ -48,9 +53,9 @@ def render(lang: str) -> None:
     if buy_zones.empty:
         st.info(t("no_data"))
     else:
-        add_candidates = buy_zones[buy_zones["action_label"].isin(["Potential Layer 1", "Potential Layer 2", "Deep Pullback Watch", "Hold"])].head(3).copy()
-        add_candidates["action_label"] = add_candidates["action_label"].map(translate_action_label)
-        render_interactive_table(add_candidates[["ticker", "latest_price", "drawdown_52w_pct", "action_label", "warning"]], table_key="daily_add_candidates", lang=lang)
+        add_candidates = buy_zones[buy_zones["strategy_action"].isin(["DCA only", "Potential buy zone", "Consider gradual allocation", "Hold"])].head(3).copy()
+        add_candidates["strategy_action"] = add_candidates["strategy_action"].map(translate_action_label)
+        render_interactive_table(add_candidates[["ticker", "asset_category", "latest_price", "drawdown_52w_pct", "strategy_action", "strategy_warning"]], table_key="daily_add_candidates", lang=lang)
 
     st.subheader(t("top_avoid_warnings"))
     if not buy_zones.empty:
@@ -68,12 +73,13 @@ def render(lang: str) -> None:
         st.warning(translate_warning(warning))
 
     st.subheader(t("cash_deployment"))
-    if regime["market_regime"] == "Risk-On":
-        st.write(t("gradual"))
-    elif regime["market_regime"] == "Risk-Off":
-        st.write(t("wait"))
+    st.write(t(cash_mode))
+
+    st.subheader(t("alert_summary"))
+    if alerts:
+        render_interactive_table(pd.DataFrame(alerts), table_key="daily_alerts", lang=lang)
     else:
-        st.write(t("dca_only"))
+        st.info(t("no_alerts"))
 
     st.subheader(t("sector_heat_page"))
     st.caption(t("proxy_heat_warning"))
@@ -93,6 +99,8 @@ def render(lang: str) -> None:
             f"{t('market_regime')}: {translate_regime(regime['market_regime'])}",
             f"{t('suggested_action')}: {translate_action_label(regime['today_action'])}",
             f"{t('portfolio_health')}: {health['score']}/100",
+            f"{t('cash_deployment_mode')}: {t(cash_mode)}",
+            format_alerts(lang, alerts),
             t("buy_zone_candidates"),
             *[f"- {item['ticker']}: {translate_action_label(item['action_label'])}" for item in top_signals],
             t("sector_heat_page"),

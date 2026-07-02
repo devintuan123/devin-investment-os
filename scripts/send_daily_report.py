@@ -9,10 +9,12 @@ ROOT_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT_DIR))
 
 from utils.buy_zone_engine import score_buy_zones
+from utils.alert_engine import evaluate_alerts, format_alerts
 from utils.i18n import LANG_EN, LANG_ZH, set_lang, t, translate_action_label, translate_regime, translate_warning
 from utils.market_regime import calculate_market_regime
 from utils.portfolio_engine import calculate_position_values, load_portfolio, portfolio_health_score
 from utils.sector_heat_engine import calculate_theme_heat_score, get_candidate_symbols_by_theme
+from utils.strategy_rules import get_cash_deployment_mode
 from utils.table_i18n import translate_cell_value
 from utils.telegram import send_telegram_message
 
@@ -27,6 +29,9 @@ def build_daily_report(lang: str = LANG_ZH) -> str:
     risk_warnings = [row for row in buy_zones if row["action_label"] in {"Broken trend, avoid", "Extended, do not chase"}][:3]
     sector_heat = calculate_theme_heat_score().head(3)
     sector_candidates = get_candidate_symbols_by_theme(limit=3)
+    average_drift = float(positions["drift"].abs().mean()) if not positions.empty else 0.0
+    cash_mode = get_cash_deployment_mode(regime["market_score"], regime["market_regime"], average_drift)
+    alerts = evaluate_alerts()
 
     drift_summary = t("no_data")
     if not positions.empty:
@@ -40,8 +45,10 @@ def build_daily_report(lang: str = LANG_ZH) -> str:
             f"{t('market_regime')}: {translate_regime(regime['market_regime'])}",
             f"{t('today_action')}: {translate_action_label(regime['today_action'])}",
             drift_summary,
+            f"{t('cash_deployment_mode')}: {t(cash_mode)}",
+            format_alerts(lang, alerts),
             f"{t('buy_zone_candidates')}:",
-            *[f"- {row['ticker']}: {translate_action_label(row['action_label'])} @ {row['latest_price']:.2f}" for row in top_candidates],
+            *[f"- {row['ticker']}: {translate_action_label(row.get('strategy_action', row['action_label']))} @ {row['latest_price']:.2f}" for row in top_candidates],
             f"{t('risk_warnings')}:",
             *([f"- {row['ticker']}: {translate_action_label(row['action_label'])}" for row in risk_warnings] or [f"- {t('no_data')}"]),
             f"{t('sector_heat_page')}:",

@@ -15,8 +15,9 @@ def render(lang: str) -> None:
     if scores.empty:
         st.info(t("no_data"))
     else:
-        view = scores[["ticker", "latest_price", "trend_status", "drawdown_52w_pct", "ma20", "ma60", "ma120", "buy_zone_1", "buy_zone_2", "buy_zone_3", "current_zone_status", "action_label", "warning"]].copy()
+        view = scores[["ticker", "asset_category", "latest_price", "trend_status", "drawdown_52w_pct", "ma20", "ma60", "ma120", "buy_zone_1", "buy_zone_2", "buy_zone_3", "current_zone_status", "action_label", "strategy_action", "strategy_warning"]].copy()
         view["action_label"] = view["action_label"].map(translate_action_label)
+        view["strategy_action"] = view["strategy_action"].map(translate_action_label)
         render_interactive_table(view, table_key="buy_zones", lang=lang)
         for warning in scores["warning"].dropna().astype(str).unique()[:5]:
             if warning:

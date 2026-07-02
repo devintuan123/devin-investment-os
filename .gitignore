@@ -14,6 +14,7 @@ __pycache__/
 *.dll
 .streamlit/secrets.toml
 data/snapshots/*.json
+data/alert_state.json
 data/tradingview_alerts.jsonl
 data/yuanta_quotes.json
 data/yuanta_positions.json

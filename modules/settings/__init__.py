@@ -5,6 +5,9 @@ from utils.config import safety_status
 from utils.i18n import t
 from utils.interactive_table import render_interactive_table
 from utils.provider_status import active_provider_rows, future_disabled_provider_rows
+from utils.alert_engine import ALERT_RULES_PATH, load_alert_rules
+from utils.snapshot_store import SNAPSHOT_DIR
+from utils.strategy_rules import STRATEGY_RULES_PATH, load_strategy_rules
 from utils.telegram import send_telegram_message
 from utils.ui import get_current_lang, render_refresh_button, render_sidebar_language_switch, render_sidebar_provider_status
 
@@ -38,6 +41,19 @@ def render(lang: str) -> None:
     st.subheader(t("provider_strategy"))
     st.write(t("read_only_notice"))
     st.write(" / ".join(["yfinance", "Binance", "FRED", "Telegram"]))
+
+    st.subheader(t("strategy_rules"))
+    render_interactive_table(
+        pd.DataFrame(
+            [
+                {"status": t("configured"), "path": str(STRATEGY_RULES_PATH), "categories": len(load_strategy_rules().get("asset_categories", {}))},
+                {"status": t("configured"), "path": str(ALERT_RULES_PATH), "categories": len(load_alert_rules().get("alerts", {}))},
+                {"status": t("available") if SNAPSHOT_DIR.exists() else t("missing"), "path": str(SNAPSHOT_DIR), "categories": 0},
+            ]
+        ),
+        table_key="settings_strategy_files",
+        lang=lang,
+    )
 
     st.subheader(t("telegram_test"))
     message = st.text_area(t("telegram_ready_summary"), value=t("telegram_test_default"))

@@ -1,0 +1,86 @@
+global_rules:
+  no_chasing_extended_assets: true
+  broker_quote_required_before_trading: true
+  yfinance_reference_only: true
+  taiwan_yfinance_delayed_warning: true
+  max_single_stock_weight_default: 10
+  max_high_vol_stock_weight_default: 5
+  crypto_max_weight_default: 5
+  gold_target_weight_default: 2
+  cash_deployment_mode:
+    - aggressive
+    - gradual
+    - dca_only
+    - wait
+
+asset_categories:
+  Core ETF:
+    examples:
+      - VWRA.L
+      - 0050.TW
+      - CNX1.L
+    style: long-term DCA
+    risk_level: medium
+    buy_rule: allow gradual buy on pullback
+  Satellite Stock:
+    examples:
+      - PLTR
+      - GEV
+      - MRVL
+      - NVDA
+    style: high volatility satellite
+    risk_level: high
+    buy_rule: only in buy zone, do not chase
+  Crypto:
+    examples:
+      - BTC-USD
+      - BTCUSDT
+    style: risk appetite asset
+    risk_level: high
+    buy_rule: only gradual buy when market regime supports
+  Gold:
+    examples:
+      - SGLD.L
+      - GC=F
+    style: defensive hedge
+    risk_level: medium
+    buy_rule: do not chase, use as hedge
+  Taiwan Stock:
+    examples:
+      - 2330.TW
+      - 2454.TW
+      - 2327.TW
+    style: Taiwan equity
+    risk_level: medium_high
+    buy_rule: reference-only yfinance, verify broker quote
+
+default_target_allocation:
+  VWRA.L: 40
+  0050.TW: 20
+  CNX1.L: 15
+  PLTR: 10
+  BTC-USD: 5
+  SGLD.L: 2
+  IEMA.L: optional satellite
+  WHEA.L: optional satellite
+  GEV: optional satellite
+  MRVL: optional satellite
+  2330.TW: optional Taiwan stock
+  2454.TW: optional Taiwan stock
+  2327.TW: optional Taiwan stock
+
+action_language_rules:
+  forbidden:
+    - Buy Now
+    - Must Buy
+    - Immediate Buy
+    - Guaranteed
+  allowed:
+    - Potential buy zone
+    - Consider gradual allocation
+    - Watch
+    - Verify broker quote
+    - DCA only
+    - Hold
+    - Reduce risk
+    - Avoid chasing
