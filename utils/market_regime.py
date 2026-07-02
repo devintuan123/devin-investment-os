@@ -48,6 +48,7 @@ def calculate_market_regime() -> dict:
     fred = _fred_snapshot()
     binance = _binance_snapshot()
 
+    component_specs = _component_specs()
     components = {
         "US Market": _average([_trend_score(assets["SPY"]), _trend_score(assets["QQQ"])]),
         "US Tech": _average([_trend_score(assets[ticker]) for ticker in ["NVDA", "TSM", "PLTR", "GEV", "MRVL"]]),
@@ -59,8 +60,9 @@ def calculate_market_regime() -> dict:
         "Liquidity": _liquidity_score(assets["DX-Y.NYB"], assets["^VIX"], fred),
         "Sentiment": _sentiment_score(assets["SPY"], assets["QQQ"], assets["^VIX"]),
         "Breadth": _breadth_score([assets[ticker] for ticker in ["SPY", "QQQ", "0050.TW", "VWRA.L"]]),
+        "Defensive": _defensive_score(assets["GC=F"], assets["SGLD.L"], assets["^VIX"], assets["SPY"]),
     }
-    score = int(round(_average(list(components.values()))))
+    score = _weighted_market_score(components, component_specs)
     regime = _regime(score, assets["^VIX"])
     action_label = _action_label(score, assets["^VIX"])
     warnings = list(WARNINGS)
@@ -84,6 +86,8 @@ def calculate_market_regime() -> dict:
         "what_to_watch": _what_to_watch(assets, fred),
         "risk_warnings": _risk_warnings(assets, components),
         "provider_quality": _provider_quality(assets, fred, binance, confidence_score),
+        "score_diagnostics": _score_diagnostics(components, component_specs, assets, fred, binance),
+        "identical_score_diagnostics": _identical_score_diagnostics(components),
         "key_metrics": {
             "VIX": assets["^VIX"]["price"],
             "10Y Yield": fred.get("DGS10", {}).get("value"),
@@ -95,6 +99,135 @@ def calculate_market_regime() -> dict:
         "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
     }
 
+
+
+def _component_specs() -> dict[str, dict]:
+    return {
+        "US Market": {"inputs": ["SPY", "QQQ"], "formula": "average trend score using price vs MA20/MA60, 20D return, 52W drawdown", "weight": 1.0},
+        "US Tech": {"inputs": ["NVDA", "TSM", "PLTR", "GEV", "MRVL"], "formula": "average trend score across AI/tech proxies", "weight": 1.0},
+        "Taiwan": {"inputs": ["0050.TW", "2330.TW", "2454.TW", "2327.TW"], "formula": "average trend score across Taiwan proxies", "weight": 1.0},
+        "Crypto": {"inputs": ["BTC-USD", "BTCUSDT", "ETHUSDT"], "formula": "BTC trend score plus Binance read-only availability adjustment", "weight": 1.0},
+        "Gold": {"inputs": ["GC=F", "SPY", "QQQ"], "formula": "gold trend adjusted against equity trend", "weight": 0.8},
+        "Macro": {"inputs": ["DGS10", "DGS2", "FEDFUNDS", "CPIAUCSL", "M2SL", "DX-Y.NYB"], "formula": "base macro score adjusted for yield pressure, inversion, DXY trend, FRED availability", "weight": 1.2},
+        "Volatility": {"inputs": ["^VIX"], "formula": "discrete VIX risk appetite thresholds", "weight": 1.0},
+        "Liquidity": {"inputs": ["DX-Y.NYB", "^VIX", "DGS10"], "formula": "DXY, VIX, and 10Y yield-change pressure", "weight": 1.0},
+        "Sentiment": {"inputs": ["SPY", "QQQ", "^VIX"], "formula": "SPY/QQQ trend adjusted by VIX", "weight": 1.0},
+        "Breadth": {"inputs": ["SPY", "QQQ", "0050.TW", "VWRA.L"], "formula": "share above MA60 and positive 20D momentum", "weight": 1.0},
+        "Defensive": {"inputs": ["GC=F", "SGLD.L", "^VIX", "SPY"], "formula": "gold hedge strength and VIX stress versus equity weakness", "weight": 0.8},
+    }
+
+
+def _weighted_market_score(components: dict[str, int], specs: dict[str, dict]) -> int:
+    numerator = 0.0
+    denominator = 0.0
+    for name, value in components.items():
+        weight = float(specs.get(name, {}).get("weight", 1.0))
+        numerator += float(value) * weight
+        denominator += weight
+    return _bound(numerator / denominator if denominator else _average(list(components.values())))
+
+
+def _defensive_score(gold: dict, sgld: dict, vix: dict, spy: dict) -> int:
+    score = 48
+    if gold["price"] > gold["ma60"]:
+        score += 12
+    if sgld["price"] > sgld["ma60"]:
+        score += 8
+    if vix["price"] > 25:
+        score += 18
+    elif vix["price"] < 18:
+        score -= 8
+    if spy["price"] < spy["ma60"]:
+        score += 10
+    return _bound(score)
+
+
+def _score_diagnostics(components: dict[str, int], specs: dict[str, dict], assets: dict, fred: dict, binance: dict) -> list[dict]:
+    rows = []
+    for component, score in components.items():
+        spec = specs.get(component, {})
+        inputs = list(spec.get("inputs", []))
+        asset_inputs = [assets[ticker] for ticker in inputs if ticker in assets]
+        fred_inputs = [fred[item] for item in inputs if item in fred]
+        binance_inputs = [binance[item] for item in inputs if item in binance]
+        fallback_used = any(_input_fallback(row) for row in [*asset_inputs, *fred_inputs, *binance_inputs])
+        warnings = [str(row.get("warning") or row.get("provider_warning")) for row in [*asset_inputs, *fred_inputs, *binance_inputs] if row.get("warning") or row.get("provider_warning")]
+        confidence_values = [float(row.get("confidence")) for row in asset_inputs if row.get("confidence") is not None]
+        if fred_inputs:
+            confidence_values.append(78 if all(item.get("connected") for item in fred_inputs) else 40)
+        if binance_inputs:
+            confidence_values.append(85 if all(item.get("connected") for item in binance_inputs) else 40)
+        confidence = int(round(mean(confidence_values))) if confidence_values else 45
+        if fallback_used:
+            confidence = min(confidence, 45)
+            warnings.append("Fallback score used, reference only")
+        if not asset_inputs and not fred_inputs and not binance_inputs:
+            warnings.append("Insufficient data, score confidence reduced")
+            confidence = min(confidence, 40)
+        latest_timestamps = [row.get("quote_timestamp") or row.get("fetch_timestamp") or row.get("date") for row in [*asset_inputs, *fred_inputs] if row.get("quote_timestamp") or row.get("fetch_timestamp") or row.get("date")]
+        providers = sorted({str(row.get("provider_label") or row.get("source") or ("FRED" if row in fred_inputs else "Binance read-only")) for row in [*asset_inputs, *fred_inputs, *binance_inputs]})
+        raw_inputs = _compact_raw_inputs(inputs, assets, fred, binance)
+        rows.append({
+            "component": component,
+            "score": int(score),
+            "raw_inputs": raw_inputs,
+            "provider": ", ".join(providers) if providers else "unavailable",
+            "latest_timestamp": max(latest_timestamps) if latest_timestamps else "unavailable",
+            "confidence": confidence,
+            "fallback_used": bool(fallback_used),
+            "warning": "; ".join(dict.fromkeys(warnings)) if warnings else "",
+            "formula": spec.get("formula", "undocumented"),
+            "formula_version": "market_regime_v2",
+            "weight": spec.get("weight", 1.0),
+            "freshness_status": _freshness_summary(asset_inputs, fred_inputs, binance_inputs),
+        })
+    return rows
+
+
+def _compact_raw_inputs(inputs: list[str], assets: dict, fred: dict, binance: dict) -> str:
+    values = []
+    for item in inputs:
+        if item in assets:
+            row = assets[item]
+            values.append(f"{item}: price={row.get('price'):.4g}, ma60={row.get('ma60'):.4g}, r20={row.get('return_20d'):.2f}")
+        elif item in fred:
+            row = fred[item]
+            values.append(f"{item}: value={row.get('value')}, date={row.get('date')}")
+        elif item in binance:
+            row = binance[item]
+            values.append(f"{item}: price={row.get('price')}, connected={row.get('connected')}")
+        else:
+            values.append(f"{item}: unavailable")
+    return " | ".join(values)
+
+
+def _input_fallback(row: dict) -> bool:
+    text = " ".join(str(row.get(key, "")) for key in ["source", "warning", "provider_warning", "freshness_status"]).lower()
+    return "fallback" in text or row.get("connected") is False
+
+
+def _freshness_summary(asset_inputs: list[dict], fred_inputs: list[dict], binance_inputs: list[dict]) -> str:
+    statuses = [str(row.get("freshness_status")) for row in asset_inputs if row.get("freshness_status")]
+    if fred_inputs:
+        statuses.append("FRED daily/lagged" if any(row.get("connected") for row in fred_inputs) else "FRED unavailable")
+    if binance_inputs:
+        statuses.append("Binance near real-time" if any(row.get("connected") for row in binance_inputs) else "Binance unavailable")
+    return "; ".join(dict.fromkeys(statuses)) if statuses else "unavailable"
+
+
+def _identical_score_diagnostics(components: dict[str, int]) -> list[dict]:
+    groups: dict[int, list[str]] = {}
+    for name, score in components.items():
+        groups.setdefault(int(score), []).append(name)
+    rows = []
+    for score, names in groups.items():
+        if len(names) > 1:
+            rows.append({
+                "score": score,
+                "components": names,
+                "justification": "May be valid only if raw inputs and formulas independently produce the same bounded score; inspect score_diagnostics.",
+            })
+    return rows
 
 def _asset_snapshot(ticker: str) -> dict:
     price_row = safe_fetch_with_fallback(ticker, FALLBACK_PRICES.get(ticker))

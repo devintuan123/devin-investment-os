@@ -1,0 +1,275 @@
+{
+  "generated_at": "2026-07-02T13:52:14.226942+00:00",
+  "yfinance": {
+    "provider": "yfinance",
+    "tickers_requested": [
+      "SPY",
+      "QQQ",
+      "NVDA",
+      "TSM",
+      "0050.TW",
+      "2330.TW",
+      "GC=F",
+      "^VIX",
+      "BTC-USD"
+    ],
+    "rows": [
+      {
+        "ticker": "SPY",
+        "latest_price": 750.9249877929688,
+        "quote_timestamp": "2026-07-02T00:00:00+00:00",
+        "historical_rows": 125,
+        "missing_columns": [],
+        "all_nan": false,
+        "source": "yfinance",
+        "freshness_status": "Delayed / best-effort",
+        "confidence": 75,
+        "warning": "yfinance data may be delayed or best-effort."
+      },
+      {
+        "ticker": "QQQ",
+        "latest_price": 729.4400024414062,
+        "quote_timestamp": "2026-07-02T00:00:00+00:00",
+        "historical_rows": 125,
+        "missing_columns": [],
+        "all_nan": false,
+        "source": "yfinance",
+        "freshness_status": "Delayed / best-effort",
+        "confidence": 75,
+        "warning": "yfinance data may be delayed or best-effort."
+      },
+      {
+        "ticker": "NVDA",
+        "latest_price": 198.44000244140625,
+        "quote_timestamp": "2026-07-02T00:00:00+00:00",
+        "historical_rows": 125,
+        "missing_columns": [],
+        "all_nan": false,
+        "source": "yfinance",
+        "freshness_status": "Delayed / best-effort",
+        "confidence": 75,
+        "warning": "yfinance data may be delayed or best-effort."
+      },
+      {
+        "ticker": "TSM",
+        "latest_price": 455.1336975097656,
+        "quote_timestamp": "2026-07-02T00:00:00+00:00",
+        "historical_rows": 125,
+        "missing_columns": [],
+        "all_nan": false,
+        "source": "yfinance",
+        "freshness_status": "Delayed / best-effort",
+        "confidence": 75,
+        "warning": "yfinance data may be delayed or best-effort."
+      },
+      {
+        "ticker": "0050.TW",
+        "latest_price": 108.80000305175781,
+        "quote_timestamp": "2026-07-02T00:00:00+00:00",
+        "historical_rows": 118,
+        "missing_columns": [],
+        "all_nan": false,
+        "source": "yfinance",
+        "freshness_status": "Reference / delayed",
+        "confidence": 60,
+        "warning": "Taiwan stock data is reference-only. Do not use for execution."
+      },
+      {
+        "ticker": "2330.TW",
+        "latest_price": 2465.0,
+        "quote_timestamp": "2026-07-02T00:00:00+00:00",
+        "historical_rows": 118,
+        "missing_columns": [],
+        "all_nan": false,
+        "source": "yfinance",
+        "freshness_status": "Reference / delayed",
+        "confidence": 60,
+        "warning": "Taiwan stock data is reference-only. Do not use for execution."
+      },
+      {
+        "ticker": "GC=F",
+        "latest_price": 4141.0,
+        "quote_timestamp": "2026-07-02T00:00:00+00:00",
+        "historical_rows": 125,
+        "missing_columns": [],
+        "all_nan": false,
+        "source": "yfinance",
+        "freshness_status": "Delayed / best-effort",
+        "confidence": 75,
+        "warning": "yfinance data may be delayed or best-effort."
+      },
+      {
+        "ticker": "^VIX",
+        "latest_price": 16.0,
+        "quote_timestamp": "2026-07-02T00:00:00+00:00",
+        "historical_rows": 126,
+        "missing_columns": [],
+        "all_nan": false,
+        "source": "yfinance",
+        "freshness_status": "Delayed / best-effort",
+        "confidence": 75,
+        "warning": "yfinance data may be delayed or best-effort."
+      },
+      {
+        "ticker": "BTC-USD",
+        "latest_price": 61897.75,
+        "quote_timestamp": "2026-07-02T13:52:14.226979+00:00",
+        "historical_rows": 182,
+        "missing_columns": [],
+        "all_nan": false,
+        "source": "binance",
+        "freshness_status": "Near real-time",
+        "confidence": 90,
+        "warning": "Read-only crypto reference data."
+      }
+    ],
+    "all_same_values": false
+  },
+  "binance": {
+    "configured": true,
+    "rows": [
+      {
+        "symbol": "BTCUSDT",
+        "connected": true,
+        "latest_price": 61897.75,
+        "timestamp": "2026-07-02T13:52:15.879357+00:00",
+        "confidence": 85,
+        "warning": "Read-only public endpoint."
+      },
+      {
+        "symbol": "ETHUSDT",
+        "connected": true,
+        "latest_price": 1710.9,
+        "timestamp": "2026-07-02T13:52:16.428308+00:00",
+        "confidence": 85,
+        "warning": "Read-only public endpoint."
+      }
+    ]
+  },
+  "fred": {
+    "configured": true,
+    "rows": [
+      {
+        "series_id": "DGS10",
+        "connected": true,
+        "latest_observation_date": "2026-06-30",
+        "latest_value": 4.44,
+        "previous_value": 4.38,
+        "confidence": 78,
+        "warning": "daily/lagged macro data"
+      },
+      {
+        "series_id": "DGS2",
+        "connected": true,
+        "latest_observation_date": "2026-06-30",
+        "latest_value": 4.14,
+        "previous_value": 4.1,
+        "confidence": 78,
+        "warning": "daily/lagged macro data"
+      },
+      {
+        "series_id": "FEDFUNDS",
+        "connected": true,
+        "latest_observation_date": "2026-06-01",
+        "latest_value": 3.63,
+        "previous_value": 3.63,
+        "confidence": 78,
+        "warning": "daily/lagged macro data"
+      },
+      {
+        "series_id": "CPIAUCSL",
+        "connected": true,
+        "latest_observation_date": "2026-05-01",
+        "latest_value": 333.979,
+        "previous_value": 332.407,
+        "confidence": 78,
+        "warning": "daily/lagged macro data"
+      },
+      {
+        "series_id": "M2SL",
+        "connected": true,
+        "latest_observation_date": "2026-05-01",
+        "latest_value": 23052.3,
+        "previous_value": 22804.5,
+        "confidence": 78,
+        "warning": "daily/lagged macro data"
+      }
+    ]
+  },
+  "local_files": [
+    {
+      "file": "data/portfolio.csv",
+      "exists": true,
+      "warnings": [],
+      "row_count": 13,
+      "columns": [
+        "symbol",
+        "name",
+        "category",
+        "market",
+        "currency",
+        "quantity",
+        "avg_cost",
+        "target_weight",
+        "account",
+        "note"
+      ],
+      "missing_required_columns": [],
+      "duplicate_symbols": 0
+    },
+    {
+      "file": "data/watchlist.csv",
+      "exists": true,
+      "warnings": [],
+      "row_count": 10,
+      "columns": [
+        "ticker",
+        "name",
+        "current_price",
+        "buy_zone_low",
+        "buy_zone_high",
+        "trim_zone",
+        "stop_level",
+        "priority",
+        "category",
+        "notes"
+      ],
+      "missing_required_columns": [],
+      "duplicate_symbols": 0
+    },
+    {
+      "file": "data/theme_universe.csv",
+      "exists": true,
+      "warnings": [],
+      "row_count": 70,
+      "columns": [
+        "theme",
+        "theme_zh",
+        "market",
+        "symbol",
+        "name",
+        "category",
+        "proxy_type",
+        "note"
+      ],
+      "missing_required_columns": [],
+      "duplicate_symbols": 0
+    },
+    {
+      "file": "data/strategy_rules.yaml",
+      "exists": true,
+      "warnings": []
+    },
+    {
+      "file": "data/alert_rules.yaml",
+      "exists": true,
+      "warnings": []
+    }
+  ],
+  "snapshots": {
+    "exists": true,
+    "snapshot_count": 1,
+    "latest_snapshot": "2026-07-02.json"
+  },
+  "failures": []
+}

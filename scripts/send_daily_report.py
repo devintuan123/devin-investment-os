@@ -10,7 +10,7 @@ sys.path.insert(0, str(ROOT_DIR))
 
 from utils.buy_zone_engine import score_buy_zones
 from utils.alert_engine import evaluate_alerts, format_alerts
-from utils.i18n import LANG_EN, LANG_ZH, set_lang, t, translate_action_label, translate_regime, translate_warning
+from utils.i18n import LANG_EN, LANG_ZH, set_lang, t, translate_action_label, translate_regime, translate_term, translate_warning
 from utils.market_regime import calculate_market_regime
 from utils.portfolio_engine import calculate_position_values, load_portfolio, portfolio_health_score
 from utils.sector_heat_engine import calculate_theme_heat_score, get_candidate_symbols_by_theme
@@ -32,6 +32,11 @@ def build_daily_report(lang: str = LANG_ZH) -> str:
     average_drift = float(positions["drift"].abs().mean()) if not positions.empty else 0.0
     cash_mode = get_cash_deployment_mode(regime["market_score"], regime["market_regime"], average_drift)
     alerts = evaluate_alerts()
+    diagnostics = regime.get("score_diagnostics", [])
+    positive_drivers = sorted(diagnostics, key=lambda row: row.get("score", 0), reverse=True)[:3]
+    negative_drivers = sorted(diagnostics, key=lambda row: row.get("score", 100))[:3]
+    fallback_rows = [row for row in diagnostics if row.get("fallback_used")]
+    provider_warnings = [row.get("warning") for row in diagnostics if row.get("warning")]
 
     drift_summary = t("no_data")
     if not positions.empty:
@@ -46,6 +51,11 @@ def build_daily_report(lang: str = LANG_ZH) -> str:
             f"{t('today_action')}: {translate_action_label(regime['today_action'])}",
             drift_summary,
             f"{t('cash_deployment_mode')}: {t(cash_mode)}",
+            f"{t('data_confidence')}: {t(regime['confidence_level'].lower())} ({regime.get('confidence_score', 0)}/100)",
+            f"{t('top_positive_drivers')}: " + ", ".join([f"{translate_term(row['component'])} {row['score']}/100" for row in positive_drivers]),
+            f"{t('top_negative_drivers')}: " + ", ".join([f"{translate_term(row['component'])} {row['score']}/100" for row in negative_drivers]),
+            f"{t('fallback_warning')}: " + (t('fallback_score_warning') if fallback_rows else t('no_major_warning')),
+            f"{t('provider_warning')}: " + (str(provider_warnings[0]) if provider_warnings else translate_warning(regime['warnings'][0])),
             format_alerts(lang, alerts),
             f"{t('buy_zone_candidates')}:",
             *[f"- {row['ticker']}: {translate_action_label(row.get('strategy_action', row['action_label']))} @ {row['latest_price']:.2f}" for row in top_candidates],

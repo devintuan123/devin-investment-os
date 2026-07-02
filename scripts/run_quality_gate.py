@@ -10,6 +10,10 @@ ROOT_DIR = Path(__file__).resolve().parents[1]
 CHECKS = [
     ("compileall", [sys.executable, "-m", "compileall", "-q", "."]),
     ("full_runtime_audit", [sys.executable, "scripts/full_runtime_audit.py"]),
+    ("audit_data_sources", [sys.executable, "scripts/audit_data_sources.py"]),
+    ("audit_scoring_formulas", [sys.executable, "scripts/audit_scoring_formulas.py"]),
+    ("enforce_data_integrity_gate", [sys.executable, "scripts/enforce_data_integrity_gate.py"]),
+    ("run_daily_workflow", [sys.executable, "scripts/run_daily_workflow.py", "--dry-run"]),
     ("enforce_i18n_hard_gate", [sys.executable, "scripts/enforce_i18n_hard_gate.py"]),
     ("enforce_table_usability_gate", [sys.executable, "scripts/enforce_table_usability_gate.py"]),
     ("enforce_modular_pages_gate", [sys.executable, "scripts/enforce_modular_pages_gate.py"]),
@@ -28,6 +32,10 @@ CHECKS = [
 MANDATORY = {
     "compileall",
     "full_runtime_audit",
+    "audit_data_sources",
+    "audit_scoring_formulas",
+    "enforce_data_integrity_gate",
+    "run_daily_workflow",
     "enforce_i18n_hard_gate",
     "enforce_table_usability_gate",
     "enforce_modular_pages_gate",

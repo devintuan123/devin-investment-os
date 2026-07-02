@@ -58,6 +58,7 @@ def render(lang: str) -> None:
     component_cols = st.columns(4)
     for index, (name, score) in enumerate(regime["components"].items()):
         component_cols[index % 4].metric(translate_term(name), f"{score}/100")
+    st.caption(t("home_diagnostics_hint"))
 
     st.subheader(t("recommended_action"))
     st.markdown(f"<div class='action-box'>{regime['recommended_action'] if lang == 'en' else t('read_only_notice')}</div>", unsafe_allow_html=True)

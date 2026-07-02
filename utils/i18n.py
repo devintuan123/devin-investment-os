@@ -738,6 +738,46 @@ TERM_KEYS = {
     "Snapshot Status": "snapshot_status",
 }
 
+
+TRANSLATIONS[LANG_EN].update({
+    "score_diagnostics": "Score Diagnostics",
+    "raw_data": "Raw Data",
+    "source": "Source",
+    "latest_timestamp": "Latest Timestamp",
+    "formula": "Formula",
+    "weight": "Weight",
+    "fallback_used": "Fallback Used",
+    "main_drivers": "Main Drivers",
+    "no_major_warning": "No major warning.",
+    "identical_score_warning": "Some component scores are identical. Review raw inputs and formulas before relying on the score.",
+    "insufficient_data_warning": "Insufficient data, score confidence reduced",
+    "fallback_score_warning": "Fallback score used, reference only",
+    "home_diagnostics_hint": "Detailed raw inputs, providers, timestamps, confidence, and fallback status are available in Macro Dashboard diagnostics.",
+    "top_positive_drivers": "Top Positive Drivers",
+    "top_negative_drivers": "Top Negative Drivers",
+    "fallback_warning": "Fallback Warning",
+    "provider_warning": "Provider Warning",
+})
+TRANSLATIONS[LANG_ZH].update({
+    "score_diagnostics": "????",
+    "raw_data": "????",
+    "source": "????",
+    "latest_timestamp": "?????",
+    "formula": "??",
+    "weight": "??",
+    "fallback_used": "??????",
+    "main_drivers": "??????",
+    "no_major_warning": "??????",
+    "identical_score_warning": "??????????????????????????",
+    "insufficient_data_warning": "????????????",
+    "fallback_score_warning": "???????????",
+    "home_diagnostics_hint": "????????????????????????????????????",
+    "top_positive_drivers": "???????",
+    "top_negative_drivers": "???????",
+    "fallback_warning": "????",
+    "provider_warning": "?????",
+})
+
 PHRASE_KEYS = {
     "Risk controls should take priority.": "risk_controls_priority",
     "Signals are mixed; confirmation matters.": "signals_mixed_confirmation",
