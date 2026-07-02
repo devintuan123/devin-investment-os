@@ -10,11 +10,13 @@ from utils.sector_heat_engine import calculate_theme_heat_score, fetch_theme_pri
 def render(lang: str) -> None:
     st.title(t("sector_heat_page"))
     st.caption(t("proxy_heat_warning"))
+    st.info(t("cached_data_notice"))
+    full_scan = st.checkbox(t("full_scan"), value=False)
 
-    with st.spinner(t("loading")):
-        symbol_rows = fetch_theme_prices()
+    with st.spinner(t("loading_notice")):
+        symbol_rows = fetch_theme_prices(full_scan=full_scan)
         theme_scores = calculate_theme_heat_score(symbol_rows)
-        candidates = get_candidate_symbols_by_theme()
+        candidates = get_candidate_symbols_by_theme(full_scan=full_scan)
 
     if theme_scores.empty:
         st.info(t("no_data"))

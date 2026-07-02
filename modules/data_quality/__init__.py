@@ -49,11 +49,16 @@ def render(lang: str) -> None:
     render_interactive_table(pd.DataFrame(quality_rows), table_key="data_quality_providers", lang=lang)
 
     st.subheader(t("freshness"))
+    st.info(t("cached_data_notice"))
+    check_tickers = st.checkbox(t("refresh_data"), value=False, key="data_quality_check_tickers")
     ticker_rows = []
-    for ticker in DEFAULT_WATCHLIST:
-        quote = safe_fetch_with_fallback(ticker)
-        ticker_rows.append({t("ticker"): ticker, t("provider"): quote.get("provider_label") or quote.get("source"), t("latest_price_label"): quote.get("price"), t("fetch_time"): quote.get("fetch_timestamp"), t("quote_time"): quote.get("quote_timestamp"), t("market_session_status"): get_tw_market_session_label() if ticker.endswith(".TW") else "n/a", t("freshness_status"): quote.get("freshness_status"), t("confidence"): quote.get("confidence"), t("warning"): translate_warning(quote.get("provider_warning", ""))})
-    render_interactive_table(pd.DataFrame(ticker_rows), table_key="data_quality_tickers", lang=lang)
+    if check_tickers:
+        for ticker in DEFAULT_WATCHLIST:
+            quote = safe_fetch_with_fallback(ticker)
+            ticker_rows.append({t("ticker"): ticker, t("provider"): quote.get("provider_label") or quote.get("source"), t("latest_price_label"): quote.get("price"), t("fetch_time"): quote.get("fetch_timestamp"), t("quote_time"): quote.get("quote_timestamp"), t("market_session_status"): get_tw_market_session_label() if ticker.endswith(".TW") else "n/a", t("freshness_status"): quote.get("freshness_status"), t("confidence"): quote.get("confidence"), t("warning"): translate_warning(quote.get("provider_warning", ""))})
+        render_interactive_table(pd.DataFrame(ticker_rows), table_key="data_quality_tickers", lang=lang)
+    else:
+        st.caption(t("cached_data_notice"))
 
     st.subheader(t("overall_confidence"))
     cols = st.columns(4)

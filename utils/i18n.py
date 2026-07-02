@@ -324,6 +324,9 @@ TRANSLATIONS = {
         "potential_buy_zone_short": "Potential buy zone",
         "consider_gradual_allocation": "Consider gradual allocation",
         "verify_broker_quote": "Verify broker quote",
+        "loading_notice": "Loading, this may take a few seconds...",
+        "cached_data_notice": "This page uses cached data for performance.",
+        "full_scan": "Full Scan",
     },
     LANG_ZH: {
         "language": "\u8a9e\u8a00",
@@ -639,6 +642,9 @@ TRANSLATIONS = {
         "potential_buy_zone_short": "\u6f5b\u5728\u8cb7\u9032\u5340",
         "consider_gradual_allocation": "\u8003\u616e\u5206\u6279\u914d\u7f6e",
         "verify_broker_quote": "\u78ba\u8a8d\u5238\u5546\u5831\u50f9",
+        "loading_notice": "\u8f09\u5165\u4e2d\uff0c\u9019\u53ef\u80fd\u9700\u8981\u5e7e\u79d2\u9418...",
+        "cached_data_notice": "\u70ba\u4e86\u63d0\u5347\u6548\u80fd\uff0c\u672c\u9801\u4f7f\u7528\u5feb\u53d6\u8cc7\u6599\u3002",
+        "full_scan": "\u5b8c\u6574\u6383\u63cf",
     },
 }
 

@@ -5,10 +5,13 @@ import os
 import requests
 from dotenv import load_dotenv
 
+from utils.cache import cache_binance_price
+
 
 load_dotenv()
 
 
+@cache_binance_price
 def get_public_price(symbol: str) -> dict:
     base_url = os.getenv("BINANCE_BASE_URL", "https://api.binance.com").rstrip("/")
     response = requests.get(f"{base_url}/api/v3/ticker/price", params={"symbol": symbol}, timeout=15)

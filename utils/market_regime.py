@@ -6,9 +6,10 @@ from statistics import mean
 import pandas as pd
 
 from utils.binance_provider import get_public_price
+from utils.cache import cache_market_regime
 from utils.data_freshness import TW_REFERENCE_WARNING
 from utils.fred_provider import get_latest_observation, get_recent_observations
-from utils.market_data import FALLBACK_PRICES, get_history, safe_fetch_with_fallback
+from utils.market_data import FALLBACK_PRICES, get_batch_history, get_batch_prices, get_history, safe_fetch_with_fallback
 
 
 MARKET_TICKERS = [
@@ -41,8 +42,9 @@ WARNINGS = [
 ]
 
 
+@cache_market_regime
 def calculate_market_regime() -> dict:
-    assets = {ticker: _asset_snapshot(ticker) for ticker in MARKET_TICKERS}
+    assets = _asset_snapshots(MARKET_TICKERS)
     fred = _fred_snapshot()
     binance = _binance_snapshot()
 
@@ -97,6 +99,38 @@ def calculate_market_regime() -> dict:
 def _asset_snapshot(ticker: str) -> dict:
     price_row = safe_fetch_with_fallback(ticker, FALLBACK_PRICES.get(ticker))
     history, warning = get_history(ticker, period="1y")
+    close = history["Close"].dropna() if "Close" in history else pd.Series(dtype=float)
+    latest = float(close.iloc[-1]) if not close.empty else float(price_row.get("price", 0.0))
+    return {
+        "ticker": ticker,
+        "price": float(price_row.get("price", latest)),
+        "history_price": latest,
+        "ma20": _ma(close, 20),
+        "ma60": _ma(close, 60),
+        "ma120": _ma(close, 120),
+        "return_20d": _return(close, 20),
+        "return_60d": _return(close, 60),
+        "drawdown_52w": _drawdown(close),
+        "source": price_row.get("source", "unknown"),
+        "fetch_timestamp": price_row.get("fetch_timestamp"),
+        "quote_timestamp": price_row.get("quote_timestamp"),
+        "provider_label": price_row.get("provider_label"),
+        "freshness_status": price_row.get("freshness_status"),
+        "confidence": price_row.get("confidence"),
+        "provider_warning": price_row.get("provider_warning"),
+        "warning": price_row.get("warning") or warning,
+    }
+
+
+def _asset_snapshots(tickers: list[str]) -> dict[str, dict]:
+    prices = get_batch_prices(tickers)
+    histories = get_batch_history(tickers, period="1y")
+    return {ticker: _asset_snapshot_from_rows(ticker, prices.get(ticker), histories.get(ticker)) for ticker in tickers}
+
+
+def _asset_snapshot_from_rows(ticker: str, price_row: dict | None, history_row: tuple[pd.DataFrame, str] | None) -> dict:
+    price_row = price_row or safe_fetch_with_fallback(ticker, FALLBACK_PRICES.get(ticker))
+    history, warning = history_row or get_history(ticker, period="1y")
     close = history["Close"].dropna() if "Close" in history else pd.Series(dtype=float)
     latest = float(close.iloc[-1]) if not close.empty else float(price_row.get("price", 0.0))
     return {

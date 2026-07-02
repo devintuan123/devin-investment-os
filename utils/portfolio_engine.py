@@ -4,7 +4,8 @@ from pathlib import Path
 
 import pandas as pd
 
-from utils.market_data import safe_fetch_with_fallback
+from utils.market_data import get_batch_prices, safe_fetch_with_fallback
+from utils.cache import cache_portfolio_prices
 from utils.strategy_rules import get_asset_category, get_asset_risk_policy, get_target_weight
 
 
@@ -60,11 +61,17 @@ def normalize_portfolio(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def fetch_portfolio_prices(df: pd.DataFrame) -> pd.DataFrame:
+    return _fetch_portfolio_prices_cached(tuple(normalize_portfolio(df)["symbol"].dropna().astype(str).tolist()))
+
+
+@cache_portfolio_prices
+def _fetch_portfolio_prices_cached(symbols: tuple[str, ...]) -> pd.DataFrame:
     rows = []
-    for symbol in normalize_portfolio(df)["symbol"]:
+    quotes = get_batch_prices(symbols)
+    for symbol in symbols:
         if not symbol:
             continue
-        quote = safe_fetch_with_fallback(symbol)
+        quote = quotes.get(symbol) or safe_fetch_with_fallback(symbol)
         rows.append(
             {
                 "symbol": symbol,

@@ -1,13 +1,11 @@
 import pandas as pd
 import streamlit as st
 
-from utils.buy_zone_engine import score_buy_zones
 from utils.i18n import t, translate_action_label, translate_regime, translate_risk_label, translate_term, translate_warning
 from utils.interactive_table import render_interactive_table
 from utils.market_regime import calculate_market_regime
 from utils.portfolio_engine import calculate_position_values, load_portfolio, portfolio_health_score
 from utils.provider_status import active_provider_rows
-from utils.alert_engine import evaluate_alerts
 from utils.snapshot_store import load_latest_snapshot, summarize_snapshot_trend
 from utils.strategy_rules import get_cash_deployment_mode
 from utils.ui import get_current_lang, render_refresh_button, render_sidebar_language_switch, render_sidebar_provider_status
@@ -30,12 +28,11 @@ def render(lang: str) -> None:
     portfolio = load_portfolio()
     positions = calculate_position_values(portfolio)
     health = portfolio_health_score(portfolio)
-    buy_zones = pd.DataFrame(score_buy_zones())
     average_drift = float(positions["drift"].abs().mean()) if not positions.empty else 0.0
     cash_mode = get_cash_deployment_mode(regime["market_score"], regime["market_regime"], average_drift)
     latest_snapshot = load_latest_snapshot()
     snapshot_trend = summarize_snapshot_trend()
-    active_alerts = evaluate_alerts()
+    active_alert_count = len(latest_snapshot.get("top_risk_warnings", [])) if latest_snapshot else 0
 
     st.title(t("app_title"))
     st.caption(t("app_caption"))
@@ -50,7 +47,7 @@ def render(lang: str) -> None:
     status_cols[0].metric(t("strategy_mode"), t(cash_mode))
     status_cols[1].metric(t("cash_deployment_mode"), t(cash_mode))
     status_cols[2].metric(t("snapshot_status"), latest_snapshot.get("timestamp", t("no_snapshots")))
-    status_cols[3].metric(t("active_alerts"), str(len(active_alerts)))
+    status_cols[3].metric(t("active_alerts"), str(active_alert_count))
 
     st.subheader(t("active_provider_status"))
     provider_cols = st.columns(4)
@@ -77,15 +74,18 @@ def render(lang: str) -> None:
             st.warning(translate_warning(warning))
 
     st.subheader(t("top_add_candidates"))
-    if buy_zones.empty:
+    snapshot_candidates = pd.DataFrame(latest_snapshot.get("buy_zone_candidates", []))
+    if snapshot_candidates.empty:
         st.info(t("no_data"))
     else:
-        candidates = buy_zones[buy_zones["action_label"].isin(["Potential Layer 1", "Potential Layer 2", "Deep Pullback Watch", "Hold"])].head(5).copy()
+        candidates = snapshot_candidates.head(5).copy()
         if candidates.empty:
             st.info(t("no_data"))
         else:
-            candidates["strategy_action"] = candidates["strategy_action"].map(translate_action_label)
-            render_interactive_table(candidates[["ticker", "asset_category", "latest_price", "drawdown_52w_pct", "strategy_action", "strategy_warning"]], table_key="home_candidates", lang=lang)
+            if "strategy_action" in candidates:
+                candidates["strategy_action"] = candidates["strategy_action"].map(translate_action_label)
+            columns = [column for column in ["ticker", "asset_category", "latest_price", "drawdown_52w_pct", "strategy_action", "strategy_warning"] if column in candidates]
+            render_interactive_table(candidates[columns], table_key="home_candidates", lang=lang)
 
     st.subheader(t("quick_portfolio"))
     if positions.empty:

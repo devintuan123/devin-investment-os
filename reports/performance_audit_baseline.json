@@ -1,0 +1,137 @@
+{
+  "generated_at": "2026-07-02T10:12:43+00:00",
+  "rows": [
+    {
+      "module": "Market regime calculation",
+      "duration_seconds": 12.981,
+      "ticker_count": null,
+      "cache": "not measurable in CLI audit",
+      "status": "pass",
+      "result_size": null,
+      "warning": "",
+      "bottleneck": "high",
+      "recommendation": "Cache regime and batch core market tickers"
+    },
+    {
+      "module": "Watchlist scoring",
+      "duration_seconds": 2.756,
+      "ticker_count": 15,
+      "cache": "not measurable in CLI audit",
+      "status": "pass",
+      "result_size": 15,
+      "warning": "",
+      "bottleneck": "low",
+      "recommendation": "Acceptable"
+    },
+    {
+      "module": "Portfolio valuation",
+      "duration_seconds": 1.927,
+      "ticker_count": 13,
+      "cache": "not measurable in CLI audit",
+      "status": "pass",
+      "result_size": 13,
+      "warning": "",
+      "bottleneck": "low",
+      "recommendation": "Acceptable"
+    },
+    {
+      "module": "Buy zone scoring",
+      "duration_seconds": 15.495,
+      "ticker_count": 13,
+      "cache": "not measurable in CLI audit",
+      "status": "pass",
+      "result_size": 13,
+      "warning": "",
+      "bottleneck": "high",
+      "recommendation": "Batch yfinance calls and reuse cached history"
+    },
+    {
+      "module": "Sector heat calculation",
+      "duration_seconds": 9.8,
+      "ticker_count": 70,
+      "cache": "not measurable in CLI audit",
+      "status": "pass",
+      "result_size": 22,
+      "warning": "",
+      "bottleneck": "high",
+      "recommendation": "Use quick scan, batch yfinance history, and cache results"
+    },
+    {
+      "module": "Daily Playbook generation",
+      "duration_seconds": 88.57,
+      "ticker_count": null,
+      "cache": "not measurable in CLI audit",
+      "status": "pass",
+      "result_size": null,
+      "warning": "",
+      "bottleneck": "critical",
+      "recommendation": "Cache expensive market data and avoid recomputation on Home"
+    },
+    {
+      "module": "Snapshot creation",
+      "duration_seconds": 46.637,
+      "ticker_count": null,
+      "cache": "not measurable in CLI audit",
+      "status": "pass",
+      "result_size": null,
+      "warning": "",
+      "bottleneck": "critical",
+      "recommendation": "Cache expensive market data and avoid recomputation on Home"
+    },
+    {
+      "module": "Alert evaluation",
+      "duration_seconds": 43.337,
+      "ticker_count": null,
+      "cache": "not measurable in CLI audit",
+      "status": "pass",
+      "result_size": 5,
+      "warning": "",
+      "bottleneck": "critical",
+      "recommendation": "Cache expensive market data and avoid recomputation on Home"
+    },
+    {
+      "module": "yfinance batch fetch",
+      "duration_seconds": 0.772,
+      "ticker_count": 8,
+      "cache": "not measurable in CLI audit",
+      "status": "pass",
+      "result_size": 8,
+      "warning": "",
+      "bottleneck": "low",
+      "recommendation": "Acceptable"
+    },
+    {
+      "module": "yfinance history fetch",
+      "duration_seconds": 0.122,
+      "ticker_count": 5,
+      "cache": "not measurable in CLI audit",
+      "status": "pass",
+      "result_size": 5,
+      "warning": "",
+      "bottleneck": "low",
+      "recommendation": "Acceptable"
+    },
+    {
+      "module": "Binance fetch",
+      "duration_seconds": 0.489,
+      "ticker_count": 1,
+      "cache": "not measurable in CLI audit",
+      "status": "pass",
+      "result_size": null,
+      "warning": "",
+      "bottleneck": "low",
+      "recommendation": "Acceptable"
+    },
+    {
+      "module": "FRED fetch",
+      "duration_seconds": 0.81,
+      "ticker_count": 1,
+      "cache": "not measurable in CLI audit",
+      "status": "pass",
+      "result_size": null,
+      "warning": "",
+      "bottleneck": "low",
+      "recommendation": "Acceptable"
+    }
+  ]
+}

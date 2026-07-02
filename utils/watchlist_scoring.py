@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from utils.market_data import FALLBACK_PRICES, get_history, normalize_ticker, safe_fetch_with_fallback
+from utils.market_data import FALLBACK_PRICES, get_batch_history, get_batch_prices, get_history, normalize_ticker, safe_fetch_with_fallback
 
 
 DEFAULT_WATCHLIST = [
@@ -25,16 +25,19 @@ DEFAULT_WATCHLIST = [
 
 
 def score_watchlist(tickers: list[str] | None = None) -> list[dict]:
+    selected = [normalize_ticker(ticker) for ticker in (tickers or DEFAULT_WATCHLIST) if normalize_ticker(ticker)]
+    prices = get_batch_prices(selected)
+    histories = get_batch_history(selected, period="1y")
     rows = []
-    for ticker in tickers or DEFAULT_WATCHLIST:
-        rows.append(score_ticker(ticker))
+    for ticker in selected:
+        rows.append(score_ticker(ticker, prices.get(ticker), histories.get(ticker)))
     return rows
 
 
-def score_ticker(ticker: str) -> dict:
+def score_ticker(ticker: str, price_row: dict | None = None, history_row: tuple[pd.DataFrame, str] | None = None) -> dict:
     ticker = normalize_ticker(ticker)
-    price_row = safe_fetch_with_fallback(ticker, FALLBACK_PRICES.get(ticker))
-    history, warning = get_history(ticker, period="1y")
+    price_row = price_row or safe_fetch_with_fallback(ticker, FALLBACK_PRICES.get(ticker))
+    history, warning = history_row or get_history(ticker, period="1y")
     close = history["Close"].dropna() if "Close" in history else pd.Series(dtype=float)
     latest = float(price_row.get("price") or (close.iloc[-1] if not close.empty else 0.0))
     ma20 = _ma(close, 20)

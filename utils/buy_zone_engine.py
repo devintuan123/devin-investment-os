@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from utils.market_data import FALLBACK_PRICES, get_history, normalize_ticker, safe_fetch_with_fallback
+from utils.market_data import FALLBACK_PRICES, get_batch_history, get_batch_prices, get_history, normalize_ticker, safe_fetch_with_fallback
 from utils.market_regime import calculate_market_regime
 from utils.strategy_rules import classify_action_by_strategy, get_asset_category, get_asset_risk_policy, strategy_warning_for_symbol
 
@@ -26,13 +26,16 @@ DEFAULT_BUY_ZONE_TICKERS = [
 
 def score_buy_zones(tickers: list[str] | None = None) -> list[dict]:
     regime = calculate_market_regime()
-    return [score_buy_zone(ticker, regime["market_regime"]) for ticker in tickers or DEFAULT_BUY_ZONE_TICKERS]
+    selected = [normalize_ticker(ticker) for ticker in (tickers or DEFAULT_BUY_ZONE_TICKERS) if normalize_ticker(ticker)]
+    prices = get_batch_prices(selected)
+    histories = get_batch_history(selected, period="1y")
+    return [score_buy_zone(ticker, regime["market_regime"], prices.get(ticker), histories.get(ticker)) for ticker in selected]
 
 
-def score_buy_zone(ticker: str, market_regime: str = "Neutral") -> dict:
+def score_buy_zone(ticker: str, market_regime: str = "Neutral", quote: dict | None = None, history_row: tuple[pd.DataFrame, str] | None = None) -> dict:
     ticker = normalize_ticker(ticker)
-    quote = safe_fetch_with_fallback(ticker, FALLBACK_PRICES.get(ticker))
-    history, warning = get_history(ticker, period="1y")
+    quote = quote or safe_fetch_with_fallback(ticker, FALLBACK_PRICES.get(ticker))
+    history, warning = history_row or get_history(ticker, period="1y")
     close = history["Close"].dropna() if "Close" in history else pd.Series(dtype=float)
     latest = float(quote.get("price") or (close.iloc[-1] if not close.empty else 0.0))
     ma20 = _ma(close, 20)

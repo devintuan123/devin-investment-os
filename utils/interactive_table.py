@@ -91,6 +91,8 @@ def render_interactive_table(
     st.caption(t("showing_rows").format(shown=len(view), total=original_count))
     kwargs = {"use_container_width": True, "hide_index": hide_index}
     valid_height = _valid_dataframe_height(height)
+    if valid_height is None and len(view) > 20:
+        valid_height = 420
     if valid_height is not None:
         kwargs["height"] = valid_height
     st.dataframe(view, **kwargs)

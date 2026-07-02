@@ -4,6 +4,7 @@ import os
 
 import requests
 
+from utils.cache import cache_fred_data
 from utils.config import load_app_env
 
 
@@ -16,6 +17,7 @@ def fred_configured() -> bool:
     return bool(os.getenv("FRED_API_KEY"))
 
 
+@cache_fred_data
 def get_latest_observation(series_id: str = "DGS10") -> dict:
     api_key = os.getenv("FRED_API_KEY")
     if not api_key:
@@ -50,6 +52,7 @@ def get_latest_observation(series_id: str = "DGS10") -> dict:
     }
 
 
+@cache_fred_data
 def get_recent_observations(series_id: str = "DGS10", limit: int = 30) -> dict:
     api_key = os.getenv("FRED_API_KEY")
     if not api_key:

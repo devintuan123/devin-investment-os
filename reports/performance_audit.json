@@ -1,0 +1,137 @@
+{
+  "generated_at": "2026-07-02T10:18:45+00:00",
+  "rows": [
+    {
+      "module": "Market regime calculation",
+      "duration_seconds": 10.562,
+      "ticker_count": null,
+      "cache": "not measurable in CLI audit",
+      "status": "pass",
+      "result_size": null,
+      "warning": "",
+      "bottleneck": "high",
+      "recommendation": "Cache regime and batch core market tickers"
+    },
+    {
+      "module": "Watchlist scoring",
+      "duration_seconds": 0.783,
+      "ticker_count": 15,
+      "cache": "not measurable in CLI audit",
+      "status": "pass",
+      "result_size": 15,
+      "warning": "",
+      "bottleneck": "low",
+      "recommendation": "Acceptable"
+    },
+    {
+      "module": "Portfolio valuation",
+      "duration_seconds": 0.745,
+      "ticker_count": 13,
+      "cache": "not measurable in CLI audit",
+      "status": "pass",
+      "result_size": 13,
+      "warning": "",
+      "bottleneck": "low",
+      "recommendation": "Acceptable"
+    },
+    {
+      "module": "Buy zone scoring",
+      "duration_seconds": 0.711,
+      "ticker_count": 13,
+      "cache": "not measurable in CLI audit",
+      "status": "pass",
+      "result_size": 13,
+      "warning": "",
+      "bottleneck": "low",
+      "recommendation": "Acceptable"
+    },
+    {
+      "module": "Sector heat calculation",
+      "duration_seconds": 1.303,
+      "ticker_count": 70,
+      "cache": "not measurable in CLI audit",
+      "status": "pass",
+      "result_size": 22,
+      "warning": "",
+      "bottleneck": "low",
+      "recommendation": "Acceptable"
+    },
+    {
+      "module": "Daily Playbook generation",
+      "duration_seconds": 2.071,
+      "ticker_count": null,
+      "cache": "not measurable in CLI audit",
+      "status": "pass",
+      "result_size": null,
+      "warning": "",
+      "bottleneck": "low",
+      "recommendation": "Acceptable"
+    },
+    {
+      "module": "Snapshot creation",
+      "duration_seconds": 1.043,
+      "ticker_count": null,
+      "cache": "not measurable in CLI audit",
+      "status": "pass",
+      "result_size": null,
+      "warning": "",
+      "bottleneck": "low",
+      "recommendation": "Acceptable"
+    },
+    {
+      "module": "Alert evaluation",
+      "duration_seconds": 0.772,
+      "ticker_count": null,
+      "cache": "not measurable in CLI audit",
+      "status": "pass",
+      "result_size": 5,
+      "warning": "",
+      "bottleneck": "low",
+      "recommendation": "Acceptable"
+    },
+    {
+      "module": "yfinance batch fetch",
+      "duration_seconds": 0.277,
+      "ticker_count": 8,
+      "cache": "not measurable in CLI audit",
+      "status": "pass",
+      "result_size": 8,
+      "warning": "",
+      "bottleneck": "low",
+      "recommendation": "Acceptable"
+    },
+    {
+      "module": "yfinance history fetch",
+      "duration_seconds": 0.767,
+      "ticker_count": 5,
+      "cache": "not measurable in CLI audit",
+      "status": "pass",
+      "result_size": 5,
+      "warning": "",
+      "bottleneck": "low",
+      "recommendation": "Acceptable"
+    },
+    {
+      "module": "Binance fetch",
+      "duration_seconds": 0.0,
+      "ticker_count": 1,
+      "cache": "not measurable in CLI audit",
+      "status": "pass",
+      "result_size": null,
+      "warning": "",
+      "bottleneck": "low",
+      "recommendation": "Acceptable"
+    },
+    {
+      "module": "FRED fetch",
+      "duration_seconds": 0.0,
+      "ticker_count": 1,
+      "cache": "not measurable in CLI audit",
+      "status": "pass",
+      "result_size": null,
+      "warning": "",
+      "bottleneck": "low",
+      "recommendation": "Acceptable"
+    }
+  ]
+}

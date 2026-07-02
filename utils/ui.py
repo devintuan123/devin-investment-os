@@ -4,6 +4,7 @@ import streamlit as st
 
 from utils.i18n import LANG_EN, LANG_ZH, get_lang, set_lang, t
 from utils.provider_status import active_provider_rows
+from utils.cache import clear_all_caches
 
 
 def get_current_lang() -> str:
@@ -58,5 +59,5 @@ def render_sidebar_provider_status() -> None:
 
 def render_refresh_button() -> None:
     if st.sidebar.button(t("refresh_data"), use_container_width=True):
-        st.cache_data.clear()
+        clear_all_caches()
         st.rerun()

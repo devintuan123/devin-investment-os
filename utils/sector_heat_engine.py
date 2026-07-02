@@ -4,7 +4,8 @@ from pathlib import Path
 
 import pandas as pd
 
-from utils.market_data import get_history
+from utils.cache import cache_sector_heat
+from utils.market_data import get_batch_history, get_history
 
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
@@ -17,12 +18,22 @@ def load_theme_universe() -> pd.DataFrame:
     return pd.read_csv(THEME_UNIVERSE_PATH)
 
 
-def fetch_theme_prices(universe: pd.DataFrame | None = None) -> pd.DataFrame:
+def quick_theme_universe(universe: pd.DataFrame | None = None, max_per_theme: int = 3, max_total: int = 60) -> pd.DataFrame:
     universe = load_theme_universe() if universe is None else universe.copy()
+    if universe.empty:
+        return universe
+    return universe.groupby(["market", "theme"], dropna=False).head(max_per_theme).head(max_total).reset_index(drop=True)
+
+
+def fetch_theme_prices(universe: pd.DataFrame | None = None, full_scan: bool = False) -> pd.DataFrame:
+    universe = load_theme_universe() if universe is None else universe.copy()
+    if not full_scan:
+        universe = quick_theme_universe(universe)
+    histories = get_batch_history(universe["symbol"].astype(str).tolist(), period="6mo") if not universe.empty else {}
     rows = []
     for _, item in universe.iterrows():
         symbol = str(item["symbol"])
-        history, warning = get_history(symbol, period="6mo")
+        history, warning = histories.get(symbol) or get_history(symbol, period="6mo")
         rows.append({**item.to_dict(), **calculate_symbol_momentum(symbol, history), "warning": warning})
     return pd.DataFrame(rows)
 
@@ -45,8 +56,17 @@ def calculate_symbol_momentum(symbol: str, history: pd.DataFrame) -> dict:
     }
 
 
-def calculate_theme_heat_score(rows: pd.DataFrame | None = None) -> pd.DataFrame:
-    symbol_rows = fetch_theme_prices() if rows is None else rows.copy()
+def calculate_theme_heat_score(rows: pd.DataFrame | None = None, full_scan: bool = False) -> pd.DataFrame:
+    symbol_rows = _cached_symbol_rows(full_scan) if rows is None else rows.copy()
+    return _calculate_theme_heat_score_from_rows(symbol_rows)
+
+
+@cache_sector_heat
+def _cached_symbol_rows(full_scan: bool = False) -> pd.DataFrame:
+    return fetch_theme_prices(full_scan=full_scan)
+
+
+def _calculate_theme_heat_score_from_rows(symbol_rows: pd.DataFrame) -> pd.DataFrame:
     if symbol_rows.empty:
         return pd.DataFrame()
     grouped = []
@@ -74,11 +94,13 @@ def calculate_theme_heat_score(rows: pd.DataFrame | None = None) -> pd.DataFrame
                 "warning": "Proxy-based heat only, not exact fund flows or trading advice.",
             }
         )
-    return pd.DataFrame(grouped).sort_values(["heat_score", "rotation_score"], ascending=False)
+    result = pd.DataFrame(grouped).sort_values(["heat_score", "rotation_score"], ascending=False)
+    result["last_updated"] = pd.Timestamp.utcnow().isoformat()
+    return result
 
 
-def calculate_rotation_score(rows: pd.DataFrame | None = None) -> pd.DataFrame:
-    return calculate_theme_heat_score(rows)
+def calculate_rotation_score(rows: pd.DataFrame | None = None, full_scan: bool = False) -> pd.DataFrame:
+    return calculate_theme_heat_score(rows, full_scan=full_scan)
 
 
 def classify_theme_heat(score: float) -> str:
@@ -99,17 +121,17 @@ def classify_rotation_score(score: float) -> str:
     return "Neutral"
 
 
-def get_top_hot_themes(limit: int = 3) -> pd.DataFrame:
-    return calculate_theme_heat_score().head(limit)
+def get_top_hot_themes(limit: int = 3, full_scan: bool = False) -> pd.DataFrame:
+    return calculate_theme_heat_score(full_scan=full_scan).head(limit)
 
 
-def get_cooling_themes(limit: int = 3) -> pd.DataFrame:
-    scores = calculate_theme_heat_score()
+def get_cooling_themes(limit: int = 3, full_scan: bool = False) -> pd.DataFrame:
+    scores = calculate_theme_heat_score(full_scan=full_scan)
     return scores[scores["heat_label"] == "Cooling"].head(limit)
 
 
-def get_candidate_symbols_by_theme(limit: int = 20) -> pd.DataFrame:
-    rows = fetch_theme_prices()
+def get_candidate_symbols_by_theme(limit: int = 20, full_scan: bool = False) -> pd.DataFrame:
+    rows = fetch_theme_prices(full_scan=full_scan)
     if rows.empty:
         return rows
     rows["candidate_label"] = rows.apply(lambda row: "Watchlist Candidate" if row["return_5d"] > 0 and row["distance_ma20"] > 0 else "Avoid chasing", axis=1)
