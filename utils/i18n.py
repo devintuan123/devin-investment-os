@@ -778,12 +778,34 @@ TRANSLATIONS[LANG_ZH].update({
     "provider_warning": "資料源警示",
 })
 
+
+TRANSLATIONS[LANG_EN].update({
+    "macro_data_status": "Macro Data Status",
+    "fred_raw_data": "FRED Raw Data",
+    "market_proxy_data": "Market Proxy Data",
+    "macro_missing_data_warning": "Missing or fallback macro inputs detected. Score confidence is reduced; inspect raw tables before relying on the market score.",
+})
+TRANSLATIONS[LANG_ZH].update({
+    "macro_data_status": "??????",
+    "fred_raw_data": "FRED ????",
+    "market_proxy_data": "??????",
+    "macro_missing_data_warning": "????????????????????????????????",
+})
+
 PHRASE_KEYS = {
     "Risk controls should take priority.": "risk_controls_priority",
     "Signals are mixed; confirmation matters.": "signals_mixed_confirmation",
     "Trend and momentum are supportive.": "trend_momentum_supportive",
 }
 
+
+
+TRANSLATIONS[LANG_ZH].update({
+    "macro_data_status": "??????",
+    "fred_raw_data": "FRED ????",
+    "market_proxy_data": "??????",
+    "macro_missing_data_warning": "????????????????????????????????",
+})
 
 def get_lang() -> str:
     if "streamlit" not in sys.modules:

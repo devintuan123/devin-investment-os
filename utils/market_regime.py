@@ -8,7 +8,7 @@ import pandas as pd
 from utils.binance_provider import get_public_price
 from utils.cache import cache_market_regime
 from utils.data_freshness import TW_REFERENCE_WARNING
-from utils.fred_provider import get_latest_observation, get_recent_observations
+from utils.fred_provider import get_macro_series_snapshot
 from utils.market_data import FALLBACK_PRICES, get_batch_history, get_batch_prices, get_history, safe_fetch_with_fallback
 
 
@@ -65,9 +65,15 @@ def calculate_market_regime() -> dict:
     score = _weighted_market_score(components, component_specs)
     regime = _regime(score, assets["^VIX"])
     action_label = _action_label(score, assets["^VIX"])
+    score_diagnostics = _score_diagnostics(components, component_specs, assets, fred, binance)
+    fallback_component_count = len([row for row in score_diagnostics if row.get("fallback_used")])
     warnings = list(WARNINGS)
     warnings.extend(_data_warnings(assets, fred, binance))
-    confidence_score = max(35, 92 - (len([w for w in warnings if "fallback" in w.lower() or "missing" in w.lower()]) * 8))
+    if fallback_component_count > len(score_diagnostics) / 2:
+        warnings.insert(0, "More than 50% of score components use fallback inputs; market score confidence is low.")
+    confidence_score = max(35, 92 - (len([w for w in warnings if "fallback" in w.lower() or "missing" in w.lower()]) * 8) - fallback_component_count * 4)
+    if fallback_component_count > len(score_diagnostics) / 2:
+        confidence_score = min(confidence_score, 45)
     confidence_level = _confidence_label(confidence_score)
 
     return {
@@ -86,7 +92,7 @@ def calculate_market_regime() -> dict:
         "what_to_watch": _what_to_watch(assets, fred),
         "risk_warnings": _risk_warnings(assets, components),
         "provider_quality": _provider_quality(assets, fred, binance, confidence_score),
-        "score_diagnostics": _score_diagnostics(components, component_specs, assets, fred, binance),
+        "score_diagnostics": score_diagnostics,
         "identical_score_diagnostics": _identical_score_diagnostics(components),
         "key_metrics": {
             "VIX": assets["^VIX"]["price"],
@@ -288,23 +294,18 @@ def _asset_snapshot_from_rows(ticker: str, price_row: dict | None, history_row: 
 
 
 def _fred_snapshot() -> dict:
-    series = {"DGS10": "10Y Treasury Yield", "DGS2": "2Y Treasury Yield", "FEDFUNDS": "Fed Funds", "CPIAUCSL": "CPI", "M2SL": "M2"}
     output = {}
-    for series_id, label in series.items():
-        try:
-            latest = get_latest_observation(series_id)
-            recent = get_recent_observations(series_id, limit=30)
-            values = recent.get("observations", [])
-            previous = values[-1]["value"] if len(values) > 1 else latest.get("value")
-            output[series_id] = {
-                "label": label,
-                "connected": bool(latest.get("connected")),
-                "date": latest.get("date"),
-                "value": latest.get("value"),
-                "change": (latest.get("value") - previous) if latest.get("value") is not None and previous is not None else 0.0,
-            }
-        except Exception as exc:
-            output[series_id] = {"label": label, "connected": False, "value": None, "date": None, "change": 0.0, "warning": str(exc)}
+    for row in get_macro_series_snapshot().to_dict("records"):
+        output[row["series_id"]] = {
+            "label": row.get("label"),
+            "connected": bool(row.get("connected")),
+            "date": row.get("latest_date"),
+            "value": row.get("latest_value"),
+            "change": row.get("change") or 0.0,
+            "warning": row.get("error") or "",
+            "confidence": row.get("confidence"),
+            "fallback_used": row.get("fallback_used"),
+        }
     return output
 
 

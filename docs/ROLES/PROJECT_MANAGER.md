@@ -16,3 +16,4 @@
 - Are files changed listed?
 - Are tests actually run?
 - Is the user protected from manual checking burden?
+- Is Macro Dashboard visibly populated with raw macro/market proxy data or a clear missing-data warning before completion is reported?

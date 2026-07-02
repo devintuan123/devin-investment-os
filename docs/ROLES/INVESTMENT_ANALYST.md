@@ -14,3 +14,7 @@
 - Are high-volatility stocks treated with stricter rules?
 - Are ETFs, stocks, crypto, and gold handled differently?
 - Are Taiwan stock quotes marked reference-only if sourced from yfinance?
+- Is Macro Dashboard raw FRED data visible, or is missing FRED data clearly warned?
+- Is market proxy raw data visible with timestamps, providers, and fallback status?
+- Are score diagnostics visible with raw inputs, confidence, and warnings?
+- Are scores treated as low confidence when raw macro inputs are absent or fallback-heavy?

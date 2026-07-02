@@ -13,6 +13,7 @@ from utils.alert_engine import evaluate_alerts, format_alerts
 from utils.i18n import LANG_EN, LANG_ZH, set_lang, t, translate_action_label, translate_regime, translate_term, translate_warning
 from utils.market_regime import calculate_market_regime
 from utils.portfolio_engine import calculate_position_values, load_portfolio, portfolio_health_score
+from utils.scoring_diagnostics import detect_missing_macro_inputs, summarize_score_data_quality
 from utils.sector_heat_engine import calculate_theme_heat_score, get_candidate_symbols_by_theme
 from utils.strategy_rules import get_cash_deployment_mode
 from utils.table_i18n import translate_cell_value
@@ -37,6 +38,9 @@ def build_daily_report(lang: str = LANG_ZH) -> str:
     negative_drivers = sorted(diagnostics, key=lambda row: row.get("score", 100))[:3]
     fallback_rows = [row for row in diagnostics if row.get("fallback_used")]
     provider_warnings = [row.get("warning") for row in diagnostics if row.get("warning")]
+    macro_quality = summarize_score_data_quality()
+    missing_macro_inputs = detect_missing_macro_inputs()
+    effective_confidence = min(int(regime.get("confidence_score", 0)), int(macro_quality["confidence"]))
 
     drift_summary = t("no_data")
     if not positions.empty:
@@ -51,10 +55,12 @@ def build_daily_report(lang: str = LANG_ZH) -> str:
             f"{t('today_action')}: {translate_action_label(regime['today_action'])}",
             drift_summary,
             f"{t('cash_deployment_mode')}: {t(cash_mode)}",
-            f"{t('data_confidence')}: {t(regime['confidence_level'].lower())} ({regime.get('confidence_score', 0)}/100)",
+            f"{t('data_confidence')}: {effective_confidence}/100",
             f"{t('top_positive_drivers')}: " + ", ".join([f"{translate_term(row['component'])} {row['score']}/100" for row in positive_drivers]),
             f"{t('top_negative_drivers')}: " + ", ".join([f"{translate_term(row['component'])} {row['score']}/100" for row in negative_drivers]),
-            f"{t('fallback_warning')}: " + (t('fallback_score_warning') if fallback_rows else t('no_major_warning')),
+            f"{t('macro_data_status')}: {macro_quality['confidence']}/100; {t('fallback_used')}: {macro_quality['fallback_rows']}; {t('missing')}: {macro_quality['missing_rows']}",
+            f"{t('provider_warning')}: " + (f"{missing_macro_inputs[0]['provider']} {missing_macro_inputs[0]['item']}: {missing_macro_inputs[0]['warning']}" if missing_macro_inputs else t("no_major_warning")),
+            f"{t('fallback_warning')}: " + (t('fallback_score_warning') if fallback_rows or macro_quality["fallback_rows"] else t('no_major_warning')),
             f"{t('provider_warning')}: " + (str(provider_warnings[0]) if provider_warnings else translate_warning(regime['warnings'][0])),
             format_alerts(lang, alerts),
             f"{t('buy_zone_candidates')}:",

@@ -6,6 +6,7 @@ from utils.i18n import LANG_ZH, t, translate_action_label, translate_regime, tra
 from utils.interactive_table import render_interactive_table
 from utils.market_regime import calculate_market_regime
 from utils.portfolio_engine import calculate_position_values, load_portfolio, portfolio_health_score
+from utils.scoring_diagnostics import detect_missing_macro_inputs, summarize_score_data_quality
 from utils.sector_heat_engine import calculate_theme_heat_score, get_candidate_symbols_by_theme
 from utils.alert_engine import evaluate_alerts, format_alerts
 from utils.strategy_rules import get_cash_deployment_mode
@@ -25,6 +26,9 @@ def render(lang: str) -> None:
     diagnostics = regime.get("score_diagnostics", [])
     positive_drivers = sorted(diagnostics, key=lambda row: row.get("score", 0), reverse=True)[:3]
     negative_drivers = sorted(diagnostics, key=lambda row: row.get("score", 100))[:3]
+    macro_quality = summarize_score_data_quality()
+    missing_macro_inputs = detect_missing_macro_inputs()
+    effective_confidence = min(int(regime.get("confidence_score", 0)), int(macro_quality["confidence"]))
 
     st.title(t("daily_playbook"))
     st.caption(t("daily_caption"))
@@ -36,9 +40,16 @@ def render(lang: str) -> None:
     summary_cols[2].metric(t("suggested_action"), translate_action_label(regime["today_action"]))
     summary_cols[3].metric(t("confidence"), t(regime["confidence_level"].lower()))
     st.write(_translate_playbook_text(regime["recommended_action"], lang))
-    st.write(f"{t('data_confidence')}: {t(regime['confidence_level'].lower())} ({regime.get('confidence_score', 0)}/100)")
+    st.write(f"{t('data_confidence')}: {effective_confidence}/100")
     st.write(f"{t('top_positive_drivers')}: " + ", ".join([f"{translate_term(row['component'])} {row['score']}/100" for row in positive_drivers]))
     st.write(f"{t('top_negative_drivers')}: " + ", ".join([f"{translate_term(row['component'])} {row['score']}/100" for row in negative_drivers]))
+    st.write(
+        f"{t('macro_data_status')}: {macro_quality['confidence']}/100; "
+        f"{t('fallback_used')}: {macro_quality['fallback_rows']}; "
+        f"{t('missing')}: {macro_quality['missing_rows']}"
+    )
+    if missing_macro_inputs:
+        st.warning(f"{t('macro_missing_data_warning')} {missing_macro_inputs[0]['provider']} {missing_macro_inputs[0]['item']}: {missing_macro_inputs[0]['warning']}")
 
     st.subheader(t("portfolio_drift_summary"))
     st.metric(t("portfolio_health"), f"{health['score']}/100")
@@ -106,9 +117,11 @@ def render(lang: str) -> None:
             f"{t('suggested_action')}: {translate_action_label(regime['today_action'])}",
             f"{t('portfolio_health')}: {health['score']}/100",
             f"{t('cash_deployment_mode')}: {t(cash_mode)}",
-            f"{t('data_confidence')}: {t(regime['confidence_level'].lower())} ({regime.get('confidence_score', 0)}/100)",
+            f"{t('data_confidence')}: {effective_confidence}/100",
             f"{t('top_positive_drivers')}: " + ", ".join([f"{translate_term(row['component'])} {row['score']}/100" for row in positive_drivers]),
             f"{t('top_negative_drivers')}: " + ", ".join([f"{translate_term(row['component'])} {row['score']}/100" for row in negative_drivers]),
+            f"{t('macro_data_status')}: {macro_quality['confidence']}/100; {t('fallback_used')}: {macro_quality['fallback_rows']}; {t('missing')}: {macro_quality['missing_rows']}",
+            f"{t('provider_warning')}: " + (f"{missing_macro_inputs[0]['provider']} {missing_macro_inputs[0]['item']}: {missing_macro_inputs[0]['warning']}" if missing_macro_inputs else t("no_major_warning")),
             format_alerts(lang, alerts),
             t("buy_zone_candidates"),
             *[f"- {item['ticker']}: {translate_action_label(item['action_label'])}" for item in top_signals],

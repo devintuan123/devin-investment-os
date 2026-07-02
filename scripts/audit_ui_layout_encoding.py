@@ -11,7 +11,19 @@ REPORT_MD = ROOT_DIR / "reports" / "ui_layout_encoding_audit.md"
 REPORT_JSON = ROOT_DIR / "reports" / "ui_layout_encoding_issues.json"
 SCAN_DIRS = ["app.py", "pages", "modules", "utils", "scripts", "data", "reports"]
 TEXT_SUFFIXES = {".py", ".md", ".txt", ".json", ".yaml", ".yml", ".csv", ".toml"}
-SKIP_PREFIXES = {"scripts/audit_ui_layout_encoding.py", "scripts/ui_visual_text_snapshot.py","reports/v0_3_validation_report.txt", "reports/v0_5_alerts_zh.log", "reports/v0_5_daily_workflow.log", "reports/v0_5_full_runtime_audit.log", "reports/v0_5_post_deployment_validation.md", "reports/v0_5_quality_gate.log", "reports/v0_5_telegram_zh.log"}
+SKIP_PREFIXES = {
+    "scripts/audit_ui_layout_encoding.py",
+    "scripts/ui_visual_text_snapshot.py",
+    "reports/ui_layout_encoding_audit.md",
+    "reports/ui_layout_encoding_issues.json",
+    "reports/v0_3_validation_report.txt",
+    "reports/v0_5_alerts_zh.log",
+    "reports/v0_5_daily_workflow.log",
+    "reports/v0_5_full_runtime_audit.log",
+    "reports/v0_5_post_deployment_validation.md",
+    "reports/v0_5_quality_gate.log",
+    "reports/v0_5_telegram_zh.log",
+}
 MOJIBAKE_PATTERNS = ["嚙", "�", "癟", "疆", "矇", "疇", "瓊", "癡", "璽", "", "", "", "", "", ""]
 RAW_UNICODE_RE = re.compile(r"\\u[0-9a-fA-F]{4}")
 OPEN_WITHOUT_ENCODING_RE = re.compile(r"\bopen\s*\([^\n)]*(?:'|\")r?[^\n)]*\)(?![^\n]*encoding\s*=)")

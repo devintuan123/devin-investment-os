@@ -1,0 +1,16 @@
+# Macro Data Gate Report
+
+## Checks
+- Macro Dashboard includes FRED raw data section.
+- Macro Dashboard includes Market Proxy Data section.
+- Macro Dashboard includes Score Diagnostics section.
+- Macro Dashboard includes FRED snapshot call.
+- Macro Dashboard includes market proxy snapshot call.
+- Macro Dashboard includes top missing-data warning.
+- FRED provider returned 8 diagnostic rows.
+- yfinance market proxy provider returned 8 diagnostic rows.
+- Fallback-heavy scores reduce top-level confidence.
+- Missing/fallback macro inputs are visible (8 issue rows).
+
+## Issues
+- None

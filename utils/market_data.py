@@ -38,6 +38,17 @@ FALLBACK_PRICES = {
     "2327.TW": 930.0,
 }
 
+MARKET_PROXY_SYMBOLS = {
+    "SPY": "US Market",
+    "QQQ": "US Tech",
+    "^VIX": "Volatility",
+    "DX-Y.NYB": "US Dollar / liquidity proxy",
+    "TLT": "Bonds / rates proxy",
+    "GLD": "Gold",
+    "BTC-USD": "Crypto",
+    "0050.TW": "Taiwan Market",
+}
+
 
 def normalize_ticker(ticker: object) -> str:
     return str(ticker or "").strip().upper()
@@ -337,3 +348,61 @@ def _timestamp_to_iso(value: object) -> str | None:
         return timestamp.isoformat()
     except Exception:
         return None
+
+
+def get_market_proxy_snapshot() -> pd.DataFrame:
+    rows = []
+    for symbol, label in MARKET_PROXY_SYMBOLS.items():
+        row = {
+            "symbol": symbol,
+            "label": label,
+            "latest_date": None,
+            "latest_price": None,
+            "return_5d": None,
+            "return_20d": None,
+            "return_60d": None,
+            "ma20": None,
+            "ma60": None,
+            "provider": "yfinance",
+            "freshness_status": "Unavailable",
+            "confidence": 20,
+            "error": "",
+            "fallback_used": False,
+            "rows_fetched": 0,
+            "missing": True,
+            "stale": True,
+            "connected": False,
+        }
+        try:
+            history, warning = get_history(symbol, period="1y")
+            close = history["Close"].dropna() if "Close" in history else pd.Series(dtype=float)
+            fallback_used = "fallback" in str(warning).lower()
+            row.update(
+                {
+                    "rows_fetched": int(len(close)),
+                    "fallback_used": fallback_used,
+                    "error": warning or "",
+                    "connected": bool(not close.empty and not fallback_used),
+                    "confidence": 35 if fallback_used else 75,
+                    "freshness_status": "Fallback" if fallback_used else "Delayed / best-effort",
+                    "missing": close.empty,
+                    "stale": close.empty or fallback_used,
+                }
+            )
+            if not close.empty:
+                row.update(
+                    {
+                        "latest_date": _timestamp_to_iso(close.index[-1]),
+                        "latest_price": float(close.iloc[-1]),
+                        "return_5d": _return(close, 5),
+                        "return_20d": _return(close, 20),
+                        "return_60d": _return(close, 60),
+                        "ma20": _moving_average(close, 20),
+                        "ma60": _moving_average(close, 60),
+                        "missing": False,
+                    }
+                )
+        except Exception as exc:
+            row["error"] = str(exc)
+        rows.append(row)
+    return pd.DataFrame(rows)

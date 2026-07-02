@@ -18,6 +18,8 @@ from scripts.send_daily_report import build_daily_report
 from utils.i18n import LANG_EN, LANG_ZH, set_lang, t, translate_term, translate_text
 from utils.indicators import market_indicators
 from utils.interactive_table import _valid_dataframe_height
+from utils.fred_provider import get_macro_series_snapshot
+from utils.market_data import get_market_proxy_snapshot
 from utils.market_regime import calculate_market_regime
 from utils.portfolio_engine import calculate_position_values
 from utils.portfolio_store import load_portfolio, load_transactions
@@ -76,6 +78,7 @@ def main() -> int:
     _check_navigation(issues, checks)
     _check_home_components(issues, checks)
     _check_tables(issues, checks)
+    _check_macro_data_sections(issues, checks)
     _check_macro_runtime_text(issues, checks)
     _check_daily_and_telegram_text(issues, checks)
     _check_portfolio_runtime(issues, checks)
@@ -185,6 +188,39 @@ def _check_macro_runtime_text(issues: list[dict], checks: list[str]) -> None:
     output = "\n".join(lines)
     _check_forbidden(issues, "macro runtime zh", output)
     checks.append("macro indicator runtime text translated in zh")
+
+
+def _check_macro_data_sections(issues: list[dict], checks: list[str]) -> None:
+    source = (ROOT_DIR / "modules" / "macro" / "__init__.py").read_text(encoding="utf-8")
+    for label, token in {
+        "FRED Raw Data": "fred_raw_data",
+        "Market Proxy Data": "market_proxy_data",
+        "Score Diagnostics": "score_diagnostics",
+        "Missing Data Warnings": "macro_missing_data_warning",
+    }.items():
+        if token not in source:
+            _issue(issues, "critical", "macro data sections", f"Missing {label} section")
+    fred = get_macro_series_snapshot()
+    proxies = get_market_proxy_snapshot()
+    if fred.empty:
+        _issue(issues, "critical", "macro data sections", "FRED diagnostics are empty")
+    if proxies.empty:
+        _issue(issues, "critical", "macro data sections", "Market proxy diagnostics are empty")
+    valid_fred = bool(not fred.empty and (~fred["missing"].fillna(False).astype(bool)).any())
+    visible_fred_warning = "macro_missing_data_warning" in source
+    valid_proxy = bool(not proxies.empty and (~proxies["missing"].fillna(False).astype(bool)).any())
+    visible_proxy_warning = "macro_missing_data_warning" in source
+    if not (valid_fred or visible_fred_warning):
+        _issue(issues, "critical", "macro data sections", "FRED missing without visible warning")
+    if not (valid_proxy or visible_proxy_warning):
+        _issue(issues, "critical", "macro data sections", "yfinance missing without visible warning")
+    regime = calculate_market_regime()
+    fallback_rows = [row for row in regime.get("score_diagnostics", []) if row.get("fallback_used")]
+    if fallback_rows and not any("fallback" in str(warning).lower() for warning in regime.get("warnings", [])):
+        _issue(issues, "critical", "macro data sections", "Fallback scores are not surfaced in top-level warnings")
+    if fallback_rows and regime.get("confidence_score", 100) >= 75:
+        _issue(issues, "critical", "macro data sections", "Fallback scores still show high confidence")
+    checks.append("macro raw data sections and fallback visibility audited")
 
 
 def _check_daily_and_telegram_text(issues: list[dict], checks: list[str]) -> None:

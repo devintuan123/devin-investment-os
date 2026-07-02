@@ -15,6 +15,7 @@ except Exception:
 CHECKS = [
     ("compileall", [sys.executable, "-m", "compileall", "-q", "."]),
     ("enforce_ui_layout_encoding_gate", [sys.executable, "scripts/enforce_ui_layout_encoding_gate.py"]),
+    ("enforce_macro_data_gate", [sys.executable, "scripts/enforce_macro_data_gate.py"]),
     ("full_runtime_audit", [sys.executable, "scripts/full_runtime_audit.py"]),
     ("audit_data_sources", [sys.executable, "scripts/audit_data_sources.py"]),
     ("audit_scoring_formulas", [sys.executable, "scripts/audit_scoring_formulas.py"]),
@@ -38,6 +39,7 @@ CHECKS = [
 MANDATORY = {
     "compileall",
     "enforce_ui_layout_encoding_gate",
+    "enforce_macro_data_gate",
     "full_runtime_audit",
     "audit_data_sources",
     "audit_scoring_formulas",
