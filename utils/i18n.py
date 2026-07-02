@@ -287,6 +287,20 @@ TRANSLATIONS = {
         "relative_strength": "Relative Strength",
         "breadth": "Breadth",
         "risk_controls_priority": "Risk controls should take priority.",
+        "sentiment": "Sentiment",
+        "mixed": "Mixed",
+        "constructive": "Constructive",
+        "signals_mixed_confirmation": "Signals are mixed; confirmation matters.",
+        "trend_momentum_supportive": "Trend and momentum are supportive.",
+        "led_5d_momentum": "led 5D momentum",
+        "lagged": "lagged",
+        "value": "Value",
+        "position_value": "Position Value",
+        "target_drift": "Target Drift",
+        "current_drift": "Current Drift",
+        "allocation_drift": "Allocation Drift",
+        "drift_abs": "Absolute Drift",
+        "drift_pct": "Drift %",
     },
     LANG_ZH: {
         "language": "\u8a9e\u8a00",
@@ -565,6 +579,20 @@ TRANSLATIONS = {
         "relative_strength": "\u76f8\u5c0d\u5f37\u5f31",
         "breadth": "\u5ee3\u5ea6",
         "risk_controls_priority": "\u98a8\u96aa\u63a7\u5236\u61c9\u512a\u5148\u3002",
+        "sentiment": "\u5e02\u5834\u60c5\u7dd2",
+        "mixed": "\u6df7\u5408",
+        "constructive": "\u6b63\u5411\u5efa\u8a2d",
+        "signals_mixed_confirmation": "\u8a0a\u865f\u6df7\u5408\uff0c\u9700\u8981\u78ba\u8a8d\u3002",
+        "trend_momentum_supportive": "\u8da8\u52e2\u8207\u52d5\u80fd\u5177\u652f\u6490\u3002",
+        "led_5d_momentum": "\u9818\u5148 5 \u65e5\u52d5\u80fd",
+        "lagged": "\u843d\u5f8c",
+        "value": "\u50f9\u503c",
+        "position_value": "\u90e8\u4f4d\u50f9\u503c",
+        "target_drift": "\u76ee\u6a19\u504f\u96e2",
+        "current_drift": "\u76ee\u524d\u504f\u96e2",
+        "allocation_drift": "\u914d\u7f6e\u504f\u96e2",
+        "drift_abs": "\u504f\u96e2\u7d55\u5c0d\u503c",
+        "drift_pct": "\u504f\u96e2\u767e\u5206\u6bd4",
     },
 }
 
@@ -605,10 +633,17 @@ TERM_KEYS = {
     "Volatility": "volatility",
     "Liquidity": "liquidity",
     "Defensive": "defensive",
+    "Defensive / Hedge": "defensive",
+    "Sentiment": "sentiment",
+    "Breadth": "breadth",
+    "Mixed": "mixed",
+    "Constructive": "constructive",
     "Sector Heat": "sector_heat",
     "Capital Rotation": "capital_rotation",
     "Sector Heat / Capital Rotation": "sector_heat_page",
     "Risk controls should take priority.": "risk_controls_priority",
+    "Signals are mixed; confirmation matters.": "signals_mixed_confirmation",
+    "Trend and momentum are supportive.": "trend_momentum_supportive",
     "Home": "home",
     "Macro Dashboard": "macro_dashboard",
     "Portfolio": "portfolio",
@@ -637,6 +672,12 @@ TERM_KEYS = {
     "Hot Themes": "hot_themes",
     "Rotation Signal": "rotation_signal",
     "Candidate List": "candidate_list",
+}
+
+PHRASE_KEYS = {
+    "Risk controls should take priority.": "risk_controls_priority",
+    "Signals are mixed; confirmation matters.": "signals_mixed_confirmation",
+    "Trend and momentum are supportive.": "trend_momentum_supportive",
 }
 
 
@@ -685,6 +726,17 @@ def translate_regime(label: str) -> str:
 
 def translate_term(label: str) -> str:
     return t(TERM_KEYS.get(str(label), str(label)))
+
+
+def translate_text(text: str) -> str:
+    value = str(text or "")
+    if value in PHRASE_KEYS:
+        return t(PHRASE_KEYS[value])
+    if " led 5D momentum; " in value and value.endswith(" lagged."):
+        strongest, rest = value.split(" led 5D momentum; ", 1)
+        weakest = rest.replace(" lagged.", "")
+        return f"{strongest} {t('led_5d_momentum')}\uff1b{weakest} {t('lagged')}\u3002"
+    return translate_term(value)
 
 
 def translate_status(label: str) -> str:

@@ -7,7 +7,7 @@ from pathlib import Path
 ROOT_DIR = Path(__file__).resolve().parents[1]
 TARGETS = [ROOT_DIR / "app.py", *sorted((ROOT_DIR / "pages").glob("*.py")), *sorted((ROOT_DIR / "modules").glob("**/*.py"))]
 FORBIDDEN_CALLS = ("st.table(", "st.dataframe(", "st.write(df", "st.write(view", "st.data_editor(")
-ALLOWLIST_MARKERS = ("Editable CSV editor", "st.data_editor(portfolio")
+ALLOWLIST_MARKERS = ("TABLE_ALLOWLIST_REASON:",)
 NO_COLUMN_PATTERN = re.compile(r"[\"'](?:No\.|No|no|index|Index|#)[\"']")
 
 

@@ -9,6 +9,7 @@ ROOT_DIR = Path(__file__).resolve().parents[1]
 
 CHECKS = [
     ("compileall", [sys.executable, "-m", "compileall", "-q", "."]),
+    ("full_runtime_audit", [sys.executable, "scripts/full_runtime_audit.py"]),
     ("enforce_i18n_hard_gate", [sys.executable, "scripts/enforce_i18n_hard_gate.py"]),
     ("enforce_table_usability_gate", [sys.executable, "scripts/enforce_table_usability_gate.py"]),
     ("enforce_modular_pages_gate", [sys.executable, "scripts/enforce_modular_pages_gate.py"]),
@@ -21,7 +22,7 @@ CHECKS = [
     ("telegram_dry_run_zh", [sys.executable, "scripts/send_daily_report.py", "--dry-run", "--lang", "zh"]),
     ("telegram_dry_run_en", [sys.executable, "scripts/send_daily_report.py", "--dry-run", "--lang", "en"]),
 ]
-MANDATORY = {"compileall", "enforce_i18n_hard_gate", "enforce_table_usability_gate", "enforce_modular_pages_gate", "enforce_portfolio_management_gate", "enforce_sector_heat_gate"}
+MANDATORY = {"compileall", "full_runtime_audit", "enforce_i18n_hard_gate", "enforce_table_usability_gate", "enforce_modular_pages_gate", "enforce_portfolio_management_gate", "enforce_sector_heat_gate"}
 
 
 def main() -> int:

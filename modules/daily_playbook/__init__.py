@@ -2,7 +2,7 @@ import pandas as pd
 import streamlit as st
 
 from utils.buy_zone_engine import score_buy_zones
-from utils.i18n import LANG_ZH, t, translate_action_label, translate_regime, translate_term, translate_warning
+from utils.i18n import LANG_ZH, t, translate_action_label, translate_regime, translate_term, translate_text, translate_warning
 from utils.interactive_table import render_interactive_table
 from utils.market_regime import calculate_market_regime
 from utils.portfolio_engine import calculate_position_values, load_portfolio, portfolio_health_score
@@ -63,7 +63,7 @@ def render(lang: str) -> None:
 
     st.subheader(t("risk_warnings"))
     for warning in regime["risk_warnings"]:
-        st.warning(warning)
+        st.warning(translate_text(warning))
     for warning in regime["warnings"]:
         st.warning(translate_warning(warning))
 
@@ -106,10 +106,4 @@ def render(lang: str) -> None:
 def _translate_playbook_text(text: str, lang: str) -> str:
     if lang != LANG_ZH:
         return text
-    if "Risk controls should take priority" in str(text):
-        return t("risk_controls_priority")
-    if "led 5D momentum" in str(text):
-        return "5 日動能領先；請以風險控制優先。"
-    if "lagged" in str(text):
-        return "部分指標落後；請保持觀察。"
-    return str(text)
+    return translate_text(str(text))

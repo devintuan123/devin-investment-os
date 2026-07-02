@@ -37,14 +37,19 @@ COLUMN_KEYS = {
     "price": "price",
     "current_price": "current_price",
     "latest_price": "latest_price",
-    "value": "portfolio_value",
-    "position_value": "portfolio_value",
+    "value": "value",
+    "position_value": "position_value",
     "market_value": "market_value",
     "cost": "cost",
     "unrealized_pl": "unrealized_pl",
     "unrealized_pnl": "unrealized_pl",
     "pnl": "unrealized_pl",
     "drift": "drift",
+    "target_drift": "target_drift",
+    "current_drift": "current_drift",
+    "allocation_drift": "allocation_drift",
+    "drift_abs": "drift_abs",
+    "drift_pct": "drift_pct",
     "drift_label": "drift",
     "action": "action",
     "action_label": "action_label",
@@ -197,6 +202,8 @@ VALUE_KEYS = {
     "Healthy": "healthy_trend_hold",
     "Constructive": "gradual_buy_zone",
     "Mixed": "watch_wait",
+    "Sentiment": "sentiment",
+    "Breadth": "breadth",
     "Broken": "broken_trend_avoid",
     "Near MA20": "potential_layer_1",
     "Normal pullback": "potential_layer_2",
@@ -217,6 +224,10 @@ VALUE_KEYS = {
     "Avoid chasing": "avoid_chasing",
     "Liquidity": "liquidity",
     "Defensive": "defensive",
+    "Defensive / Hedge": "defensive",
+    "Signals are mixed; confirmation matters.": "signals_mixed_confirmation",
+    "Trend and momentum are supportive.": "trend_momentum_supportive",
+    "Risk controls should take priority.": "risk_controls_priority",
 }
 
 
@@ -271,6 +282,7 @@ def translate_dataframe(df: pd.DataFrame, lang: str) -> pd.DataFrame:
         if pd.api.types.is_object_dtype(translated[column]) or pd.api.types.is_string_dtype(translated[column]):
             translated[column] = translated[column].map(lambda value: translate_cell_value(value, lang))
     translated = translated.rename(columns={column: translate_column_name(column, lang) for column in translated.columns})
+    translated.columns = _dedupe_columns([str(column) for column in translated.columns])
     return translated
 
 
@@ -290,7 +302,17 @@ def format_currency(value: Any, currency: str = "") -> str:
 
 
 def translated_column_config(df: pd.DataFrame, lang: str) -> dict[str, Any]:
-    return {column: translate_column_name(column, lang) for column in df.columns}
+    labels = _dedupe_columns([str(translate_column_name(column, lang)) for column in df.columns])
+    return {column: label for column, label in zip(df.columns, labels)}
+
+
+def _dedupe_columns(columns: list[str]) -> list[str]:
+    counts: dict[str, int] = {}
+    output = []
+    for column in columns:
+        counts[column] = counts.get(column, 0) + 1
+        output.append(column if counts[column] == 1 else f"{column}_{counts[column]}")
+    return output
 
 
 def _should_preserve(value: Any) -> bool:

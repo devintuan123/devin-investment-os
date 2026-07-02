@@ -1,9 +1,9 @@
 板塊熱度／資金輪動
 資金輪動
 僅為指標代理熱度，不代表精確資金流向或交易建議。
- 市場                        主題       主題  熱度分數  輪動分數  主題熱度 輪動訊號  return_5d    20 日報酬    廣度  symbol_count                                                             警示
- US             Cybersecurity       資安   100   100 過熱／延伸 資金流入  15.280163  3.757058 100.0             4 Proxy-based heat only, not exact fund flows or trading advice.
- US        Healthcare / GLP-1 醫療／GLP-1   100    75 過熱／延伸 資金流入   4.923822 12.131677 100.0             3 Proxy-based heat only, not exact fund flows or trading advice.
- 台灣        Passive Components     被動元件   100    54 過熱／延伸   中性   4.842492 40.578259  50.0             2 Proxy-based heat only, not exact fund flows or trading advice.
- US                   Defense     防禦軍工    91    82 過熱／延伸 資金流入   4.497669  4.256133 100.0             4 Proxy-based heat only, not exact fund flows or trading advice.
-LSE Healthcare / World health     全球醫療    91    65 過熱／延伸 資金流入   3.042564  7.505863 100.0             1 Proxy-based heat only, not exact fund flows or trading advice.
+ 市場                        主題     主題_2  熱度分數  輪動分數  主題熱度 輪動訊號  return_5d    20 日報酬    廣度  symbol_count                                                             警示
+ US             Cybersecurity       資安   100   100 過熱／延伸 資金流入  14.211991  2.796473 100.0             4 Proxy-based heat only, not exact fund flows or trading advice.
+ 台灣        Passive Components     被動元件   100    77 過熱／延伸 資金流入   5.387409 33.977748 100.0             2 Proxy-based heat only, not exact fund flows or trading advice.
+ US        Healthcare / GLP-1 醫療／GLP-1   100    73 過熱／延伸 資金流入   4.523804 11.691960 100.0             3 Proxy-based heat only, not exact fund flows or trading advice.
+LSE Healthcare / World health     全球醫療    92    66 過熱／延伸 資金流入   3.127080  7.594039 100.0             1 Proxy-based heat only, not exact fund flows or trading advice.
+ 台灣            Semiconductors      半導體    90    61 過熱／延伸 資金流入   2.144841  9.980293  75.0             4 Proxy-based heat only, not exact fund flows or trading advice.

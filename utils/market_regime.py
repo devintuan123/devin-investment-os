@@ -54,6 +54,9 @@ def calculate_market_regime() -> dict:
         "Gold": _gold_score(assets["GC=F"], assets["SPY"], assets["QQQ"]),
         "Macro": _macro_score(fred, assets["DX-Y.NYB"]),
         "Volatility": _volatility_score(assets["^VIX"]),
+        "Liquidity": _liquidity_score(assets["DX-Y.NYB"], assets["^VIX"], fred),
+        "Sentiment": _sentiment_score(assets["SPY"], assets["QQQ"], assets["^VIX"]),
+        "Breadth": _breadth_score([assets[ticker] for ticker in ["SPY", "QQQ", "0050.TW", "VWRA.L"]]),
     }
     score = int(round(_average(list(components.values()))))
     regime = _regime(score, assets["^VIX"])
@@ -189,6 +192,36 @@ def _macro_score(fred: dict, dxy: dict) -> int:
     if not ten_year.get("connected"):
         score -= 10
     return _bound(score)
+
+
+def _liquidity_score(dxy: dict, vix: dict, fred: dict) -> int:
+    score = 60
+    if dxy["price"] > dxy["ma60"]:
+        score -= 8
+    if vix["price"] < 18:
+        score += 12
+    elif vix["price"] > 25:
+        score -= 18
+    if fred.get("DGS10", {}).get("change", 0) > 0.25:
+        score -= 10
+    return _bound(score)
+
+
+def _sentiment_score(spy: dict, qqq: dict, vix: dict) -> int:
+    score = _average([_trend_score(spy), _trend_score(qqq)])
+    if vix["price"] < 18:
+        score += 8
+    elif vix["price"] > 25:
+        score -= 15
+    return _bound(score)
+
+
+def _breadth_score(assets: list[dict]) -> int:
+    if not assets:
+        return 50
+    above_ma = sum(1 for asset in assets if asset["price"] > asset["ma60"])
+    positive_momentum = sum(1 for asset in assets if asset["return_20d"] > 0)
+    return _bound(35 + above_ma / len(assets) * 35 + positive_momentum / len(assets) * 30)
 
 
 def _crypto_score(btc: dict, binance: dict) -> int:

@@ -16,10 +16,14 @@ from utils.table_i18n import translate_dataframe
 
 REQUIRED_TERMS_PATH = ROOT_DIR / "data" / "i18n_required_terms.yaml"
 NAV_FORBIDDEN = ["Home", "Macro Dashboard", "Portfolio", "Watchlist", "Asset Scores", "Daily Playbook", "Data Quality", "Settings", "History", "Buy Zones", "Sector Heat / Capital Rotation"]
-COMPONENT_FORBIDDEN = ["US Market", "US Tech", "Taiwan", "Crypto", "Gold", "Macro", "Volatility", "Liquidity", "Defensive"]
+COMPONENT_FORBIDDEN = ["US Market", "US Tech", "Taiwan", "Crypto", "Gold", "Macro", "Volatility", "Liquidity", "Sentiment", "Breadth", "Defensive", "Mixed", "Constructive"]
 HEADER_FORBIDDEN = ["symbol", "ticker", "latest_price", "current_price", "action_label", "risk_label", "freshness_status", "provider", "confidence", "target_weight", "current_weight", "drift", "buy_zone_1", "buy_zone_2", "buy_zone_3", "buy_zone_low", "buy_zone_high", "trim_zone", "stop_level", "priority", "No."]
 CELL_FORBIDDEN = COMPONENT_FORBIDDEN + [
     "Risk controls should take priority.",
+    "Signals are mixed; confirmation matters.",
+    "Trend and momentum are supportive.",
+    "led 5D momentum",
+    "lagged",
     "Potential Buy Zone - verify quote",
     "Extended / Do not chase",
     "Healthy trend / Hold",
@@ -87,7 +91,7 @@ def main() -> int:
             findings.append(("table_headers", str(column), "Forbidden untranslated table header."))
     _check_forbidden(findings, "table_cells", translated.to_string(index=False), CELL_FORBIDDEN)
 
-    for path in [ROOT_DIR / "app.py", *sorted((ROOT_DIR / "pages").glob("*.py"))]:
+    for path in [ROOT_DIR / "app.py", *sorted((ROOT_DIR / "pages").glob("*.py")), *sorted((ROOT_DIR / "modules").glob("**/*.py"))]:
         _scan_source(path, findings)
 
     if findings:

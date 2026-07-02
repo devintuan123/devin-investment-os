@@ -38,7 +38,7 @@ def render(lang: str) -> None:
     if "priority" in view:
         view = view.sort_values("priority", na_position="last")
 
-    # Editable CSV editor: intentionally allowlisted by table usability gate.
+    # TABLE_ALLOWLIST_REASON: editable local CSV watchlist management form, not a display table.
     edited = st.data_editor(view, use_container_width=True, hide_index=True, num_rows="dynamic", column_config=translated_column_config(view, lang))
     if st.button(t("save_watchlist"), use_container_width=True):
         if "signal" in edited:

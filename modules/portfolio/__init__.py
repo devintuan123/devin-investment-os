@@ -148,6 +148,7 @@ def _render_target_allocation(portfolio: pd.DataFrame, lang: str) -> None:
     st.subheader(t("cash_deployment"))
     render_interactive_table(calculate_cash_needed_for_rebalance(portfolio), table_key="portfolio_cash_needed", lang=lang)
     st.subheader(t("positions"))
+    # TABLE_ALLOWLIST_REASON: editable local CSV portfolio management form, not a display table.
     edited = st.data_editor(portfolio, use_container_width=True, hide_index=True, num_rows="dynamic", column_config=translated_column_config(portfolio, lang))
     if st.button(t("save_portfolio"), use_container_width=True):
         save_portfolio(edited)

@@ -9,7 +9,7 @@ from utils.i18n import t
 from utils.table_i18n import translate_dataframe
 
 
-NO_COLUMNS = {"No.", "No", "no", "index", "Index", "#"}
+NO_COLUMNS = {"No.", "No", "no", "index", "Index", "#", "Unnamed: 0"}
 FILTER_HINTS = (
     "category",
     "market",
@@ -53,7 +53,8 @@ def render_interactive_table(
         st.info(t("no_data"))
         return translated
 
-    view = translated.copy()
+    view = translated.copy().reset_index(drop=True)
+    view.columns = _dedupe_columns([str(column) for column in view.columns])
     original_count = len(view)
 
     if searchable:
@@ -116,7 +117,7 @@ def _as_dataframe(df) -> pd.DataFrame:
 
 def _drop_no_columns(df: pd.DataFrame) -> pd.DataFrame:
     columns = [column for column in df.columns if str(column) not in NO_COLUMNS]
-    return df[columns].copy()
+    return df[columns].copy().reset_index(drop=True)
 
 
 def _filter_columns(df: pd.DataFrame) -> list:
@@ -138,3 +139,12 @@ def _clear_table_state(table_key: str) -> None:
     for key in list(st.session_state.keys()):
         if str(key).startswith(f"{table_key}_filter_") or str(key) in {f"{table_key}_search", f"{table_key}_sort_column", f"{table_key}_sort_direction"}:
             del st.session_state[key]
+
+
+def _dedupe_columns(columns: list[str]) -> list[str]:
+    counts: dict[str, int] = {}
+    output = []
+    for column in columns:
+        counts[column] = counts.get(column, 0) + 1
+        output.append(column if counts[column] == 1 else f"{column}_{counts[column]}")
+    return output
