@@ -2,8 +2,8 @@
 資金輪動
 僅為指標代理熱度，不代表精確資金流向或交易建議。
  市場                        主題     主題_2  熱度分數  輪動分數  主題熱度 輪動訊號  return_5d    20 日報酬    廣度  symbol_count                                                             警示                           最近成功抓取
- US             Cybersecurity       資安   100   100 過熱／延伸 資金流入  15.353587  8.303989 100.0             3 Proxy-based heat only, not exact fund flows or trading advice. 2026-07-02T13:53:20.134284+00:00
- US                   Defense     防禦軍工   100    84 過熱／延伸 資金流入   6.792988  7.347645 100.0             3 Proxy-based heat only, not exact fund flows or trading advice. 2026-07-02T13:53:20.134284+00:00
- US        Healthcare / GLP-1 醫療／GLP-1   100    78 過熱／延伸 資金流入   5.600387 13.848138 100.0             3 Proxy-based heat only, not exact fund flows or trading advice. 2026-07-02T13:53:20.134284+00:00
- US             Mega-cap Tech    大型科技股    94   100 過熱／延伸 資金流入   8.768489 -5.020702 100.0             3 Proxy-based heat only, not exact fund flows or trading advice. 2026-07-02T13:53:20.134284+00:00
-LSE Healthcare / World health     全球醫療    88    62 過熱／延伸 資金流入   2.445833  5.802923 100.0             1 Proxy-based heat only, not exact fund flows or trading advice. 2026-07-02T13:53:20.134284+00:00
+ US             Cybersecurity       資安   100   100 過熱／延伸 資金流入  15.082482  8.065409 100.0             3 Proxy-based heat only, not exact fund flows or trading advice. 2026-07-02T14:30:52.320966+00:00
+ US                   Defense     防禦軍工   100    85 過熱／延伸 資金流入   7.064123  7.607891 100.0             3 Proxy-based heat only, not exact fund flows or trading advice. 2026-07-02T14:30:52.320966+00:00
+ US        Healthcare / GLP-1 醫療／GLP-1   100    82 過熱／延伸 資金流入   6.455948 14.765082 100.0             3 Proxy-based heat only, not exact fund flows or trading advice. 2026-07-02T14:30:52.320966+00:00
+ US             Mega-cap Tech    大型科技股    99   100 過熱／延伸 資金流入   9.609079 -4.286733 100.0             3 Proxy-based heat only, not exact fund flows or trading advice. 2026-07-02T14:30:52.320966+00:00
+LSE Healthcare / World health     全球醫療    93    66 過熱／延伸 資金流入   3.202945  6.584845 100.0             1 Proxy-based heat only, not exact fund flows or trading advice. 2026-07-02T14:30:52.320966+00:00

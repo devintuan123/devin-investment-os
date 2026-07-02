@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import json
 import math
@@ -104,7 +104,7 @@ def audit_local_files() -> list[dict]:
         path = ROOT_DIR / rel
         row = {"file": rel, "exists": path.exists(), "warnings": []}
         if path.suffix == ".csv" and path.exists():
-            df = pd.read_csv(path)
+            df = pd.read_csv(path, encoding="utf-8")
             row["row_count"] = int(len(df))
             row["columns"] = list(df.columns)
             missing = [col for col in required.get(rel, []) if col not in df.columns]

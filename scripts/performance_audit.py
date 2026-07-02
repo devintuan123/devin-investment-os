@@ -97,7 +97,7 @@ def _recommendation(name: str, duration: float) -> str:
 
 def _write_reports(rows: list[dict]) -> None:
     payload = {"generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "rows": rows}
-    REPORT_JSON.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    REPORT_JSON.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
     lines = [
         "# Devin Investment OS Performance Audit",
         "",

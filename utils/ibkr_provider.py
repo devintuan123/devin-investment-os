@@ -6,7 +6,7 @@ import pandas as pd
 
 
 def import_holdings_csv(path: str) -> pd.DataFrame:
-    df = pd.read_csv(path)
+    df = pd.read_csv(path, encoding="utf-8")
     df["_updated"] = datetime.utcnow().isoformat() + "Z"
     df["_source"] = "ibkr_csv_read_only"
     return df

@@ -6,9 +6,15 @@ from pathlib import Path
 
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
 
 CHECKS = [
     ("compileall", [sys.executable, "-m", "compileall", "-q", "."]),
+    ("enforce_ui_layout_encoding_gate", [sys.executable, "scripts/enforce_ui_layout_encoding_gate.py"]),
     ("full_runtime_audit", [sys.executable, "scripts/full_runtime_audit.py"]),
     ("audit_data_sources", [sys.executable, "scripts/audit_data_sources.py"]),
     ("audit_scoring_formulas", [sys.executable, "scripts/audit_scoring_formulas.py"]),
@@ -31,6 +37,7 @@ CHECKS = [
 ]
 MANDATORY = {
     "compileall",
+    "enforce_ui_layout_encoding_gate",
     "full_runtime_audit",
     "audit_data_sources",
     "audit_scoring_formulas",
@@ -64,7 +71,7 @@ def main() -> int:
             continue
 
         print(f"[RUN] {name}")
-        result = subprocess.run(command, cwd=ROOT_DIR, text=True, capture_output=True)
+        result = subprocess.run(command, cwd=ROOT_DIR, text=True, capture_output=True, encoding="utf-8", errors="replace")
         if result.stdout:
             print(result.stdout.rstrip())
         if result.stderr:

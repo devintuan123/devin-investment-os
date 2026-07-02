@@ -15,7 +15,7 @@ THEME_UNIVERSE_PATH = ROOT_DIR / "data" / "theme_universe.csv"
 def load_theme_universe() -> pd.DataFrame:
     if not THEME_UNIVERSE_PATH.exists():
         return pd.DataFrame(columns=["theme", "theme_zh", "market", "symbol", "name", "category", "proxy_type", "note"])
-    return pd.read_csv(THEME_UNIVERSE_PATH)
+    return pd.read_csv(THEME_UNIVERSE_PATH, encoding="utf-8")
 
 
 def quick_theme_universe(universe: pd.DataFrame | None = None, max_per_theme: int = 3, max_total: int = 60) -> pd.DataFrame:

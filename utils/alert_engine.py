@@ -103,7 +103,7 @@ def format_alerts(lang: str = LANG_ZH, alerts: list[dict] | None = None) -> str:
         if lang == LANG_ZH:
             message = _translate_alert_message(message)
             if alert.get("type") == "sector_heat_spike":
-                message = f"{alert.get('theme_zh', message)} \u71b1\u5ea6\u5347\u9ad8"
+                message = f"{alert.get('theme_zh', message)} 熱度升高"
             if str(value) == "verify broker quote":
                 value = t("verify_broker_quote")
         lines.append(f"- {message}: {value}")
@@ -145,7 +145,7 @@ def _store_state(alerts: list[dict], sent: bool) -> None:
         now = datetime.now(timezone.utc).isoformat(timespec="seconds")
         for alert in alerts:
             state["sent"][alert["dedupe_key"]] = now
-    ALERT_STATE_PATH.write_text(json.dumps(state, indent=2), encoding="utf-8")
+    ALERT_STATE_PATH.write_text(json.dumps(state, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
 def _load_state() -> dict:

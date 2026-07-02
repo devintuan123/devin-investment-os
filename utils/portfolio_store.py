@@ -42,14 +42,14 @@ TRANSACTION_COLUMNS = [
 def load_portfolio() -> pd.DataFrame:
     DATA_DIR.mkdir(exist_ok=True)
     if not PORTFOLIO_PATH.exists():
-        pd.DataFrame(columns=PORTFOLIO_COLUMNS).to_csv(PORTFOLIO_PATH, index=False)
-    return _normalize_portfolio(pd.read_csv(PORTFOLIO_PATH))
+        pd.DataFrame(columns=PORTFOLIO_COLUMNS).to_csv(PORTFOLIO_PATH, index=False, encoding="utf-8")
+    return _normalize_portfolio(pd.read_csv(PORTFOLIO_PATH, encoding="utf-8"))
 
 
 def save_portfolio(df: pd.DataFrame) -> None:
     DATA_DIR.mkdir(exist_ok=True)
     clean = _normalize_portfolio(df)
-    clean[PORTFOLIO_COLUMNS].to_csv(PORTFOLIO_PATH, index=False)
+    clean[PORTFOLIO_COLUMNS].to_csv(PORTFOLIO_PATH, index=False, encoding="utf-8")
 
 
 def backup_portfolio() -> Path:
@@ -59,7 +59,7 @@ def backup_portfolio() -> Path:
     if PORTFOLIO_PATH.exists():
         backup_path.write_bytes(PORTFOLIO_PATH.read_bytes())
     else:
-        pd.DataFrame(columns=PORTFOLIO_COLUMNS).to_csv(backup_path, index=False)
+        pd.DataFrame(columns=PORTFOLIO_COLUMNS).to_csv(backup_path, index=False, encoding="utf-8")
     return backup_path
 
 
@@ -67,7 +67,7 @@ def clear_portfolio(confirm: bool) -> bool:
     if not confirm:
         return False
     backup_portfolio()
-    pd.DataFrame(columns=PORTFOLIO_COLUMNS).to_csv(PORTFOLIO_PATH, index=False)
+    pd.DataFrame(columns=PORTFOLIO_COLUMNS).to_csv(PORTFOLIO_PATH, index=False, encoding="utf-8")
     record_transaction("CLEAR_ALL", "", 0, 0, "", 0, 0, "Manual clear all holdings")
     return True
 
@@ -180,14 +180,14 @@ def record_transaction(action_type, symbol, quantity, price, currency="", fees=0
         "note": note,
     }
     ledger = pd.concat([ledger, pd.DataFrame([row])], ignore_index=True)
-    ledger[TRANSACTION_COLUMNS].to_csv(TRANSACTIONS_PATH, index=False)
+    ledger[TRANSACTION_COLUMNS].to_csv(TRANSACTIONS_PATH, index=False, encoding="utf-8")
 
 
 def load_transactions() -> pd.DataFrame:
     DATA_DIR.mkdir(exist_ok=True)
     if not TRANSACTIONS_PATH.exists():
-        pd.DataFrame(columns=TRANSACTION_COLUMNS).to_csv(TRANSACTIONS_PATH, index=False)
-    ledger = pd.read_csv(TRANSACTIONS_PATH)
+        pd.DataFrame(columns=TRANSACTION_COLUMNS).to_csv(TRANSACTIONS_PATH, index=False, encoding="utf-8")
+    ledger = pd.read_csv(TRANSACTIONS_PATH, encoding="utf-8")
     for column in TRANSACTION_COLUMNS:
         if column not in ledger.columns:
             ledger[column] = "" if column in {"timestamp", "action_type", "symbol", "currency", "note"} else 0

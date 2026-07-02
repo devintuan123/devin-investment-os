@@ -9,6 +9,7 @@ modules\portfolio\__init__.py
 modules\sector_heat\__init__.py
 modules\settings\__init__.py
 modules\shared\labels.py
+modules\shared\styles.py
 modules\shared\tables.py
 modules\shared\ui_shell.py
 modules\watchlist\__init__.py

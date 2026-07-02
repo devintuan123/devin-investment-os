@@ -1,9 +1,7 @@
-import streamlit as st
-
-from modules.shared.ui_shell import render_page_shell
+from modules.shared.ui_shell import configure_page, render_page_shell
 from modules.home import render
 
 
-st.set_page_config(page_title="Devin Investment OS", page_icon="DI", layout="wide")
+configure_page("Devin Investment OS")
 lang = render_page_shell()
 render(lang)

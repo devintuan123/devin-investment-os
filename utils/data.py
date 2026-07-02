@@ -66,8 +66,8 @@ def save_watchlist(df: pd.DataFrame) -> None:
 def _load_csv(path: Path, columns: list[str]) -> pd.DataFrame:
     DATA_DIR.mkdir(exist_ok=True)
     if not path.exists():
-        pd.DataFrame(columns=columns).to_csv(path, index=False)
-    df = pd.read_csv(path)
+        pd.DataFrame(columns=columns).to_csv(path, index=False, encoding="utf-8")
+    df = pd.read_csv(path, encoding="utf-8")
     for column in columns:
         if column not in df.columns:
             df[column] = ""
@@ -76,4 +76,4 @@ def _load_csv(path: Path, columns: list[str]) -> pd.DataFrame:
 
 def _save_csv(df: pd.DataFrame, path: Path) -> None:
     DATA_DIR.mkdir(exist_ok=True)
-    df.to_csv(path, index=False)
+    df.to_csv(path, index=False, encoding="utf-8")

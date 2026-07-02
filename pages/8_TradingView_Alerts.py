@@ -1,5 +1,4 @@
 import pandas as pd
-import streamlit as st
 
 from utils.i18n import t
 from utils.interactive_table import render_interactive_table
@@ -7,7 +6,7 @@ from utils.tradingview import load_alerts
 from utils.ui import get_current_lang, render_refresh_button, render_sidebar_language_switch, render_sidebar_provider_status
 
 
-st.set_page_config(page_title="TradingView Alerts", page_icon="DI", layout="wide")
+configure_page("TradingView Alerts")
 render_sidebar_language_switch()
 render_refresh_button()
 render_sidebar_provider_status()

@@ -35,7 +35,7 @@ def log_alert(payload: dict) -> dict:
     ALERT_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
     alert = sanitize_alert(payload)
     with ALERT_LOG_PATH.open("a", encoding="utf-8") as handle:
-        handle.write(json.dumps(alert, ensure_ascii=True) + "\n")
+        handle.write(json.dumps(alert, ensure_ascii=False) + "\n")
     return alert
 
 

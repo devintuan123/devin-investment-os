@@ -155,10 +155,10 @@ COLUMN_LABELS = {
         "distance_ma_50d": "Distance from 50D MA",
     },
     LANG_ZH: {
-        "timeframe": "\u6642\u9593\u9031\u671f",
-        "return_5d": "5 \u65e5\u5831\u916c",
-        "return_1m": "1 \u500b\u6708\u5831\u916c",
-        "distance_ma_50d": "\u8ddd 50 \u65e5\u5747\u7dda",
+        "timeframe": "時間週期",
+        "return_5d": "5 日報酬",
+        "return_1m": "1 個月報酬",
+        "distance_ma_50d": "距 50 日均線",
     },
 }
 

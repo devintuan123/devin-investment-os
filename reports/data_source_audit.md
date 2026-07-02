@@ -1,23 +1,23 @@
 # Data Source Audit
 
-Generated: 2026-07-02T13:52:14.226942+00:00
+Generated: 2026-07-02T14:29:06.468937+00:00
 
 Status: PASS
 
 ## yfinance
-- SPY: price=750.9249877929688 rows=125 source=yfinance confidence=75 warning=yfinance data may be delayed or best-effort.
-- QQQ: price=729.4400024414062 rows=125 source=yfinance confidence=75 warning=yfinance data may be delayed or best-effort.
-- NVDA: price=198.44000244140625 rows=125 source=yfinance confidence=75 warning=yfinance data may be delayed or best-effort.
-- TSM: price=455.1336975097656 rows=125 source=yfinance confidence=75 warning=yfinance data may be delayed or best-effort.
+- SPY: price=748.2150268554688 rows=125 source=yfinance confidence=75 warning=yfinance data may be delayed or best-effort.
+- QQQ: price=722.4199829101562 rows=125 source=yfinance confidence=75 warning=yfinance data may be delayed or best-effort.
+- NVDA: price=197.74989318847656 rows=125 source=yfinance confidence=75 warning=yfinance data may be delayed or best-effort.
+- TSM: price=450.6600036621094 rows=125 source=yfinance confidence=75 warning=yfinance data may be delayed or best-effort.
 - 0050.TW: price=108.80000305175781 rows=118 source=yfinance confidence=60 warning=Taiwan stock data is reference-only. Do not use for execution.
 - 2330.TW: price=2465.0 rows=118 source=yfinance confidence=60 warning=Taiwan stock data is reference-only. Do not use for execution.
-- GC=F: price=4141.0 rows=125 source=yfinance confidence=75 warning=yfinance data may be delayed or best-effort.
-- ^VIX: price=16.0 rows=126 source=yfinance confidence=75 warning=yfinance data may be delayed or best-effort.
-- BTC-USD: price=61897.75 rows=182 source=binance confidence=90 warning=Read-only crypto reference data.
+- GC=F: price=4143.39990234375 rows=125 source=yfinance confidence=75 warning=yfinance data may be delayed or best-effort.
+- ^VIX: price=15.8100004196167 rows=126 source=yfinance confidence=75 warning=yfinance data may be delayed or best-effort.
+- BTC-USD: price=61691.45 rows=182 source=binance confidence=90 warning=Read-only crypto reference data.
 
 ## Binance
-- BTCUSDT: connected=True price=61897.75 confidence=85 warning=Read-only public endpoint.
-- ETHUSDT: connected=True price=1710.9 confidence=85 warning=Read-only public endpoint.
+- BTCUSDT: connected=True price=61691.45 confidence=85 warning=Read-only public endpoint.
+- ETHUSDT: connected=True price=1702.44 confidence=85 warning=Read-only public endpoint.
 
 ## FRED
 - DGS10: connected=True date=2026-06-30 value=4.44 previous=4.38 confidence=78 warning=daily/lagged macro data

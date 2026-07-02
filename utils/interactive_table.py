@@ -20,17 +20,16 @@ FILTER_HINTS = (
     "status",
     "theme",
     "sector",
-    "分類",
-    "市場",
-    "行動",
-    "風險",
-    "資料來源",
-    "新鮮度",
-    "狀態",
-    "主題",
-    "板塊",
+    "??",
+    "??",
+    "??",
+    "??",
+    "????",
+    "???",
+    "??",
+    "??",
+    "??",
 )
-
 
 def render_interactive_table(
     df,
@@ -54,6 +53,7 @@ def render_interactive_table(
         return translated
 
     view = translated.copy().reset_index(drop=True)
+    view = _drop_duplicate_columns(view)
     view.columns = _dedupe_columns([str(column) for column in view.columns])
     original_count = len(view)
 
@@ -95,6 +95,7 @@ def render_interactive_table(
         valid_height = 420
     if valid_height is not None:
         kwargs["height"] = valid_height
+    view = _compact_long_text(view)
     st.dataframe(view, **kwargs)
     return view
 
@@ -150,3 +151,23 @@ def _dedupe_columns(columns: list[str]) -> list[str]:
         counts[column] = counts.get(column, 0) + 1
         output.append(column if counts[column] == 1 else f"{column}_{counts[column]}")
     return output
+
+
+def _drop_duplicate_columns(df: pd.DataFrame) -> pd.DataFrame:
+    return df.loc[:, ~pd.Index(df.columns).duplicated()].copy()
+
+
+def _compact_long_text(df: pd.DataFrame, max_length: int = 180) -> pd.DataFrame:
+    compact = df.copy()
+    for column in compact.columns:
+        if pd.api.types.is_object_dtype(compact[column]) or pd.api.types.is_string_dtype(compact[column]):
+            compact[column] = compact[column].map(lambda value: _truncate_text(value, max_length))
+    return compact
+
+
+def _truncate_text(value, max_length: int):
+    if not isinstance(value, str):
+        return value
+    if len(value) <= max_length:
+        return value
+    return value[: max_length - 1] + "?"

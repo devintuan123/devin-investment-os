@@ -29,13 +29,13 @@ PORTFOLIO_COLUMNS = [
 def load_portfolio() -> pd.DataFrame:
     if not PORTFOLIO_PATH.exists():
         PORTFOLIO_PATH.parent.mkdir(exist_ok=True)
-        pd.DataFrame(columns=PORTFOLIO_COLUMNS).to_csv(PORTFOLIO_PATH, index=False)
-    return normalize_portfolio(pd.read_csv(PORTFOLIO_PATH))
+        pd.DataFrame(columns=PORTFOLIO_COLUMNS).to_csv(PORTFOLIO_PATH, index=False, encoding="utf-8")
+    return normalize_portfolio(pd.read_csv(PORTFOLIO_PATH, encoding="utf-8"))
 
 
 def save_portfolio(df: pd.DataFrame) -> None:
     clean = normalize_portfolio(df)
-    clean[PORTFOLIO_COLUMNS].to_csv(PORTFOLIO_PATH, index=False)
+    clean[PORTFOLIO_COLUMNS].to_csv(PORTFOLIO_PATH, index=False, encoding="utf-8")
 
 
 def normalize_portfolio(df: pd.DataFrame) -> pd.DataFrame:
